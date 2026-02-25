@@ -167,8 +167,8 @@ The implementation is organized into 6 phases following the roadmap: Infrastruct
     - Generate random carts with varying items
     - _Requirements: 6.4_
 
-- [ ] 7. Eastern Triangle Pricing Engine (Logistics)
-  - [ ] 7.1 Implement delivery fee calculation utility
+- [x] 7. Eastern Triangle Pricing Engine (Logistics)
+  - [x] 7.1 Implement delivery fee calculation utility
     - Create `src/lib/logistics/pricing.ts`
     - Implement `calculateDeliveryFee()` function with route matrix
     - Define routes: Harar→Harar_Campus (40 ETB), Dire_Dawa→DDU (40 ETB)
