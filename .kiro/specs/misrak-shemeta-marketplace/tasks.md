@@ -143,7 +143,7 @@ The implementation is organized into 6 phases following the roadmap: Infrastruct
     - Add quantity selector and "Add to Cart" button
     - _Requirements: 5.5_
 
-- [ ] 6. Shopping Cart Management
+- [x] 6. Shopping Cart Management
   - [ ] 6.1 Implement Cart Server Actions
     - Create `addToCart()` Server Action
     - Implement `updateCartItem()` for quantity changes
