@@ -5,6 +5,7 @@
   "price": "Gatii",
   "stock": "Kuusaa Keessa Jira",
   "outOfStock": "Kuusaa Keessaa Bahe",
+  "onlyInStock": "{{count}} qofa kuusaa keessa jira",
   "category": "Ramaddii",
   "shop": "Suuqii",
   "location": "Bakka",

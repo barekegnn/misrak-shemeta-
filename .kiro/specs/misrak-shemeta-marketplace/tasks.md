@@ -144,7 +144,7 @@ The implementation is organized into 6 phases following the roadmap: Infrastruct
     - _Requirements: 5.5_
 
 - [x] 6. Shopping Cart Management
-  - [ ] 6.1 Implement Cart Server Actions
+  - [x] 6.1 Implement Cart Server Actions
     - Create `addToCart()` Server Action
     - Implement `updateCartItem()` for quantity changes
     - Implement `removeFromCart()` Server Action
@@ -152,7 +152,7 @@ The implementation is organized into 6 phases following the roadmap: Infrastruct
     - Implement `calculateCartTotal()` utility function
     - _Requirements: 6.1, 6.2, 6.3, 6.4_
 
-  - [ ] 6.2 Build CartView component
+  - [x] 6.2 Build CartView component
     - Display all cart items with product details
     - Add quantity increment/decrement controls
     - Add remove item button

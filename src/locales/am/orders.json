@@ -31,5 +31,17 @@
     "reorder": "እንደገና አዝዝ"
   },
   "empty": "ገና ምንም ትዕዛዝ የለም",
-  "emptyDescription": "የመጀመሪያ ትዕዛዝዎን ለማድረግ ግዢ ይጀምሩ"
+  "emptyDescription": "የመጀመሪያ ትዕዛዝዎን ለማድረግ ግዢ ይጀምሩ",
+  "cart": {
+    "title": "የግዢ ጋሪ",
+    "empty": "ጋሪዎ ባዶ ነው",
+    "emptyDescription": "ለመጀመር ምርቶችን ወደ ጋሪዎ ያክሉ",
+    "summary": "የትዕዛዝ ማጠቃለያ",
+    "subtotal": "ንዑስ ድምር",
+    "deliveryFee": "የማድረሻ ክፍያ",
+    "calculatedAtCheckout": "በመክፈያ ጊዜ ይሰላል",
+    "total": "ጠቅላላ",
+    "excludingDelivery": "የማድረሻ ክፍያ ሳይጨምር",
+    "proceedToCheckout": "ወደ መክፈያ ይቀጥሉ"
+  }
 }

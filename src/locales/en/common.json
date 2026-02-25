@@ -35,6 +35,10 @@
     "error": "An error occurred",
     "success": "Success",
     "noResults": "No results found",
-    "selectLanguage": "Select Language"
+    "selectLanguage": "Select Language",
+    "tryAgain": "Try Again",
+    "remove": "Remove",
+    "increase": "Increase",
+    "decrease": "Decrease"
   }
 }

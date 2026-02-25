@@ -31,5 +31,17 @@
     "reorder": "Order Again"
   },
   "empty": "No orders yet",
-  "emptyDescription": "Start shopping to place your first order"
+  "emptyDescription": "Start shopping to place your first order",
+  "cart": {
+    "title": "Shopping Cart",
+    "empty": "Your cart is empty",
+    "emptyDescription": "Add products to your cart to get started",
+    "summary": "Order Summary",
+    "subtotal": "Subtotal",
+    "deliveryFee": "Delivery Fee",
+    "calculatedAtCheckout": "Calculated at checkout",
+    "total": "Total",
+    "excludingDelivery": "Excluding delivery fee",
+    "proceedToCheckout": "Proceed to Checkout"
+  }
 }

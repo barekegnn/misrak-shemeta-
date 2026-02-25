@@ -31,5 +31,17 @@
     "reorder": "Ammas Ajaji"
   },
   "empty": "Ajajni amma hin jiru",
-  "emptyDescription": "Ajaja kee jalqabaa gochuuf bittaa jalqabi"
+  "emptyDescription": "Ajaja kee jalqabaa gochuuf bittaa jalqabi",
+  "cart": {
+    "title": "Gaarii Bittaa",
+    "empty": "Gaarii kee duwwaa dha",
+    "emptyDescription": "Jalqabuuf oomisha gara gaarii keetti ida'i",
+    "summary": "Cuunfaa Ajaja",
+    "subtotal": "Ida'ama Xiqqaa",
+    "deliveryFee": "Kaffaltii Geejjibaa",
+    "calculatedAtCheckout": "Yeroo kaffaltii shallagama",
+    "total": "Waliigala",
+    "excludingDelivery": "Kaffaltii geejjibaa osoo hin dabalatiin",
+    "proceedToCheckout": "Gara Kaffaltii Itti Fufi"
+  }
 }

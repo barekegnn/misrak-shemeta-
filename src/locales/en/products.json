@@ -5,6 +5,7 @@
   "price": "Price",
   "stock": "In Stock",
   "outOfStock": "Out of Stock",
+  "onlyInStock": "Only {{count}} in stock",
   "category": "Category",
   "shop": "Shop",
   "location": "Location",

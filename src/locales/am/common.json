@@ -35,6 +35,10 @@
     "error": "ስህተት ተከስቷል",
     "success": "ተሳክቷል",
     "noResults": "ምንም ውጤት አልተገኘም",
-    "selectLanguage": "ቋንቋ ይምረጡ"
+    "selectLanguage": "ቋንቋ ይምረጡ",
+    "tryAgain": "እንደገና ይሞክሩ",
+    "remove": "አስወግድ",
+    "increase": "ጨምር",
+    "decrease": "ቀንስ"
   }
 }

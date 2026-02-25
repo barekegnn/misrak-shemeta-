@@ -5,6 +5,7 @@
   "price": "ዋጋ",
   "stock": "በመጋዘን ውስጥ",
   "outOfStock": "ከመጋዘን ውጭ",
+  "onlyInStock": "{{count}} ብቻ በመጋዘን ውስጥ",
   "category": "ምድብ",
   "shop": "ሱቅ",
   "location": "አካባቢ",

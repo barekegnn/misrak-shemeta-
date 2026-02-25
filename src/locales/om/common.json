@@ -35,6 +35,10 @@
     "error": "Dogoggorri uumame",
     "success": "Milkaa'e",
     "noResults": "Bu'aan hin argamne",
-    "selectLanguage": "Afaan Filadhu"
+    "selectLanguage": "Afaan Filadhu",
+    "tryAgain": "Ammas Yaali",
+    "remove": "Haqi",
+    "increase": "Dabali",
+    "decrease": "Hir'isi"
   }
 }
