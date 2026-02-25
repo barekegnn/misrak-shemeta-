@@ -43,5 +43,12 @@
     "total": "Waliigala",
     "excludingDelivery": "Kaffaltii geejjibaa osoo hin dabalatiin",
     "proceedToCheckout": "Gara Kaffaltii Itti Fufi"
+  },
+  "payment": {
+    "sandboxMode": "Haalata Yaalii (Kaffaltii Yaalii)",
+    "sandboxDescription": "Kun naannoo yaalii ti. Maallaqa dhugaa hin kaffaltamu.",
+    "processing": "Hojjechaa jira...",
+    "payNow": "Amma Kaffali",
+    "securePayment": "Kaffaltii nageenya Chapa"
   }
 }

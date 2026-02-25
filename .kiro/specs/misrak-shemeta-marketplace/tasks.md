@@ -184,25 +184,25 @@ The implementation is organized into 6 phases following the roadmap: Infrastruct
     - Verify determinism (same inputs always produce same output)
     - _Requirements: 16.1, 16.2, 16.3, 16.4, 16.5, 16.6, 16.7_
 
-- [ ] 8. Checkpoint - Verify product catalog and cart functionality
+- [x] 8. Checkpoint - Verify product catalog and cart functionality
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 9. Chapa Payment Integration (Payment Flow)
-  - [ ] 9.1 Set up Chapa SDK and configuration
+- [x] 9. Chapa Payment Integration (Payment Flow)
+  - [x] 9.1 Set up Chapa SDK and configuration
     - Install Chapa SDK or create HTTP client for Chapa API
     - Configure environment variables: CHAPA_SECRET_KEY, CHAPA_WEBHOOK_SECRET, CHAPA_MODE
     - Create `src/lib/payment/chapa.ts` for Chapa utilities
     - Implement sandbox mode support
     - _Requirements: 25.1, 25.2, 25.4, 25.5_
 
-  - [ ] 9.2 Implement payment initiation Server Action
+  - [x] 9.2 Implement payment initiation Server Action
     - Create `initiateChapaPayment()` Server Action
     - Generate Chapa payment request with order details
     - Return checkout URL for redirect
     - Store Chapa transaction reference with order
     - _Requirements: 8.1, 8.2, 8.6_
 
-  - [ ] 9.3 Implement payment webhook handler
+  - [x] 9.3 Implement payment webhook handler
     - Create `/app/api/webhooks/chapa/route.ts` API route
     - Verify webhook signature using CHAPA_WEBHOOK_SECRET
     - Implement idempotency check (prevent duplicate processing)
@@ -210,7 +210,7 @@ The implementation is organized into 6 phases following the roadmap: Infrastruct
     - Use Firestore Transaction for atomic status update
     - _Requirements: 8.3, 8.7, 24.1, 24.2, 24.3, 24.4, 24.5_
 
-  - [ ] 9.4 Build ChapaPaymentButton component
+  - [x] 9.4 Build ChapaPaymentButton component
     - Create button to initiate payment flow
     - Handle redirect to Chapa payment interface
     - Handle return from Chapa after payment

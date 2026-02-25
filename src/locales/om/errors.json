@@ -27,5 +27,6 @@
   "payment": {
     "failed": "Kaffaltiin hin milkoofne. Mee ammas yaali.",
     "cancelled": "Kaffaltiin haqameera"
-  }
+  },
+  "notAuthenticated": "Gocha kana raawwachuuf seenuu qabda"
 }

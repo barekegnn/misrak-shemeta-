@@ -43,5 +43,12 @@
     "total": "Total",
     "excludingDelivery": "Excluding delivery fee",
     "proceedToCheckout": "Proceed to Checkout"
+  },
+  "payment": {
+    "sandboxMode": "Sandbox Mode (Test Payments)",
+    "sandboxDescription": "This is a test environment. No real money will be charged.",
+    "processing": "Processing...",
+    "payNow": "Pay Now",
+    "securePayment": "Secure payment powered by Chapa"
   }
 }

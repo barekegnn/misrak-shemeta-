@@ -43,5 +43,12 @@
     "total": "ጠቅላላ",
     "excludingDelivery": "የማድረሻ ክፍያ ሳይጨምር",
     "proceedToCheckout": "ወደ መክፈያ ይቀጥሉ"
+  },
+  "payment": {
+    "sandboxMode": "የሙከራ ሁነታ (የሙከራ ክፍያዎች)",
+    "sandboxDescription": "ይህ የሙከራ አካባቢ ነው። ምንም እውነተኛ ገንዘብ አይከፈልም።",
+    "processing": "በማስኬድ ላይ...",
+    "payNow": "አሁን ይክፈሉ",
+    "securePayment": "በቻፓ የተጠበቀ ክፍያ"
   }
 }
