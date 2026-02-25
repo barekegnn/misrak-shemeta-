@@ -28,7 +28,39 @@
   "actions": {
     "cancelOrder": "ትዕዛዝ ሰርዝ",
     "trackOrder": "ትዕዛዝ ተከታተል",
-    "reorder": "እንደገና አዝዝ"
+    "reorder": "እንደገና አዝዝ",
+    "markDispatched": "እንደተላከ ምልክት አድርግ",
+    "markArrived": "እንደደረሰ ምልክት አድርግ",
+    "completeDelivery": "ማድረሻ አጠናቅቅ"
+  },
+  "cancellation": {
+    "title": "ትዕዛዝ ሰርዝ",
+    "reason": "የስረዛ ምክንያት",
+    "reasonPlaceholder": "እባክዎ የስረዛ ምክንያት ይስጡ...",
+    "confirm": "ስረዛ አረጋግጥ",
+    "keepOrder": "ትዕዛዝ ያቆዩ",
+    "refundNote": "ክፍያ ከተደረገ ተመላሽ ይደረጋል"
+  },
+  "shopOrders": {
+    "title": "የሱቅ ትዕዛዞች",
+    "earnings": "የእርስዎ ገቢ",
+    "earningsNote": "ትዕዛዝ ሲጠናቀቅ ገንዘብ ይለቀቃል",
+    "readyToDispatch": "ለመላክ ዝግጁ",
+    "deliveryInfo": "የማድረሻ መረጃ",
+    "itemsToPrepare": "ለማዘጋጀት እቃዎች",
+    "dispatchNote": "እቃዎችን ለማድረሻ ሰው ከሰጡ በኋላ ይጫኑ"
+  },
+  "runner": {
+    "deliveryDetails": "የማድረሻ ዝርዝሮች",
+    "destination": "መድረሻ",
+    "itemsToDeliver": "ለማድረስ እቃዎች",
+    "orderValue": "የትዕዛዝ ዋጋ",
+    "arrivedNote": "ወደ ማድረሻ ቦታ ሲደርሱ ይጫኑ",
+    "completeDelivery": "ማድረሻ አጠናቅቅ",
+    "askForCode": "ደንበኛውን ለ6-አሃዝ ማረጋገጫ ኮዳቸው ይጠይቁ",
+    "enterCode": "6-አሃዝ ኮድ ያስገቡ",
+    "deliveryCompleted": "ማድረሻ ተጠናቋል",
+    "thankYou": "ይህንን ማድረሻ ስላጠናቀቁ እናመሰግናለን!"
   },
   "empty": "ገና ምንም ትዕዛዝ የለም",
   "emptyDescription": "የመጀመሪያ ትዕዛዝዎን ለማድረግ ግዢ ይጀምሩ",

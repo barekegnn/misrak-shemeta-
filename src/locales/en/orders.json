@@ -28,7 +28,39 @@
   "actions": {
     "cancelOrder": "Cancel Order",
     "trackOrder": "Track Order",
-    "reorder": "Order Again"
+    "reorder": "Order Again",
+    "markDispatched": "Mark as Dispatched",
+    "markArrived": "Mark as Arrived",
+    "completeDelivery": "Complete Delivery"
+  },
+  "cancellation": {
+    "title": "Cancel Order",
+    "reason": "Cancellation Reason",
+    "reasonPlaceholder": "Please provide a reason for cancelling...",
+    "confirm": "Confirm Cancellation",
+    "keepOrder": "Keep Order",
+    "refundNote": "A refund will be processed if payment was made"
+  },
+  "shopOrders": {
+    "title": "Shop Orders",
+    "earnings": "Your Earnings",
+    "earningsNote": "Funds will be released when order is completed",
+    "readyToDispatch": "Ready to dispatch",
+    "deliveryInfo": "Delivery Information",
+    "itemsToPrepare": "Items to Prepare",
+    "dispatchNote": "Click after handing items to delivery person"
+  },
+  "runner": {
+    "deliveryDetails": "Delivery Details",
+    "destination": "Destination",
+    "itemsToDeliver": "Items to Deliver",
+    "orderValue": "Order Value",
+    "arrivedNote": "Click when you reach the delivery location",
+    "completeDelivery": "Complete Delivery",
+    "askForCode": "Ask the customer for their 6-digit verification code",
+    "enterCode": "Enter 6-digit code",
+    "deliveryCompleted": "Delivery Completed",
+    "thankYou": "Thank you for completing this delivery!"
   },
   "empty": "No orders yet",
   "emptyDescription": "Start shopping to place your first order",

@@ -223,8 +223,8 @@ The implementation is organized into 6 phases following the roadmap: Infrastruct
     - Verify order status changes only once
     - _Requirements: 8.7, 24.1, 24.2, 24.3, 24.4, 24.5_
 
-- [ ] 10. Order Lifecycle and Escrow State Machine
-  - [ ] 10.1 Implement Order creation Server Action
+- [x] 10. Order Lifecycle and Escrow State Machine
+  - [x] 10.1 Implement Order creation Server Action
     - Create `createOrder()` Server Action
     - Calculate total amount and delivery fee
     - Generate 6-digit OTP and store with order
@@ -233,7 +233,7 @@ The implementation is organized into 6 phases following the roadmap: Infrastruct
     - Check product stock availability
     - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 7.6_
 
-  - [ ] 10.2 Implement Escrow State Machine utilities
+  - [x] 10.2 Implement Escrow State Machine utilities
     - Create `src/lib/orders/stateMachine.ts`
     - Define allowed state transitions
     - Implement `validateTransition()` function
@@ -242,7 +242,7 @@ The implementation is organized into 6 phases following the roadmap: Infrastruct
     - Record status history with timestamps and actors
     - _Requirements: 23.1, 23.2, 23.3, 23.4, 23.5_
 
-  - [ ] 10.3 Implement OTP generation and validation
+  - [x] 10.3 Implement OTP generation and validation
     - Create `src/lib/orders/otp.ts`
     - Implement `generateOTP()` function (6-digit random)
     - Implement `validateOTP()` Server Action with attempt tracking
@@ -251,13 +251,13 @@ The implementation is organized into 6 phases following the roadmap: Infrastruct
     - Release escrow funds to shop balance using Firestore Transaction
     - _Requirements: 17.1, 17.2, 17.3, 17.4, 17.5, 17.6_
 
-  - [ ] 10.4 Build OrderCheckout component
+  - [x] 10.4 Build OrderCheckout component
     - Display cart summary with delivery fee breakdown
     - Show total amount
     - Add payment button (connects to Chapa)
     - _Requirements: 7.1, 7.5_
 
-  - [ ] 10.5 Build OrderList and OrderDetail components for buyers
+  - [x] 10.5 Build OrderList and OrderDetail components for buyers
     - Display order history in reverse chronological order
     - Show order status, date, total, products
     - Display status timeline (PENDING → PAID_ESCROW → DISPATCHED → ARRIVED → COMPLETED)
@@ -265,21 +265,21 @@ The implementation is organized into 6 phases following the roadmap: Infrastruct
     - Add cancel button (only for PENDING or PAID_ESCROW)
     - _Requirements: 14.1, 14.2, 14.3, 14.4, 17.1_
 
-  - [ ] 10.6 Build ShopOrderList and ShopOrderDetail components for shop owners
+  - [x] 10.6 Build ShopOrderList and ShopOrderDetail components for shop owners
     - Display orders containing products from owner's shop
     - Filter by status
     - Show buyer information and delivery location
     - Add "Mark as DISPATCHED" button for PAID_ESCROW orders
     - _Requirements: 9.1, 9.2, 9.6_
 
-  - [ ] 10.7 Build RunnerOrderView component for runners
+  - [x] 10.7 Build RunnerOrderView component for runners
     - Display active deliveries
     - Add "Mark as ARRIVED" button
     - Create OTP submission form
     - Show attempt counter and error messages
     - _Requirements: 9.4, 9.5_
 
-  - [ ] 10.8 Implement order cancellation Server Action
+  - [x] 10.8 Implement order cancellation Server Action
     - Create `cancelOrder()` Server Action
     - Allow cancellation for PENDING status (no refund needed)
     - Allow cancellation for PAID_ESCROW status (initiate Chapa refund)

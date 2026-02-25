@@ -28,7 +28,39 @@
   "actions": {
     "cancelOrder": "Ajaja Haqi",
     "trackOrder": "Ajaja Hordofi",
-    "reorder": "Ammas Ajaji"
+    "reorder": "Ammas Ajaji",
+    "markDispatched": "Akka Ergametti Mallatteessi",
+    "markArrived": "Akka Ga'etti Mallatteessi",
+    "completeDelivery": "Geejjiba Xumuri"
+  },
+  "cancellation": {
+    "title": "Ajaja Haqi",
+    "reason": "Sababni Haquu",
+    "reasonPlaceholder": "Maaloo sababni haquu kenni...",
+    "confirm": "Haquu Mirkaneessi",
+    "keepOrder": "Ajaja Tursi",
+    "refundNote": "Yoo kaffaltiin raawwatame deebiin ni raawwatama"
+  },
+  "shopOrders": {
+    "title": "Ajaja Suuqii",
+    "earnings": "Galii Kee",
+    "earningsNote": "Yeroo ajajni xumuramu maallaqi ni gadi lakkifama",
+    "readyToDispatch": "Ergamuuf qophaa'e",
+    "deliveryInfo": "Odeeffannoo Geejjibaa",
+    "itemsToPrepare": "Meeshaalee Qopheessuu",
+    "dispatchNote": "Erga meeshaalee nama geejjibuuf kennite booda cuqaasi"
+  },
+  "runner": {
+    "deliveryDetails": "Ibsa Geejjibaa",
+    "destination": "Bakka Dhaquu",
+    "itemsToDeliver": "Meeshaalee Geessisuu",
+    "orderValue": "Gatii Ajaja",
+    "arrivedNote": "Yeroo bakka geejjibaa geessu cuqaasi",
+    "completeDelivery": "Geejjiba Xumuri",
+    "askForCode": "Maamila koodii mirkaneessaa lakkoofsa 6 gaafadhu",
+    "enterCode": "Koodii lakkoofsa 6 galchi",
+    "deliveryCompleted": "Geejjibni Xumurameera",
+    "thankYou": "Geejjiba kana xumuruuf galatoomaa!"
   },
   "empty": "Ajajni amma hin jiru",
   "emptyDescription": "Ajaja kee jalqabaa gochuuf bittaa jalqabi",
