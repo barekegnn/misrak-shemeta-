@@ -309,15 +309,15 @@ The implementation is organized into 6 phases following the roadmap: Infrastruct
     - Verify order creation fails with insufficient stock
     - _Requirements: 4.6_
 
-- [ ] 11. Shop Owner Balance Management
-  - [ ] 11.1 Implement shop balance Server Actions
+- [x] 11. Shop Owner Balance Management
+  - [x] 11.1 Implement shop balance Server Actions
     - Create `updateShopBalance()` Server Action (internal use only)
     - Implement balance increment on order completion (use Firestore Transaction)
     - Create `getShopBalance()` Server Action
     - Create `getShopTransactions()` Server Action
     - _Requirements: 22.1, 22.2, 22.5_
 
-  - [ ] 11.2 Build BalanceDashboard component
+  - [x] 11.2 Build BalanceDashboard component
     - Display current balance
     - Show pending orders value (PAID_ESCROW, DISPATCHED, ARRIVED)
     - Show completed orders value
