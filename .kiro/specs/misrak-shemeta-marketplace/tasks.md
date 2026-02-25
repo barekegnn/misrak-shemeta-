@@ -331,17 +331,17 @@ The implementation is organized into 6 phases following the roadmap: Infrastruct
     - Generate random order sequences and verify balance
     - _Requirements: 22.1, 22.2, 22.5_
 
-- [ ] 12. Checkpoint - Verify complete order lifecycle
+- [x] 12. Checkpoint - Verify complete order lifecycle
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 13. AI Sales Assistant (AI Layer)
-  - [ ] 13.1 Set up OpenAI API integration
+- [x] 13. AI Sales Assistant (AI Layer)
+  - [x] 13.1 Set up OpenAI API integration
     - Install OpenAI SDK
     - Configure OPENAI_API_KEY environment variable
     - Create `src/lib/ai/openai.ts` for OpenAI utilities
     - _Requirements: 20.2_
 
-  - [ ] 13.2 Implement RAG query handler Server Action
+  - [x] 13.2 Implement RAG query handler Server Action
     - Create `queryAIAssistant()` Server Action
     - Retrieve relevant products from Firestore based on user question
     - Construct system prompt with product data (RAG context)
@@ -351,7 +351,7 @@ The implementation is organized into 6 phases following the roadmap: Infrastruct
     - Add 5-second timeout and fallback message
     - _Requirements: 20.2, 20.3, 20.4, 20.5, 20.6, 20.7_
 
-  - [ ] 13.3 Build AIChatInterface component
+  - [x] 13.3 Build AIChatInterface component
     - Create chat UI with message history
     - Add input field and send button
     - Show typing indicator during API call
