@@ -1,0 +1,31 @@
+{
+  "generic": "Dogoggorri uumame. Mee ammas yaali.",
+  "network": "Dogoggora networkii. Mee walitti dhufeenya kee mirkaneessi.",
+  "unauthorized": "Gocha kana raawwachuuf hayyama hin qabdu.",
+  "notFound": "Qabeenyi gaafatame hin argamne.",
+  "validation": {
+    "required": "Dirreen kun barbaachisaadha",
+    "email": "Mee email sirrii ta'e galchi",
+    "phone": "Mee lakkoofsa bilbilaa sirrii ta'e galchi",
+    "minLength": "Dheerinni gadi aanaa arfiilee {min} dha",
+    "maxLength": "Dheerinni guddaan arfiilee {max} dha",
+    "min": "Gatiin gadi aanaa {min} dha",
+    "max": "Gatiin guddaan {max} dha"
+  },
+  "product": {
+    "notFound": "Oomishni hin argamne",
+    "insufficientStock": "Kuusaan gahaan hin jiru",
+    "unauthorized": "Oomisha kana fooyyessuu hin dandeessu"
+  },
+  "order": {
+    "notFound": "Ajajni hin argamne",
+    "invalidTransition": "Jijjiirama haalata ajajaa sirrii hin taane",
+    "cannotCancel": "Ajajni kun haqamuu hin danda'u",
+    "otpInvalid": "Koodiin geejjibaa sirrii miti",
+    "otpLocked": "Yaalii baay'ee booda ajajni cufameera"
+  },
+  "payment": {
+    "failed": "Kaffaltiin hin milkoofne. Mee ammas yaali.",
+    "cancelled": "Kaffaltiin haqameera"
+  }
+}

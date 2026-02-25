@@ -1,0 +1,25 @@
+{
+  "title": "Products",
+  "addToCart": "Add to Cart",
+  "viewDetails": "View Details",
+  "price": "Price",
+  "stock": "In Stock",
+  "outOfStock": "Out of Stock",
+  "category": "Category",
+  "shop": "Shop",
+  "location": "Location",
+  "deliveryFee": "Delivery Fee",
+  "estimatedTime": "Estimated Delivery Time",
+  "search": {
+    "placeholder": "Search products...",
+    "noResults": "No products found"
+  },
+  "filters": {
+    "title": "Filters",
+    "location": "Shop Location",
+    "priceRange": "Price Range",
+    "allLocations": "All Locations",
+    "apply": "Apply Filters",
+    "clear": "Clear Filters"
+  }
+}

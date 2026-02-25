@@ -1,0 +1,40 @@
+{
+  "welcome": "ወደ ምስራቅ ሸመታ እንኳን ደህና መጡ",
+  "appName": "ምስራቅ ሸመታ",
+  "appDescription": "የምስራቅ ኢትዮጵያ ገበያ",
+  "locations": {
+    "harar": "ሐረር",
+    "direDawa": "ድሬዳዋ",
+    "haramayaMain": "ሐረማያ ዋና ካምፓስ",
+    "hararCampus": "ሐረር ካምፓስ",
+    "ddu": "ድሬዳዋ ዩኒቨርሲቲ"
+  },
+  "navigation": {
+    "home": "መነሻ",
+    "products": "ምርቶች",
+    "cart": "ጋሪ",
+    "orders": "ትዕዛዞች",
+    "profile": "መገለጫ",
+    "dashboard": "ዳሽቦርድ"
+  },
+  "actions": {
+    "save": "አስቀምጥ",
+    "cancel": "ሰርዝ",
+    "delete": "ሰርዝ",
+    "edit": "አርትዕ",
+    "submit": "ላክ",
+    "confirm": "አረጋግጥ",
+    "back": "ተመለስ",
+    "next": "ቀጣይ",
+    "close": "ዝጋ",
+    "search": "ፈልግ",
+    "continue": "ቀጥል"
+  },
+  "common": {
+    "loading": "በመጫን ላይ...",
+    "error": "ስህተት ተከስቷል",
+    "success": "ተሳክቷል",
+    "noResults": "ምንም ውጤት አልተገኘም",
+    "selectLanguage": "ቋንቋ ይምረጡ"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "title": "ትዕዛዞች",
+  "myOrders": "የእኔ ትዕዛዞች",
+  "orderDetails": "የትዕዛዝ ዝርዝር",
+  "orderNumber": "ትዕዛዝ #",
+  "status": {
+    "PENDING": "ክፍያ በመጠባበቅ ላይ",
+    "PAID_ESCROW": "ክፍያ ተደርጓል",
+    "DISPATCHED": "ተልኳል",
+    "ARRIVED": "ደርሷል",
+    "COMPLETED": "ተጠናቋል",
+    "CANCELLED": "ተሰርዟል"
+  },
+  "total": "ጠቅላላ",
+  "deliveryFee": "የማድረሻ ክፍያ",
+  "subtotal": "ንዑስ ድምር",
+  "items": "እቃዎች",
+  "quantity": "ብዛት",
+  "otp": {
+    "title": "የማድረሻ ኮድ",
+    "description": "ይህንን 6-አሃዝ ኮድ ለማድረሻ ሹፌር ይስጡ",
+    "code": "የእርስዎ ኮድ",
+    "enterCode": "የማድረሻ ኮድ ያስገቡ",
+    "validate": "ማድረሻ አረጋግጥ",
+    "attemptsRemaining": "ሙከራዎች ይቀራሉ",
+    "locked": "ትዕዛዝ ተቆልፏል። ድጋፍን ያነጋግሩ።"
+  },
+  "actions": {
+    "cancelOrder": "ትዕዛዝ ሰርዝ",
+    "trackOrder": "ትዕዛዝ ተከታተል",
+    "reorder": "እንደገና አዝዝ"
+  },
+  "empty": "ገና ምንም ትዕዛዝ የለም",
+  "emptyDescription": "የመጀመሪያ ትዕዛዝዎን ለማድረግ ግዢ ይጀምሩ"
+}

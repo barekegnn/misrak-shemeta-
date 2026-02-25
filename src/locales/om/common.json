@@ -1,0 +1,40 @@
+{
+  "welcome": "Gara Misrak Shemeta Baga Nagaan Dhuftan",
+  "appName": "Misrak Shemeta",
+  "appDescription": "Gabaa Bahaa Itoophiyaa",
+  "locations": {
+    "harar": "Harar",
+    "direDawa": "Dire Dawa",
+    "haramayaMain": "Haramaya Main Campus",
+    "hararCampus": "Harar Campus",
+    "ddu": "Yunivarsiitii Dire Dawa"
+  },
+  "navigation": {
+    "home": "Mana",
+    "products": "Oomisha",
+    "cart": "Gaarii",
+    "orders": "Ajaja",
+    "profile": "Ibsa",
+    "dashboard": "Dashboard"
+  },
+  "actions": {
+    "save": "Olkaa'i",
+    "cancel": "Dhiisi",
+    "delete": "Haqi",
+    "edit": "Sirreessi",
+    "submit": "Ergi",
+    "confirm": "Mirkaneessi",
+    "back": "Duubatti Deebi'i",
+    "next": "Itti Aanuu",
+    "close": "Cufi",
+    "search": "Barbaadi",
+    "continue": "Itti Fufi"
+  },
+  "common": {
+    "loading": "Fe'aa jira...",
+    "error": "Dogoggorri uumame",
+    "success": "Milkaa'e",
+    "noResults": "Bu'aan hin argamne",
+    "selectLanguage": "Afaan Filadhu"
+  }
+}

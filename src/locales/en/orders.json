@@ -1,0 +1,35 @@
+{
+  "title": "Orders",
+  "myOrders": "My Orders",
+  "orderDetails": "Order Details",
+  "orderNumber": "Order #",
+  "status": {
+    "PENDING": "Pending Payment",
+    "PAID_ESCROW": "Payment Received",
+    "DISPATCHED": "Dispatched",
+    "ARRIVED": "Arrived",
+    "COMPLETED": "Completed",
+    "CANCELLED": "Cancelled"
+  },
+  "total": "Total",
+  "deliveryFee": "Delivery Fee",
+  "subtotal": "Subtotal",
+  "items": "Items",
+  "quantity": "Quantity",
+  "otp": {
+    "title": "Delivery Code",
+    "description": "Provide this 6-digit code to the delivery runner",
+    "code": "Your Code",
+    "enterCode": "Enter delivery code",
+    "validate": "Confirm Delivery",
+    "attemptsRemaining": "attempts remaining",
+    "locked": "Order locked. Contact support."
+  },
+  "actions": {
+    "cancelOrder": "Cancel Order",
+    "trackOrder": "Track Order",
+    "reorder": "Order Again"
+  },
+  "empty": "No orders yet",
+  "emptyDescription": "Start shopping to place your first order"
+}

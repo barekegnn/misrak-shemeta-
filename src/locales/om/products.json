@@ -1,0 +1,25 @@
+{
+  "title": "Oomisha",
+  "addToCart": "Gara Gaarii Itti Dabaluu",
+  "viewDetails": "Ibsa Bal'aa Ilaali",
+  "price": "Gatii",
+  "stock": "Kuusaa Keessa Jira",
+  "outOfStock": "Kuusaa Keessaa Bahe",
+  "category": "Ramaddii",
+  "shop": "Suuqii",
+  "location": "Bakka",
+  "deliveryFee": "Kaffaltii Geejjibaa",
+  "estimatedTime": "Yeroo Geejjibaa Tilmaamame",
+  "search": {
+    "placeholder": "Oomisha barbaadi...",
+    "noResults": "Oomishni hin argamne"
+  },
+  "filters": {
+    "title": "Calaltoota",
+    "location": "Bakka Suuqii",
+    "priceRange": "Hangii Gatii",
+    "allLocations": "Bakkeewwan Hunda",
+    "apply": "Calaltoota Hojiirra Oolchi",
+    "clear": "Calaltoota Haqi"
+  }
+}

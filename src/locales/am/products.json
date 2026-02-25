@@ -1,0 +1,25 @@
+{
+  "title": "ምርቶች",
+  "addToCart": "ወደ ጋሪ ጨምር",
+  "viewDetails": "ዝርዝር ይመልከቱ",
+  "price": "ዋጋ",
+  "stock": "በመጋዘን ውስጥ",
+  "outOfStock": "ከመጋዘን ውጭ",
+  "category": "ምድብ",
+  "shop": "ሱቅ",
+  "location": "አካባቢ",
+  "deliveryFee": "የማድረሻ ክፍያ",
+  "estimatedTime": "የሚገመተው የማድረሻ ጊዜ",
+  "search": {
+    "placeholder": "ምርቶችን ፈልግ...",
+    "noResults": "ምንም ምርት አልተገኘም"
+  },
+  "filters": {
+    "title": "ማጣሪያዎች",
+    "location": "የሱቅ አካባቢ",
+    "priceRange": "የዋጋ ክልል",
+    "allLocations": "ሁሉም አካባቢዎች",
+    "apply": "ማጣሪያዎችን ተግብር",
+    "clear": "ማጣሪያዎችን አጽዳ"
+  }
+}

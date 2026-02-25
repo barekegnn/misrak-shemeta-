@@ -1,0 +1,35 @@
+{
+  "title": "Ajaja",
+  "myOrders": "Ajaja Koo",
+  "orderDetails": "Ibsa Ajaja",
+  "orderNumber": "Ajaja #",
+  "status": {
+    "PENDING": "Kaffaltii Eegaa Jira",
+    "PAID_ESCROW": "Kaffaltiin Raawwatame",
+    "DISPATCHED": "Ergame",
+    "ARRIVED": "Ga'e",
+    "COMPLETED": "Xumurameera",
+    "CANCELLED": "Haqameera"
+  },
+  "total": "Waliigala",
+  "deliveryFee": "Kaffaltii Geejjibaa",
+  "subtotal": "Ida'ama Xiqqaa",
+  "items": "Meeshaalee",
+  "quantity": "Baay'ina",
+  "otp": {
+    "title": "Koodii Geejjibaa",
+    "description": "Koodii lakkoofsa 6 kana nama geejjibu kenniif",
+    "code": "Koodii Kee",
+    "enterCode": "Koodii geejjibaa galchi",
+    "validate": "Geejjiba Mirkaneessi",
+    "attemptsRemaining": "yaaliin hafe",
+    "locked": "Ajajni cufameera. Deeggarsa qunnamuu."
+  },
+  "actions": {
+    "cancelOrder": "Ajaja Haqi",
+    "trackOrder": "Ajaja Hordofi",
+    "reorder": "Ammas Ajaji"
+  },
+  "empty": "Ajajni amma hin jiru",
+  "emptyDescription": "Ajaja kee jalqabaa gochuuf bittaa jalqabi"
+}

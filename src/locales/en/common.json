@@ -1,0 +1,40 @@
+{
+  "welcome": "Welcome to Misrak Shemeta",
+  "appName": "Misrak Shemeta",
+  "appDescription": "Eastern Ethiopia Marketplace",
+  "locations": {
+    "harar": "Harar",
+    "direDawa": "Dire Dawa",
+    "haramayaMain": "Haramaya Main Campus",
+    "hararCampus": "Harar Campus",
+    "ddu": "Dire Dawa University"
+  },
+  "navigation": {
+    "home": "Home",
+    "products": "Products",
+    "cart": "Cart",
+    "orders": "Orders",
+    "profile": "Profile",
+    "dashboard": "Dashboard"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "submit": "Submit",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "close": "Close",
+    "search": "Search",
+    "continue": "Continue"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success",
+    "noResults": "No results found",
+    "selectLanguage": "Select Language"
+  }
+}
