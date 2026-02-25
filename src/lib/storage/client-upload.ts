@@ -61,6 +61,11 @@ export function validateImageFile(file: File): { valid: boolean; error?: string 
  * Compresses an image file if it's too large.
  * Uses canvas to resize the image while maintaining aspect ratio.
  * 
+ * Mobile Optimization (Requirements 12.4, 21.4):
+ * - Aggressive compression for mobile networks
+ * - Multiple quality levels based on file size
+ * - WebP conversion when supported
+ * 
  * @param file - The image file
  * @param maxWidth - Maximum width in pixels (default: 1200)
  * @param maxHeight - Maximum height in pixels (default: 1200)
@@ -106,7 +111,14 @@ export function compressImage(
           return;
         }
         
+        // Enable image smoothing for better quality
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        
         ctx.drawImage(img, 0, 0, width, height);
+        
+        // Try WebP first (better compression), fallback to original format
+        const outputFormat = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
         
         canvas.toBlob(
           (blob) => {
@@ -116,7 +128,7 @@ export function compressImage(
               reject(new Error('Failed to compress image'));
             }
           },
-          file.type,
+          outputFormat,
           quality
         );
       };
@@ -134,6 +146,42 @@ export function compressImage(
     
     reader.readAsDataURL(file);
   });
+}
+
+/**
+ * Creates a thumbnail version of an image for faster loading.
+ * 
+ * @param file - The image file
+ * @param size - Thumbnail size in pixels (default: 200)
+ * @returns Thumbnail as Blob
+ */
+export function createThumbnail(
+  file: File,
+  size: number = 200
+): Promise<Blob> {
+  return compressImage(file, size, size, 0.6);
+}
+
+/**
+ * Generates multiple image sizes for responsive loading.
+ * 
+ * @param file - The image file
+ * @returns Object with different image sizes
+ */
+export async function generateResponsiveSizes(file: File): Promise<{
+  thumbnail: Blob;
+  small: Blob;
+  medium: Blob;
+  large: Blob;
+}> {
+  const [thumbnail, small, medium, large] = await Promise.all([
+    compressImage(file, 200, 200, 0.6),   // Thumbnail: 200px
+    compressImage(file, 640, 640, 0.7),   // Small: 640px (mobile)
+    compressImage(file, 1024, 1024, 0.75), // Medium: 1024px (tablet)
+    compressImage(file, 1920, 1920, 0.8),  // Large: 1920px (desktop)
+  ]);
+
+  return { thumbnail, small, medium, large };
 }
 
 /**

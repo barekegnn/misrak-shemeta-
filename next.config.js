@@ -7,26 +7,55 @@ const nextConfig = {
     },
   },
   
-  // Image optimization for mobile networks
+  // Image optimization for mobile networks (Requirements 12.4, 21.4)
   images: {
-    formats: ['image/webp'],
-    deviceSizes: [640, 750, 828, 1080, 1200],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    formats: ['image/webp', 'image/avif'], // Modern formats for better compression
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920], // Mobile-first device sizes
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384], // Thumbnail sizes
+    minimumCacheTTL: 60 * 60 * 24 * 30, // Cache for 30 days
+    dangerouslyAllowSVG: false, // Security: disable SVG
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'firebasestorage.googleapis.com',
       },
     ],
+    // Loader configuration for Firebase Storage
+    loader: 'default',
+    // Quality settings for different scenarios
+    quality: 75, // Default quality (balance between size and quality)
   },
   
   // Optimize for Telegram Mini App
   output: 'standalone',
   
+  // Compression for faster loading
+  compress: true,
+  
   // Internationalization
   i18n: {
     locales: ['en', 'am', 'om'],
     defaultLocale: 'en',
+  },
+  
+  // Performance optimizations
+  swcMinify: true, // Use SWC for faster minification
+  
+  // Headers for better caching
+  async headers() {
+    return [
+      {
+        source: '/:all*(svg|jpg|jpeg|png|webp|avif|gif)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+    ];
   },
 };
 

@@ -2,6 +2,7 @@
 
 import { Product } from '@/types';
 import { useI18n } from '@/i18n/provider';
+import { useTelegramAuth } from './TelegramAuthProvider';
 import { useState } from 'react';
 
 interface ProductCardProps {
@@ -20,11 +21,16 @@ export function ProductCard({
   onViewDetails,
 }: ProductCardProps) {
   const { t } = useI18n();
+  const { triggerHaptic } = useTelegramAuth();
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
+    
+    // Trigger haptic feedback on add to cart (Requirement 21.5)
+    triggerHaptic('light');
+    
     onAddToCart?.(product.id);
   };
 

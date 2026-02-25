@@ -15,7 +15,8 @@
     "cart": "ጋሪ",
     "orders": "ትዕዛዞች",
     "profile": "መገለጫ",
-    "dashboard": "ዳሽቦርድ"
+    "dashboard": "ዳሽቦርድ",
+    "notifications": "ማሳወቂያዎች"
   },
   "actions": {
     "save": "አስቀምጥ",
@@ -39,6 +40,39 @@
     "tryAgain": "እንደገና ይሞክሩ",
     "remove": "አስወግድ",
     "increase": "ጨምር",
-    "decrease": "ቀንስ"
+    "decrease": "ቀንስ",
+    "justNow": "አሁን",
+    "minutesAgo": "ደቂቃ በፊት",
+    "hoursAgo": "ሰዓት በፊት",
+    "daysAgo": "ቀን በፊት"
+  },
+  "notifications": {
+    "title": "ማሳወቂያዎች",
+    "noNotifications": "ምንም ማሳወቂያ የለም",
+    "markAllAsRead": "ሁሉንም እንደተነበበ ምልክት አድርግ",
+    "orderDispatched": {
+      "title": "ትዕዛዝ ተልኳል",
+      "message": "ትዕዛዝዎ ተልኳል እና በመንገድ ላይ ነው!"
+    },
+    "orderArrived": {
+      "title": "ትዕዛዝ ደርሷል",
+      "message": "ትዕዛዝዎ ደርሷል! እባክዎ ምርቱን ይመርምሩ እና OTP ያቅርቡ።"
+    },
+    "orderCancelled": {
+      "title": "ትዕዛዝ ተሰርዟል",
+      "message": "ትዕዛዝዎ ተሰርዟል።"
+    },
+    "orderCompleted": {
+      "title": "ትዕዛዝ ተጠናቋል",
+      "message": "ትዕዛዝዎ ተጠናቋል። ስለገዙ እናመሰግናለን!"
+    },
+    "paymentSuccess": {
+      "title": "ክፍያ ተሳክቷል",
+      "message": "ክፍያዎ ተሳክቷል።"
+    },
+    "paymentFailed": {
+      "title": "ክፍያ አልተሳካም",
+      "message": "ክፍያዎ አልተሳካም። እባክዎ እንደገና ይሞክሩ።"
+    }
   }
 }

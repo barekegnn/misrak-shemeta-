@@ -393,28 +393,28 @@ The implementation is organized into 6 phases following the roadmap: Infrastruct
     - Retrieve Shop record on authentication
     - _Requirements: 3.5_
 
-- [ ] 16. Mobile Optimization and Telegram Integration
-  - [ ] 16.1 Implement Telegram Mini App SDK integration
+- [x] 16. Mobile Optimization and Telegram Integration
+  - [x] 16.1 Implement Telegram Mini App SDK integration
     - Initialize Telegram WebApp SDK
     - Retrieve user context (telegramId, language_code)
     - Implement haptic feedback for key interactions
     - Adapt layout to Telegram viewport dimensions
     - _Requirements: 19.1, 21.3, 21.5_
 
-  - [ ] 16.2 Optimize images for mobile networks
+  - [x] 16.2 Optimize images for mobile networks
     - Implement lazy loading for product images
     - Use Next.js Image component with responsive sizes
     - Compress images on upload
     - _Requirements: 12.4, 21.4_
 
-  - [ ] 16.3 Ensure touch-friendly UI elements
+  - [x] 16.3 Ensure touch-friendly UI elements
     - Verify all interactive elements are minimum 44x44px
     - Test on mobile devices
     - Optimize button spacing and sizing
     - _Requirements: 12.2, 21.2_
 
-- [ ] 17. Notifications and Status Updates
-  - [ ] 17.1 Implement notification system
+- [x] 17. Notifications and Status Updates
+  - [x] 17.1 Implement notification system
     - Send notification when order status changes to DISPATCHED
     - Send notification when order status changes to ARRIVED (include OTP instructions)
     - Send notification to shop owner when order is cancelled

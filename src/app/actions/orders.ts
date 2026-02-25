@@ -4,6 +4,12 @@ import { adminDb } from '@/lib/firebase/admin';
 import { verifyTelegramUser } from '@/lib/auth/telegram';
 import { calculateDeliveryFee } from '@/lib/logistics/pricing';
 import { generateOTP } from '@/lib/orders/otp';
+import { 
+  notifyOrderDispatched, 
+  notifyOrderArrived, 
+  notifyOrderCancelled,
+  notifyOrderCompleted 
+} from '@/lib/notifications/service';
 import type { 
   Order, 
   OrderItem, 
@@ -392,6 +398,24 @@ export async function updateOrderStatus(
       } as Order;
     });
 
+    // Send notifications based on status change (Requirements 9.3, 9.5)
+    if (result) {
+      // Get buyer's language preference
+      const buyerDoc = await adminDb.collection('users').doc(result.userId).get();
+      const buyerLanguage = buyerDoc.data()?.languagePreference || 'en';
+
+      if (newStatus === 'DISPATCHED') {
+        // Requirement 9.3: Notify buyer when order is dispatched
+        await notifyOrderDispatched(result.userId, orderId, buyerLanguage);
+      } else if (newStatus === 'ARRIVED') {
+        // Requirement 9.5: Notify buyer when order arrives with OTP
+        await notifyOrderArrived(result.userId, orderId, result.otpCode, buyerLanguage);
+      } else if (newStatus === 'COMPLETED') {
+        // Notify buyer when order is completed
+        await notifyOrderCompleted(result.userId, orderId, buyerLanguage);
+      }
+    }
+
     return { success: true, data: result };
   } catch (error: any) {
     console.error('Error updating order status:', error);
@@ -588,6 +612,31 @@ export async function cancelOrder(
         requiresRefund: requiresRefund(currentStatus)
       } as Order & { requiresRefund: boolean };
     });
+
+    // Requirement 18.4: Send notification to shop owner(s) when order is cancelled
+    if (result) {
+      // Get unique shop IDs from order items
+      const shopIds = [...new Set(result.items.map(item => item.shopId))];
+
+      // Notify each shop owner
+      for (const shopId of shopIds) {
+        const shopDoc = await adminDb.collection('shops').doc(shopId).get();
+        if (shopDoc.exists) {
+          const shopData = shopDoc.data();
+          const ownerDoc = await adminDb.collection('users').doc(shopData!.ownerId).get();
+          
+          if (ownerDoc.exists) {
+            const ownerLanguage = ownerDoc.data()?.languagePreference || 'en';
+            await notifyOrderCancelled(
+              shopData!.ownerId,
+              orderId,
+              reason,
+              ownerLanguage
+            );
+          }
+        }
+      }
+    }
 
     return { success: true, data: result };
   } catch (error: any) {

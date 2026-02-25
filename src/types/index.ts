@@ -172,6 +172,10 @@ export interface TelegramWebApp {
   };
   ready(): void;
   close(): void;
+  expand?(): void; // Expand to full viewport height
+  viewportHeight?: number; // Current viewport height
+  onEvent?: (eventType: string, callback: () => void) => void;
+  offEvent?: (eventType: string, callback: () => void) => void;
   HapticFeedback: {
     impactOccurred(style: 'light' | 'medium' | 'heavy'): void;
   };

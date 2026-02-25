@@ -8,6 +8,8 @@ interface TelegramAuthContextType {
   telegramUser: any | null;
   isLoading: boolean;
   webApp: TelegramWebApp | null;
+  triggerHaptic: (style: 'light' | 'medium' | 'heavy') => void;
+  viewportHeight: number;
 }
 
 const TelegramAuthContext = createContext<TelegramAuthContextType | undefined>(undefined);
@@ -26,6 +28,7 @@ export function TelegramAuthProvider({ children }: { children: ReactNode }) {
   const [telegramUser, setTelegramUser] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [webApp, setWebApp] = useState<TelegramWebApp | null>(null);
+  const [viewportHeight, setViewportHeight] = useState(0);
 
   useEffect(() => {
     // Initialize Telegram WebApp
@@ -35,6 +38,22 @@ export function TelegramAuthProvider({ children }: { children: ReactNode }) {
       
       // Notify Telegram that the Mini App is ready
       tg.ready();
+
+      // Expand to full viewport height (Requirement 21.3)
+      tg.expand?.();
+
+      // Set initial viewport height
+      setViewportHeight(tg.viewportHeight || window.innerHeight);
+
+      // Listen for viewport changes (Requirement 21.3)
+      const handleViewportChanged = () => {
+        setViewportHeight(tg.viewportHeight || window.innerHeight);
+      };
+
+      // Telegram WebApp viewport change event
+      if (tg.onEvent) {
+        tg.onEvent('viewportChanged', handleViewportChanged);
+      }
 
       // Get Telegram user data
       const tgUser = tg.initDataUnsafe?.user;
@@ -55,6 +74,13 @@ export function TelegramAuthProvider({ children }: { children: ReactNode }) {
           setIsLoading(false);
         }
       }
+
+      // Cleanup
+      return () => {
+        if (tg.offEvent) {
+          tg.offEvent('viewportChanged', handleViewportChanged);
+        }
+      };
     } else {
       // Not running in Telegram, use development mode
       if (process.env.NODE_ENV === 'development') {
@@ -62,8 +88,10 @@ export function TelegramAuthProvider({ children }: { children: ReactNode }) {
         const mockTelegramId = '123456789';
         setTelegramUser({ id: mockTelegramId, first_name: 'Dev User' });
         verifyUser(mockTelegramId, 'en');
+        setViewportHeight(window.innerHeight);
       } else {
         setIsLoading(false);
+        setViewportHeight(window.innerHeight);
       }
     }
   }, []);
@@ -87,8 +115,32 @@ export function TelegramAuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  /**
+   * Trigger haptic feedback (Requirement 21.5)
+   * Provides tactile feedback for key interactions
+   */
+  const triggerHaptic = (style: 'light' | 'medium' | 'heavy') => {
+    if (webApp?.HapticFeedback) {
+      try {
+        webApp.HapticFeedback.impactOccurred(style);
+      } catch (error) {
+        // Haptic feedback not supported, silently fail
+        console.debug('Haptic feedback not supported:', error);
+      }
+    }
+  };
+
   return (
-    <TelegramAuthContext.Provider value={{ user, telegramUser, isLoading, webApp }}>
+    <TelegramAuthContext.Provider 
+      value={{ 
+        user, 
+        telegramUser, 
+        isLoading, 
+        webApp, 
+        triggerHaptic,
+        viewportHeight 
+      }}
+    >
       {children}
     </TelegramAuthContext.Provider>
   );

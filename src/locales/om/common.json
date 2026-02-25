@@ -15,7 +15,8 @@
     "cart": "Gaarii",
     "orders": "Ajaja",
     "profile": "Ibsa",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "notifications": "Beeksisa"
   },
   "actions": {
     "save": "Olkaa'i",
@@ -39,6 +40,39 @@
     "tryAgain": "Ammas Yaali",
     "remove": "Haqi",
     "increase": "Dabali",
-    "decrease": "Hir'isi"
+    "decrease": "Hir'isi",
+    "justNow": "Ammuma",
+    "minutesAgo": "daqiiqaa dura",
+    "hoursAgo": "sa'aatii dura",
+    "daysAgo": "guyyaa dura"
+  },
+  "notifications": {
+    "title": "Beeksisa",
+    "noNotifications": "Beeksisni hin jiru",
+    "markAllAsRead": "Hunda akka dubbifametti mallattoo godhi",
+    "orderDispatched": {
+      "title": "Ajajni Ergame",
+      "message": "Ajajni keessan ergamee karaa irra jira!"
+    },
+    "orderArrived": {
+      "title": "Ajajni Dhufe",
+      "message": "Ajajni keessan dhufee jira! Mee oomisha kana qoradhaa fi OTP kana kennaa."
+    },
+    "orderCancelled": {
+      "title": "Ajajni Haqame",
+      "message": "Ajajni keessan haqame."
+    },
+    "orderCompleted": {
+      "title": "Ajajni Xumurameera",
+      "message": "Ajajni keessan xumurameera. Bituuf galatoomaa!"
+    },
+    "paymentSuccess": {
+      "title": "Kaffaltiin Milkaawe",
+      "message": "Kaffaltiin keessan milkaawe."
+    },
+    "paymentFailed": {
+      "title": "Kaffaltiin Hin Milkoofne",
+      "message": "Kaffaltiin keessan hin milkoofne. Mee irra deebitii yaali."
+    }
   }
 }

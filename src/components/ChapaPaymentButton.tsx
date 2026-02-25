@@ -34,7 +34,7 @@ export function ChapaPaymentButton({
   onError,
   disabled = false,
 }: ChapaPaymentButtonProps) {
-  const { user } = useTelegramAuth();
+  const { user, triggerHaptic } = useTelegramAuth();
   const { t } = useI18n();
   
   const [isProcessing, setIsProcessing] = useState(false);
@@ -46,6 +46,9 @@ export function ChapaPaymentButton({
       return;
     }
 
+    // Trigger haptic feedback on payment initiation (Requirement 21.5)
+    triggerHaptic('medium');
+
     setIsProcessing(true);
     setError(null);
 
@@ -54,6 +57,9 @@ export function ChapaPaymentButton({
       const result = await initiateChapaPaymentForOrder(user.telegramId, orderId);
 
       if (result.success && result.data) {
+        // Trigger success haptic feedback (Requirement 21.5)
+        triggerHaptic('heavy');
+        
         // Redirect to Chapa checkout page
         window.location.href = result.data.checkoutUrl;
         
@@ -61,6 +67,9 @@ export function ChapaPaymentButton({
           onSuccess();
         }
       } else {
+        // Trigger error haptic feedback
+        triggerHaptic('heavy');
+        
         const errorMessage = result.error || t('errors.paymentFailed');
         setError(errorMessage);
         
@@ -69,6 +78,9 @@ export function ChapaPaymentButton({
         }
       }
     } catch (err) {
+      // Trigger error haptic feedback
+      triggerHaptic('heavy');
+      
       const errorMessage = t('errors.paymentFailed');
       setError(errorMessage);
       
