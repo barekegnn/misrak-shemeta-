@@ -227,3 +227,131 @@ export async function getShopDetails(
  * in src/app/actions/orders.ts using Firestore Transactions.
  * The balance update happens atomically when an order is completed.
  */
+
+/**
+ * Register a new shop
+ * Requirements: 3.1, 3.2, 3.3, 3.4
+ */
+export async function registerShop(
+  telegramId: string,
+  shopData: {
+    name: string;
+    city: 'Harar' | 'Dire_Dawa';
+    contactPhone: string;
+  }
+): Promise<ActionResponse<Shop>> {
+  try {
+    // Verify telegramId
+    const user = await verifyTelegramUser(telegramId);
+    if (!user) {
+      return { success: false, error: 'UNAUTHORIZED' };
+    }
+
+    // Validate input
+    if (!shopData.name || shopData.name.trim().length === 0) {
+      return { success: false, error: 'SHOP_NAME_REQUIRED' };
+    }
+
+    if (shopData.name.length > 100) {
+      return { success: false, error: 'SHOP_NAME_TOO_LONG' };
+    }
+
+    if (!shopData.city || (shopData.city !== 'Harar' && shopData.city !== 'Dire_Dawa')) {
+      return { success: false, error: 'INVALID_CITY' };
+    }
+
+    if (!shopData.contactPhone || shopData.contactPhone.trim().length === 0) {
+      return { success: false, error: 'CONTACT_PHONE_REQUIRED' };
+    }
+
+    // Validate phone number format (Ethiopian format)
+    const phoneRegex = /^(\+251|0)?[79]\d{8}$/;
+    if (!phoneRegex.test(shopData.contactPhone.replace(/\s/g, ''))) {
+      return { success: false, error: 'INVALID_PHONE_FORMAT' };
+    }
+
+    // Check if user already has a shop
+    const existingShopSnapshot = await adminDb
+      .collection('shops')
+      .where('ownerId', '==', user.id)
+      .limit(1)
+      .get();
+
+    if (!existingShopSnapshot.empty) {
+      return { success: false, error: 'SHOP_ALREADY_EXISTS' };
+    }
+
+    // Update user role to MERCHANT
+    await adminDb.collection('users').doc(user.id).update({
+      role: 'MERCHANT',
+      updatedAt: new Date()
+    });
+
+    // Create shop record
+    const shopRef = await adminDb.collection('shops').add({
+      name: shopData.name.trim(),
+      ownerId: user.id,
+      city: shopData.city,
+      contactPhone: shopData.contactPhone.trim(),
+      balance: 0,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    });
+
+    const shop: Shop = {
+      id: shopRef.id,
+      name: shopData.name.trim(),
+      ownerId: user.id,
+      city: shopData.city,
+      contactPhone: shopData.contactPhone.trim(),
+      balance: 0,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
+    return { success: true, data: shop };
+  } catch (error) {
+    console.error('Error registering shop:', error);
+    return { success: false, error: 'INTERNAL_ERROR' };
+  }
+}
+
+/**
+ * Check if user has a shop
+ */
+export async function hasShop(
+  telegramId: string
+): Promise<ActionResponse<{ hasShop: boolean; shopId?: string }>> {
+  try {
+    // Verify telegramId
+    const user = await verifyTelegramUser(telegramId);
+    if (!user) {
+      return { success: false, error: 'UNAUTHORIZED' };
+    }
+
+    // Check if user has a shop
+    const shopSnapshot = await adminDb
+      .collection('shops')
+      .where('ownerId', '==', user.id)
+      .limit(1)
+      .get();
+
+    if (shopSnapshot.empty) {
+      return {
+        success: true,
+        data: { hasShop: false }
+      };
+    }
+
+    return {
+      success: true,
+      data: {
+        hasShop: true,
+        shopId: shopSnapshot.docs[0].id
+      }
+    };
+  } catch (error) {
+    console.error('Error checking shop:', error);
+    return { success: false, error: 'INTERNAL_ERROR' };
+  }
+}

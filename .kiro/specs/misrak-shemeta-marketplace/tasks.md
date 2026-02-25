@@ -374,21 +374,21 @@ The implementation is organized into 6 phases following the roadmap: Infrastruct
     - Simulate mid-transaction failures
     - _Requirements: 23.1, 23.2, 23.3, 23.4, 23.5_
 
-- [ ] 15. Shop Registration Flow
-  - [ ] 15.1 Implement shop registration Server Action
+- [x] 15. Shop Registration Flow
+  - [x] 15.1 Implement shop registration Server Action
     - Create `registerShop()` Server Action
     - Create Firebase Auth account for shop owner
     - Create Shop record in Firestore with unique shopId
     - Associate Firebase Auth user ID with Shop record
     - _Requirements: 3.1, 3.2, 3.3, 3.4_
 
-  - [ ] 15.2 Build shop registration form component
+  - [x] 15.2 Build shop registration form component
     - Create form with fields: shop name, location (Harar/Dire_Dawa), contact phone, credentials
     - Add client-side validation
     - Connect to registerShop Server Action
     - _Requirements: 3.2_
 
-  - [ ] 15.3 Implement shop owner authentication
+  - [x] 15.3 Implement shop owner authentication
     - Verify credentials using Firebase Auth
     - Retrieve Shop record on authentication
     - _Requirements: 3.5_
