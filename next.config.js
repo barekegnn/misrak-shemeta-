@@ -22,10 +22,6 @@ const nextConfig = {
         hostname: 'firebasestorage.googleapis.com',
       },
     ],
-    // Loader configuration for Firebase Storage
-    loader: 'default',
-    // Quality settings for different scenarios
-    quality: 75, // Default quality (balance between size and quality)
   },
   
   // Optimize for Telegram Mini App
@@ -33,15 +29,6 @@ const nextConfig = {
   
   // Compression for faster loading
   compress: true,
-  
-  // Internationalization
-  i18n: {
-    locales: ['en', 'am', 'om'],
-    defaultLocale: 'en',
-  },
-  
-  // Performance optimizations
-  swcMinify: true, // Use SWC for faster minification
   
   // Headers for better caching
   async headers() {

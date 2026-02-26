@@ -35,9 +35,14 @@ next-env.d.ts
 
 # Firebase
 .firebase/
+.firebase-cache/
 emulator-data/
 *-debug.log
 firebase-debug.log
 firestore-debug.log
 ui-debug.log
+
+# Java JDK (for Firebase Emulator)
+jdk-*/
+java*.zip
 

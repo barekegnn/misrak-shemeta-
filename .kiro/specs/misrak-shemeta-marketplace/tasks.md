@@ -432,7 +432,7 @@ The implementation is organized into 6 phases following the roadmap: Infrastruct
     - Verify all properties pass
     - _Requirements: All correctness properties_
 
-  - [ ] 18.3 Perform end-to-end testing
+  - [-] 18.3 Perform end-to-end testing
     - Test complete buyer flow: browse → cart → checkout → delivery → completion
     - Test shop owner flow: product creation → order fulfillment
     - Test runner flow: delivery → OTP submission
