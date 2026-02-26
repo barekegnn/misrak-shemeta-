@@ -1,0 +1,81 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      // Users can read their own profile
+      allow read: if isOwner(userId);
+      // Users can update their own profile
+      allow update: if isOwner(userId);
+      // User creation is handled by server-side code
+      allow create: if false;
+      allow delete: if false;
+    }
+    
+    // Shops collection
+    match /shops/{shopId} {
+      // Anyone can read shop information
+      allow read: if true;
+      // Shop creation and updates are handled by server-side code
+      allow create, update, delete: if false;
+    }
+    
+    // Products collection
+    match /products/{productId} {
+      // Anyone can read products
+      allow read: if true;
+      // Product mutations are handled by server-side code
+      allow create, update, delete: if false;
+    }
+    
+    // Orders collection
+    match /orders/{orderId} {
+      // Users can read their own orders
+      allow read: if isAuthenticated() && 
+                     (resource.data.userId == request.auth.uid ||
+                      resource.data.items.hasAny([request.auth.uid]));
+      // Order mutations are handled by server-side code
+      allow create, update, delete: if false;
+    }
+    
+    // Carts collection
+    match /carts/{userId} {
+      // Users can read and write their own cart
+      allow read, write: if isOwner(userId);
+    }
+    
+    // Shop Transactions collection
+    match /shopTransactions/{transactionId} {
+      // Only shop owners can read their transactions
+      allow read: if isAuthenticated();
+      // Transactions are created by server-side code
+      allow create, update, delete: if false;
+    }
+    
+    // Notifications collection
+    match /notifications/{notificationId} {
+      // Users can read their own notifications
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      // Users can update their own notifications (mark as read)
+      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      // Notifications are created by server-side code
+      allow create, delete: if false;
+    }
+    
+    // Default deny all other collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -8,7 +8,12 @@
     "start": "next start",
     "lint": "next lint",
     "test": "vitest",
-    "test:ui": "vitest --ui"
+    "test:ui": "vitest --ui",
+    "emulator": "firebase emulators:start",
+    "emulator:export": "firebase emulators:start --export-on-exit=./emulator-data",
+    "emulator:import": "firebase emulators:start --import=./emulator-data",
+    "seed": "FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 npx ts-node scripts/seed-data.ts",
+    "dev:emulator": "concurrently \"npm run emulator\" \"npm run dev\""
   },
   "dependencies": {
     "next": "^15.0.0",
