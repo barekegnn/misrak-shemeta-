@@ -188,7 +188,7 @@ async function seedData() {
     }
     console.log(`✅ Created ${shops.length} shops\n`);
 
-    // 3. Create test products (80 products across 8 shops)
+    // 3. Create test products (72 products across 8 shops - 9 per shop)
     console.log('Creating products...');
     
     const products = generateProducts();
@@ -196,7 +196,7 @@ async function seedData() {
     for (const product of products) {
       await db.collection('products').doc(product.id).set(product);
     }
-    console.log(`✅ Created ${products.length} products\n`);
+    console.log(`✅ Created ${products.length} products (9 per shop)\n`);
 
     // 4. Create a sample cart
     console.log('Creating sample cart...');
@@ -257,7 +257,7 @@ async function seedData() {
     console.log('\n📍 Shop Categories:');
     console.log('   - Harar: Electronics, Books, Fashion, Cosmetics');
     console.log('   - Dire Dawa: Shoes, Stationery, Sports, Grocery');
-    console.log('\n🛍️  Each shop has 10 products for comprehensive testing');
+    console.log('\n🛍️  Each shop has 9 unique products for comprehensive testing');
 
   } catch (error) {
     console.error('❌ Error seeding data:', error);

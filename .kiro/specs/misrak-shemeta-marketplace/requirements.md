@@ -11,6 +11,7 @@ Misrak Shemeta is a multi-tenant marketplace platform designed for Eastern Ethio
 - **Product**: An item listed for sale by a shop
 - **User**: A buyer who can browse products and make purchases, associated with Haramaya_Main, Harar_Campus, or DDU
 - **Shop_Owner**: A user with permissions to manage a shop and its products
+- **Admin**: A system owner with elevated permissions to manage users, shops, orders, and view platform analytics
 - **Location**: Geographic identifier - either Haramaya_Main, Harar_Campus, DDU (for users) or Harar, Dire_Dawa (for shops)
 - **Tenant**: A shop instance with isolated data within the multi-tenant architecture
 - **Order**: A purchase transaction initiated by a user for one or more products
@@ -351,6 +352,96 @@ Misrak Shemeta is a multi-tenant marketplace platform designed for Eastern Ethio
 5. THE Marketplace_Platform SHALL translate all system-generated notifications (order status updates, payment confirmations) based on the User's language preference
 6. WHEN a User first loads the Telegram_Mini_App, THE Marketplace_Platform SHALL detect the User's Telegram language setting and set the initial language preference accordingly
 
+### Requirement 27: Admin Dashboard Access
+
+**User Story:** As a system owner, I want to access an admin dashboard with platform statistics, so that I can monitor the overall health and performance of the marketplace.
+
+#### Acceptance Criteria
+
+1. THE Marketplace_Platform SHALL authenticate admin users by verifying their telegramId against a list of admin telegramIds stored in environment variables
+2. WHEN an admin user accesses the admin dashboard, THE Marketplace_Platform SHALL display total number of Users, Shops, Products, and Orders
+3. THE Marketplace_Platform SHALL display total platform revenue (sum of all COMPLETED Order totals)
+4. THE Marketplace_Platform SHALL display total pending escrow amount (sum of all PAID_ESCROW and DISPATCHED Order totals)
+5. THE Marketplace_Platform SHALL display recent Orders (last 20) with status, User, Shop, and total price
+6. WHEN a non-admin user attempts to access the admin dashboard, THE Marketplace_Platform SHALL reject the request and return an authorization error
+
+### Requirement 28: User Management
+
+**User Story:** As a system owner, I want to view and manage all users on the platform, so that I can handle user-related issues and enforce platform policies.
+
+#### Acceptance Criteria
+
+1. WHEN an admin user accesses the user management interface, THE Marketplace_Platform SHALL display all Users with telegramId, Home_Location, registration date, and total orders count
+2. THE Marketplace_Platform SHALL support searching Users by telegramId or registration date range
+3. WHEN an admin user suspends a User account, THE Marketplace_Platform SHALL update the User record with a suspended flag and timestamp using a Firestore_Transaction
+4. WHEN a suspended User attempts any operation, THE Marketplace_Platform SHALL reject the request and return a suspension notice
+5. WHEN an admin user activates a suspended User account, THE Marketplace_Platform SHALL remove the suspended flag using a Firestore_Transaction
+6. THE Marketplace_Platform SHALL allow admin users to change a User's role between USER and SHOP_OWNER
+
+### Requirement 29: Shop Management
+
+**User Story:** As a system owner, I want to view and manage all shops on the platform, so that I can handle shop-related issues and enforce merchant policies.
+
+#### Acceptance Criteria
+
+1. WHEN an admin user accesses the shop management interface, THE Marketplace_Platform SHALL display all Shops with shop name, Location, Shop_Owner telegramId, registration date, balance, and total products count
+2. THE Marketplace_Platform SHALL support searching Shops by shop name, Location, or registration date range
+3. WHEN an admin user suspends a Shop, THE Marketplace_Platform SHALL update the Shop record with a suspended flag and timestamp using a Firestore_Transaction
+4. WHEN a suspended Shop_Owner attempts any Product or Order operation, THE Marketplace_Platform SHALL reject the request and return a suspension notice
+5. WHEN an admin user activates a suspended Shop, THE Marketplace_Platform SHALL remove the suspended flag using a Firestore_Transaction
+6. THE Marketplace_Platform SHALL allow admin users to manually adjust Shop balance with a reason field for audit purposes
+
+### Requirement 30: Product Moderation
+
+**User Story:** As a system owner, I want to view and moderate all products on the platform, so that I can remove inappropriate or policy-violating content.
+
+#### Acceptance Criteria
+
+1. WHEN an admin user accesses the product moderation interface, THE Marketplace_Platform SHALL display all Products with product name, Shop name, price, images, and creation date
+2. THE Marketplace_Platform SHALL support searching Products by product name, Shop name, or price range
+3. WHEN an admin user removes a Product, THE Marketplace_Platform SHALL delete the Product record from Firestore and remove associated images from Firebase_Storage
+4. THE Marketplace_Platform SHALL log all admin Product removals with admin telegramId, Product details, and removal reason
+5. THE Marketplace_Platform SHALL display Products flagged by Users for review (if flagging feature is implemented)
+
+### Requirement 31: Order Management
+
+**User Story:** As a system owner, I want to view and manage all orders on the platform, so that I can resolve disputes and handle exceptional cases.
+
+#### Acceptance Criteria
+
+1. WHEN an admin user accesses the order management interface, THE Marketplace_Platform SHALL display all Orders with orderId, User telegramId, Shop name, status, total price, and order date
+2. THE Marketplace_Platform SHALL support searching Orders by orderId, User telegramId, Shop name, status, or date range
+3. THE Marketplace_Platform SHALL allow admin users to manually update Order status with a reason field for audit purposes using a Firestore_Transaction
+4. WHEN an admin user manually completes an Order, THE Marketplace_Platform SHALL release funds from the Escrow_Account to the Shop balance using a Firestore_Transaction
+5. WHEN an admin user manually refunds an Order, THE Marketplace_Platform SHALL update the Order status to REFUNDED and initiate a refund through Chapa_Gateway
+6. THE Marketplace_Platform SHALL log all admin Order status changes with admin telegramId, Order details, and reason
+
+### Requirement 32: Financial Reporting
+
+**User Story:** As a system owner, I want to view financial reports and analytics, so that I can understand platform revenue and shop performance.
+
+#### Acceptance Criteria
+
+1. WHEN an admin user accesses the financial reporting interface, THE Marketplace_Platform SHALL display total platform revenue by date range (sum of all COMPLETED Order totals)
+2. THE Marketplace_Platform SHALL display revenue breakdown by Shop with shop name, total orders, and total revenue
+3. THE Marketplace_Platform SHALL display revenue breakdown by Location with total orders and total revenue for each User Home_Location
+4. THE Marketplace_Platform SHALL display delivery fee revenue (sum of all COMPLETED Order delivery fees)
+5. THE Marketplace_Platform SHALL support exporting financial reports as CSV files with date range filter
+6. THE Marketplace_Platform SHALL display top-performing Shops by revenue and order count
+
+### Requirement 33: System Monitoring
+
+**User Story:** As a system owner, I want to monitor system health and errors, so that I can proactively identify and resolve technical issues.
+
+#### Acceptance Criteria
+
+1. WHEN an admin user accesses the system monitoring interface, THE Marketplace_Platform SHALL display real-time statistics including active Users, pending Orders, and failed payment attempts
+2. THE Marketplace_Platform SHALL display recent error logs with timestamp, error type, affected User or Shop, and error message
+3. THE Marketplace_Platform SHALL display Payment_Webhook call history with timestamp, orderId, status, and response code
+4. THE Marketplace_Platform SHALL display failed Firestore_Transaction attempts with timestamp, operation type, and retry count
+5. THE Marketplace_Platform SHALL support filtering error logs by date range, error type, or affected entity
+6. THE Marketplace_Platform SHALL display Chapa API call statistics including success rate, average response time, and failed requests
+
 ## Notes
 
 - The platform uses Next.js 15 App Router architecture with Server Actions for all mutations
@@ -365,6 +456,7 @@ Misrak Shemeta is a multi-tenant marketplace platform designed for Eastern Ethio
 - Payment webhook handlers must implement idempotency checks to prevent double-crediting
 - All Server Actions must verify telegramId using Firebase Admin SDK before processing requests
 - The AI Sales Assistant uses RAG with OpenAI to answer product-specific questions based on Firestore data
+- Admin authentication uses environment variable ADMIN_TELEGRAM_IDS (comma-separated list) to identify system owners
 - No placeholder code is permitted - all implementations must be functional using Chapa Sandbox for testing
 
 ## Implementation Roadmap
@@ -377,3 +469,4 @@ The requirements should be implemented in the following order to ensure dependen
 4. Payment Flow: Chapa Sandbox integration and idempotent Payment_Webhook handler
 5. Order Lifecycle: OTP generation, validation logic, and escrow state machine
 6. AI Layer: RAG-based AI_Sales_Assistant integration with OpenAI
+7. Admin Platform: Admin authentication, dashboard, user/shop/order management, financial reporting, and system monitoring

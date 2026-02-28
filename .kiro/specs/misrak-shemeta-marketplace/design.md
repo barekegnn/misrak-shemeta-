@@ -28,6 +28,11 @@ The platform follows a three-tier architecture:
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
 │  │   Buyer UI   │  │  Seller UI   │  │  Runner UI   │      │
 │  └──────────────┘  └──────────────┘  └──────────────┘      │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │                   Admin UI                           │   │
+│  │  Dashboard | Users | Shops | Products | Orders      │   │
+│  │  Financial | Monitoring                             │   │
+│  └──────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────┘
                             │
                             ▼
@@ -38,6 +43,7 @@ The platform follows a three-tier architecture:
 │  │  • Product Management  • Order Processing            │   │
 │  │  • Cart Operations     • Payment Webhooks            │   │
 │  │  • OTP Verification    • Balance Management          │   │
+│  │  • Admin Operations    • Audit Logging               │   │
 │  └──────────────────────────────────────────────────────┘   │
 │  ┌──────────────────────────────────────────────────────┐   │
 │  │           Business Logic Layer                        │   │
@@ -45,6 +51,7 @@ The platform follows a three-tier architecture:
 │  │  • Escrow State Machine                              │   │
 │  │  • Multi-Tenant Isolation                            │   │
 │  │  • OTP Generation & Validation                       │   │
+│  │  • Admin Authorization & Audit                       │   │
 │  └──────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────┘
                             │
@@ -290,6 +297,132 @@ Multi-tenancy is implemented at the data model level:
 - JSON files with key-value pairs for each language
 - Covers all UI strings (navigation, buttons, labels, forms, notifications)
 
+#### 11. Admin Dashboard and Management
+
+**AdminAuthMiddleware**
+- Server-side middleware for admin route protection
+- Verifies telegramId against ADMIN_TELEGRAM_IDS environment variable
+- Rejects unauthorized access with 403 error
+- Applied to all /admin routes
+
+**AdminLayout**
+- Layout component for admin pages
+- Navigation sidebar with links to all admin sections
+- Displays admin user information
+- Responsive design (desktop-focused, mobile-compatible)
+
+**AdminDashboard**
+- Overview page with platform statistics
+- Displays total users, shops, products, orders
+- Shows total platform revenue and pending escrow amount
+- Recent orders list (last 20)
+- Quick action buttons for common tasks
+
+**AdminNav**
+- Navigation component for admin sidebar
+- Links to: Dashboard, Users, Shops, Products, Orders, Financial, Monitoring
+- Active route highlighting
+- Collapsible on mobile
+
+**StatCard**
+- Reusable component for displaying metrics
+- Shows label, value, and optional trend indicator
+- Supports different color schemes for different metric types
+
+**UserManagement**
+- Table view of all users with pagination
+- Columns: telegramId, Home_Location, registration date, total orders, status
+- Search by telegramId or date range
+- Actions: Suspend, Activate, Change Role
+- Bulk actions support
+
+**UserTable**
+- Data table component for user list
+- Sortable columns
+- Row selection for bulk actions
+- Status badges (active, suspended)
+
+**ShopManagement**
+- Table view of all shops with pagination
+- Columns: shop name, Location, owner telegramId, registration date, balance, products count, status
+- Search by shop name, Location, or date range
+- Actions: Suspend, Activate, Adjust Balance
+- Bulk actions support
+
+**ShopTable**
+- Data table component for shop list
+- Sortable columns
+- Row selection for bulk actions
+- Balance display with formatting
+- Status badges (active, suspended)
+
+**ProductModeration**
+- Grid/table view of all products with pagination
+- Columns: product name, shop name, price, images, creation date
+- Search by product name, shop name, or price range
+- Actions: Remove Product
+- Image preview on hover
+- Bulk removal support
+
+**ProductTable**
+- Data table component for product list
+- Sortable columns
+- Image thumbnails
+- Price formatting
+- Remove action with confirmation dialog
+
+**OrderManagement**
+- Table view of all orders with pagination
+- Columns: orderId, user telegramId, shop name, status, total price, order date
+- Search by orderId, user, shop, status, or date range
+- Actions: Manual Status Update, Manual Refund
+- Status filter dropdown
+- Export to CSV
+
+**OrderTable**
+- Data table component for order list
+- Sortable columns
+- Status badges with color coding
+- Price formatting
+- Action buttons per row
+
+**FinancialReporting**
+- Financial analytics dashboard
+- Date range selector
+- Total platform revenue display
+- Revenue breakdown by shop (table)
+- Revenue breakdown by location (chart)
+- Delivery fee revenue
+- Top-performing shops list
+- Export to CSV button
+
+**RevenueChart**
+- Chart component for revenue visualization
+- Line chart for revenue over time
+- Bar chart for revenue by location
+- Pie chart for revenue by shop
+
+**SystemMonitoring**
+- System health dashboard
+- Real-time statistics: active users, pending orders, failed payments
+- Error logs table with filtering
+- Payment webhook call history
+- Failed Firestore transaction logs
+- Chapa API statistics (success rate, response time)
+- Auto-refresh every 30 seconds
+
+**ErrorLogTable**
+- Table component for error logs
+- Columns: timestamp, error type, affected entity, error message
+- Filter by date range, error type
+- Expandable rows for full error details
+
+**WebhookHistoryTable**
+- Table component for webhook call history
+- Columns: timestamp, orderId, status, response code
+- Filter by date range, status
+- Retry button for failed webhooks
+
 ### Server Actions
 
 All mutations are implemented as Next.js Server Actions with the following structure:
@@ -346,6 +479,28 @@ export async function actionName(params: ParamsType): Promise<ResultType> {
 
 **AI Assistant Actions**
 - `queryAIAssistant(question: string, userId: string): Promise<string>`
+
+**Admin Actions**
+- `verifyAdminAccess(telegramId: string): Promise<boolean>`
+- `getPlatformStatistics(): Promise<PlatformStats>`
+- `getAllUsers(filters: UserFilters): Promise<User[]>`
+- `suspendUser(userId: string, reason: string, adminId: string): Promise<void>`
+- `activateUser(userId: string, adminId: string): Promise<void>`
+- `changeUserRole(userId: string, newRole: UserRole, adminId: string): Promise<void>`
+- `getAllShops(filters: ShopFilters): Promise<Shop[]>`
+- `suspendShop(shopId: string, reason: string, adminId: string): Promise<void>`
+- `activateShop(shopId: string, adminId: string): Promise<void>`
+- `adjustShopBalance(shopId: string, amount: number, reason: string, adminId: string): Promise<void>`
+- `getAllProducts(filters: ProductFilters): Promise<Product[]>`
+- `removeProduct(productId: string, reason: string, adminId: string): Promise<void>`
+- `getAllOrders(filters: OrderFilters): Promise<Order[]>`
+- `manualUpdateOrderStatus(orderId: string, newStatus: OrderStatus, reason: string, adminId: string): Promise<Order>`
+- `manualRefundOrder(orderId: string, reason: string, adminId: string): Promise<void>`
+- `generateFinancialReport(startDate: Date, endDate: Date): Promise<FinancialReport>`
+- `exportFinancialReportCSV(startDate: Date, endDate: Date): Promise<string>`
+- `getSystemMonitoring(): Promise<SystemMonitoringData>`
+- `getErrorLogs(filters: ErrorLogFilters): Promise<ErrorLog[]>`
+- `getWebhookHistory(filters: WebhookFilters): Promise<WebhookCall[]>`
 
 ### External Service Interfaces
 
@@ -461,6 +616,9 @@ interface User {
   homeLocation: Location; // Haramaya_Main | Harar_Campus | DDU
   languagePreference: 'am' | 'om' | 'en'; // Amharic, Afaan Oromo, English
   phoneNumber?: string;
+  suspended: boolean; // Admin suspension flag
+  suspendedAt?: Timestamp;
+  suspendedReason?: string;
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }
@@ -469,6 +627,7 @@ interface User {
 **Indexes:**
 - `telegramId` (unique)
 - `homeLocation`
+- `suspended`
 
 #### Shops Collection (`shops`)
 
@@ -480,6 +639,9 @@ interface Shop {
   city: 'Harar' | 'Dire_Dawa'; // Shop location
   contactPhone: string;
   balance: number; // Current balance in ETB
+  suspended: boolean; // Admin suspension flag
+  suspendedAt?: Timestamp;
+  suspendedReason?: string;
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }
@@ -488,6 +650,7 @@ interface Shop {
 **Indexes:**
 - `ownerId`
 - `city`
+- `suspended`
 
 #### Products Collection (`products`)
 
@@ -600,6 +763,89 @@ interface ShopTransaction {
 - `shopId`
 - Composite: `shopId` + `timestamp`
 
+#### Admin Logs Collection (`adminLogs`)
+
+```typescript
+interface AdminLog {
+  id: string; // Firestore document ID
+  adminId: string; // Reference to User.id (admin who performed action)
+  adminTelegramId: string; // Denormalized for quick lookup
+  action: AdminAction; // Type of admin action
+  targetType: 'USER' | 'SHOP' | 'PRODUCT' | 'ORDER';
+  targetId: string; // ID of affected entity
+  targetDetails: Record<string, any>; // Snapshot of entity at time of action
+  reason?: string; // Admin-provided reason for action
+  metadata: Record<string, any>; // Additional action-specific data
+  timestamp: Timestamp;
+}
+
+type AdminAction =
+  | 'USER_SUSPEND'
+  | 'USER_ACTIVATE'
+  | 'USER_ROLE_CHANGE'
+  | 'SHOP_SUSPEND'
+  | 'SHOP_ACTIVATE'
+  | 'SHOP_BALANCE_ADJUST'
+  | 'PRODUCT_REMOVE'
+  | 'ORDER_STATUS_UPDATE'
+  | 'ORDER_REFUND';
+```
+
+**Indexes:**
+- `adminId`
+- `action`
+- `targetType`
+- `timestamp`
+- Composite: `adminId` + `timestamp`
+- Composite: `targetType` + `targetId`
+
+#### Error Logs Collection (`errorLogs`)
+
+```typescript
+interface ErrorLog {
+  id: string; // Firestore document ID
+  errorType: string; // Error classification
+  errorMessage: string;
+  stackTrace?: string;
+  affectedEntityType?: 'USER' | 'SHOP' | 'PRODUCT' | 'ORDER';
+  affectedEntityId?: string;
+  userId?: string; // User who triggered the error (if applicable)
+  shopId?: string; // Shop involved in the error (if applicable)
+  requestPath?: string; // API path or Server Action name
+  requestPayload?: Record<string, any>; // Sanitized request data
+  timestamp: Timestamp;
+}
+```
+
+**Indexes:**
+- `errorType`
+- `timestamp`
+- `affectedEntityType`
+- Composite: `errorType` + `timestamp`
+
+#### Webhook Calls Collection (`webhookCalls`)
+
+```typescript
+interface WebhookCall {
+  id: string; // Firestore document ID
+  provider: 'CHAPA'; // Payment provider
+  event: string; // Webhook event type
+  orderId: string; // Associated order
+  payload: Record<string, any>; // Full webhook payload
+  responseCode: number; // HTTP response code sent back
+  processed: boolean; // Whether webhook was successfully processed
+  error?: string; // Error message if processing failed
+  timestamp: Timestamp;
+}
+```
+
+**Indexes:**
+- `orderId`
+- `provider`
+- `processed`
+- `timestamp`
+- Composite: `provider` + `timestamp`
+
 ### Firebase Storage Structure
 
 ```
@@ -614,6 +860,277 @@ interface ShopTransaction {
 ### Type Definitions
 
 All TypeScript interfaces are defined in `src/types/index.ts` with strict type checking enabled. The existing types will be extended to match the data models above.
+
+### Admin Authentication and Authorization
+
+Admin access is controlled through environment variable configuration and server-side verification:
+
+#### Environment Variable Configuration
+
+```env
+# Admin Telegram IDs (comma-separated list)
+ADMIN_TELEGRAM_IDS=123456789,987654321,555666777
+```
+
+#### Admin Verification Function
+
+```typescript
+async function verifyAdminAccess(telegramId: string): Promise<boolean> {
+  const adminIds = process.env.ADMIN_TELEGRAM_IDS?.split(',') || [];
+  return adminIds.includes(telegramId);
+}
+```
+
+#### Admin Middleware
+
+All admin routes (`/admin/*`) are protected by server-side middleware:
+
+```typescript
+// middleware.ts
+export async function middleware(request: NextRequest) {
+  if (request.nextUrl.pathname.startsWith('/admin')) {
+    const telegramId = await getTelegramIdFromRequest(request);
+    
+    if (!telegramId) {
+      return NextResponse.redirect(new URL('/unauthorized', request.url));
+    }
+    
+    const isAdmin = await verifyAdminAccess(telegramId);
+    
+    if (!isAdmin) {
+      return NextResponse.redirect(new URL('/unauthorized', request.url));
+    }
+  }
+  
+  return NextResponse.next();
+}
+```
+
+#### Admin Server Action Authorization
+
+All admin Server Actions verify admin access before execution:
+
+```typescript
+'use server'
+
+export async function suspendUser(
+  userId: string,
+  reason: string,
+  adminTelegramId: string
+): Promise<void> {
+  // 1. Verify admin access
+  const isAdmin = await verifyAdminAccess(adminTelegramId);
+  if (!isAdmin) {
+    throw new Error('UNAUTHORIZED: Admin access required');
+  }
+  
+  // 2. Get admin user record
+  const adminUser = await getUserByTelegramId(adminTelegramId);
+  
+  // 3. Perform action with transaction
+  await adminDb.runTransaction(async (transaction) => {
+    const userRef = adminDb.collection('users').doc(userId);
+    const userDoc = await transaction.get(userRef);
+    
+    if (!userDoc.exists) {
+      throw new Error('USER_NOT_FOUND');
+    }
+    
+    // Update user
+    transaction.update(userRef, {
+      suspended: true,
+      suspendedAt: FieldValue.serverTimestamp(),
+      suspendedReason: reason,
+      updatedAt: FieldValue.serverTimestamp()
+    });
+    
+    // Create audit log
+    const logRef = adminDb.collection('adminLogs').doc();
+    transaction.set(logRef, {
+      adminId: adminUser.id,
+      adminTelegramId,
+      action: 'USER_SUSPEND',
+      targetType: 'USER',
+      targetId: userId,
+      targetDetails: userDoc.data(),
+      reason,
+      metadata: {},
+      timestamp: FieldValue.serverTimestamp()
+    });
+  });
+}
+```
+
+#### Admin Route Protection Pattern
+
+All admin pages follow this pattern:
+
+```typescript
+// app/admin/users/page.tsx
+export default async function AdminUsersPage() {
+  // Get telegram ID from context
+  const telegramId = await getTelegramId();
+  
+  // Verify admin access (redundant with middleware, but defense in depth)
+  const isAdmin = await verifyAdminAccess(telegramId);
+  
+  if (!isAdmin) {
+    redirect('/unauthorized');
+  }
+  
+  // Fetch data and render
+  const users = await getAllUsers({});
+  
+  return <UserManagement users={users} />;
+}
+```
+
+### Admin File Structure
+
+```
+src/
+├── app/
+│   ├── admin/
+│   │   ├── layout.tsx              # Admin layout with navigation
+│   │   ├── page.tsx                # Admin dashboard (overview)
+│   │   ├── users/
+│   │   │   └── page.tsx            # User management
+│   │   ├── shops/
+│   │   │   └── page.tsx            # Shop management
+│   │   ├── products/
+│   │   │   └── page.tsx            # Product moderation
+│   │   ├── orders/
+│   │   │   └── page.tsx            # Order management
+│   │   ├── financial/
+│   │   │   └── page.tsx            # Financial reporting
+│   │   └── monitoring/
+│   │       └── page.tsx            # System monitoring
+│   └── actions/
+│       └── admin/
+│           ├── users.ts            # User management actions
+│           ├── shops.ts            # Shop management actions
+│           ├── products.ts         # Product moderation actions
+│           ├── orders.ts           # Order management actions
+│           ├── reports.ts          # Financial reporting actions
+│           └── monitoring.ts       # System monitoring actions
+├── components/
+│   └── admin/
+│       ├── AdminNav.tsx            # Admin navigation sidebar
+│       ├── StatCard.tsx            # Metric display card
+│       ├── UserTable.tsx           # User list table
+│       ├── ShopTable.tsx           # Shop list table
+│       ├── ProductTable.tsx        # Product list table
+│       ├── OrderTable.tsx          # Order list table
+│       ├── RevenueChart.tsx        # Revenue visualization
+│       ├── ErrorLogTable.tsx       # Error logs table
+│       └── WebhookHistoryTable.tsx # Webhook history table
+└── lib/
+    └── admin/
+        ├── auth.ts                 # Admin authentication utilities
+        ├── audit.ts                # Audit logging utilities
+        └── reports.ts              # Report generation utilities
+```
+
+### Admin Audit Logging
+
+All admin actions are logged to the `adminLogs` collection for audit trail:
+
+```typescript
+async function logAdminAction(
+  adminId: string,
+  adminTelegramId: string,
+  action: AdminAction,
+  targetType: 'USER' | 'SHOP' | 'PRODUCT' | 'ORDER',
+  targetId: string,
+  targetDetails: Record<string, any>,
+  reason?: string,
+  metadata?: Record<string, any>
+): Promise<void> {
+  await adminDb.collection('adminLogs').add({
+    adminId,
+    adminTelegramId,
+    action,
+    targetType,
+    targetId,
+    targetDetails,
+    reason,
+    metadata: metadata || {},
+    timestamp: FieldValue.serverTimestamp()
+  });
+}
+```
+
+### Admin Dashboard Statistics
+
+The admin dashboard displays real-time platform statistics:
+
+```typescript
+interface PlatformStats {
+  totalUsers: number;
+  totalShops: number;
+  totalProducts: number;
+  totalOrders: number;
+  totalRevenue: number; // Sum of all COMPLETED orders
+  pendingEscrow: number; // Sum of PAID_ESCROW + DISPATCHED + ARRIVED orders
+  activeUsers: number; // Users with orders in last 30 days
+  suspendedUsers: number;
+  suspendedShops: number;
+  recentOrders: Order[]; // Last 20 orders
+}
+
+async function getPlatformStatistics(): Promise<PlatformStats> {
+  const [users, shops, products, orders] = await Promise.all([
+    adminDb.collection('users').get(),
+    adminDb.collection('shops').get(),
+    adminDb.collection('products').get(),
+    adminDb.collection('orders').get()
+  ]);
+  
+  const completedOrders = orders.docs.filter(
+    doc => doc.data().status === 'COMPLETED'
+  );
+  
+  const escrowOrders = orders.docs.filter(doc =>
+    ['PAID_ESCROW', 'DISPATCHED', 'ARRIVED'].includes(doc.data().status)
+  );
+  
+  const totalRevenue = completedOrders.reduce(
+    (sum, doc) => sum + doc.data().totalAmount,
+    0
+  );
+  
+  const pendingEscrow = escrowOrders.reduce(
+    (sum, doc) => sum + doc.data().totalAmount,
+    0
+  );
+  
+  const suspendedUsers = users.docs.filter(
+    doc => doc.data().suspended === true
+  ).length;
+  
+  const suspendedShops = shops.docs.filter(
+    doc => doc.data().suspended === true
+  ).length;
+  
+  const recentOrders = orders.docs
+    .sort((a, b) => b.data().createdAt - a.data().createdAt)
+    .slice(0, 20)
+    .map(doc => ({ id: doc.id, ...doc.data() }));
+  
+  return {
+    totalUsers: users.size,
+    totalShops: shops.size,
+    totalProducts: products.size,
+    totalOrders: orders.size,
+    totalRevenue,
+    pendingEscrow,
+    activeUsers: 0, // TODO: Calculate from orders in last 30 days
+    suspendedUsers,
+    suspendedShops,
+    recentOrders
+  };
+}
+```
 
 ### Eastern Triangle Pricing Engine
 
@@ -1208,33 +1725,618 @@ fc.assert(
 );
 ```
 
+### Property 11: Admin Authorization Enforcement
+
+**Property Statement:** For any admin operation, the operation must succeed only if the telegramId is in the ADMIN_TELEGRAM_IDS list.
+
+**Formal Specification:**
+```
+∀ telegramId ∈ String, adminOperation ∈ AdminOperations:
+  (telegramId ∈ ADMIN_TELEGRAM_IDS) ⟹ adminOperation(telegramId) succeeds
+  ∧ (telegramId ∉ ADMIN_TELEGRAM_IDS) ⟹ adminOperation(telegramId) fails with UNAUTHORIZED
+```
+
+**Test Strategy:**
+- Generate random telegramIds (some in admin list, some not)
+- Attempt admin operations with each telegramId
+- Verify operations succeed only for admin telegramIds
+
+**Implementation:**
+```typescript
+fc.assert(
+  fc.property(
+    fc.record({
+      telegramId: fc.string(),
+      isAdmin: fc.boolean()
+    }),
+    async ({ telegramId, isAdmin }) => {
+      // Mock admin list
+      const adminIds = isAdmin ? [telegramId] : ['other_admin_id'];
+      process.env.ADMIN_TELEGRAM_IDS = adminIds.join(',');
+      
+      const result = await suspendUser('user123', 'test reason', telegramId);
+      
+      if (isAdmin) {
+        expect(result.success).toBe(true);
+      } else {
+        expect(result.error).toBe('UNAUTHORIZED');
+      }
+    }
+  )
+);
+```
+
+**Validates: Requirements 27.1, 28.1, 29.1, 30.1, 31.1, 32.1, 33.1**
+
+### Property 12: Admin Audit Logging Completeness
+
+**Property Statement:** For any admin action that modifies data, an audit log entry must be created with complete details.
+
+**Formal Specification:**
+```
+∀ adminAction ∈ AdminActions:
+  adminAction executes successfully
+  ⟹ ∃ auditLog ∈ AdminLogs:
+    auditLog.action = adminAction.type
+    ∧ auditLog.adminId = adminAction.adminId
+    ∧ auditLog.targetId = adminAction.targetId
+    ∧ auditLog.timestamp ≤ now()
+```
+
+**Test Strategy:**
+- Execute random admin actions
+- Verify audit log entry exists for each action
+- Verify audit log contains all required fields
+
+**Implementation:**
+```typescript
+fc.assert(
+  fc.property(
+    fc.record({
+      userId: fc.uuid(),
+      reason: fc.string(),
+      adminTelegramId: fc.string()
+    }),
+    async ({ userId, reason, adminTelegramId }) => {
+      // Setup admin access
+      process.env.ADMIN_TELEGRAM_IDS = adminTelegramId;
+      
+      const beforeCount = await getAdminLogCount();
+      
+      await suspendUser(userId, reason, adminTelegramId);
+      
+      const afterCount = await getAdminLogCount();
+      expect(afterCount).toBe(beforeCount + 1);
+      
+      const latestLog = await getLatestAdminLog();
+      expect(latestLog.action).toBe('USER_SUSPEND');
+      expect(latestLog.adminTelegramId).toBe(adminTelegramId);
+      expect(latestLog.targetId).toBe(userId);
+      expect(latestLog.reason).toBe(reason);
+    }
+  )
+);
+```
+
+**Validates: Requirements 28.3, 29.3, 30.4, 31.6**
+
+### Property 13: Suspended User Operation Rejection
+
+**Property Statement:** For any user with suspended flag set to true, all operations must be rejected.
+
+**Formal Specification:**
+```
+∀ user ∈ Users, operation ∈ UserOperations:
+  (user.suspended = true) ⟹ operation(user.id) fails with USER_SUSPENDED
+```
+
+**Test Strategy:**
+- Create user and suspend them
+- Attempt various operations (add to cart, create order, etc.)
+- Verify all operations are rejected
+
+**Implementation:**
+```typescript
+fc.assert(
+  fc.property(
+    fc.record({
+      userId: fc.uuid(),
+      operation: fc.constantFrom('addToCart', 'createOrder', 'updateProfile')
+    }),
+    async ({ userId, operation }) => {
+      const user = await createTestUser({ id: userId, suspended: true });
+      
+      let result;
+      switch (operation) {
+        case 'addToCart':
+          result = await addToCart(userId, 'product123', 1);
+          break;
+        case 'createOrder':
+          result = await createOrder(userId, []);
+          break;
+        case 'updateProfile':
+          result = await updateHomeLocation(userId, 'Haramaya_Main');
+          break;
+      }
+      
+      expect(result.error).toBe('USER_SUSPENDED');
+    }
+  )
+);
+```
+
+**Validates: Requirements 28.4**
+
+### Property 14: Suspended Shop Operation Rejection
+
+**Property Statement:** For any shop with suspended flag set to true, all shop owner operations must be rejected.
+
+**Formal Specification:**
+```
+∀ shop ∈ Shops, operation ∈ ShopOperations:
+  (shop.suspended = true) ⟹ operation(shop.id) fails with SHOP_SUSPENDED
+```
+
+**Test Strategy:**
+- Create shop and suspend it
+- Attempt various shop operations (create product, update order status, etc.)
+- Verify all operations are rejected
+
+**Implementation:**
+```typescript
+fc.assert(
+  fc.property(
+    fc.record({
+      shopId: fc.uuid(),
+      operation: fc.constantFrom('createProduct', 'updateOrderStatus')
+    }),
+    async ({ shopId, operation }) => {
+      const shop = await createTestShop({ id: shopId, suspended: true });
+      
+      let result;
+      switch (operation) {
+        case 'createProduct':
+          result = await createProduct({
+            shopId,
+            name: 'Test Product',
+            price: 100
+          });
+          break;
+        case 'updateOrderStatus':
+          result = await updateOrderStatus('order123', 'DISPATCHED');
+          break;
+      }
+      
+      expect(result.error).toBe('SHOP_SUSPENDED');
+    }
+  )
+);
+```
+
+**Validates: Requirements 29.4**
+
+### Property 15: Shop Balance Adjustment Consistency
+
+**Property Statement:** When an admin adjusts a shop balance, the new balance must equal the old balance plus the adjustment amount.
+
+**Formal Specification:**
+```
+∀ shop ∈ Shops, adjustment ∈ Number:
+  let oldBalance = shop.balance
+  adjustShopBalance(shop.id, adjustment)
+  ⟹ shop.balance = oldBalance + adjustment
+```
+
+**Test Strategy:**
+- Generate random shop with random initial balance
+- Generate random adjustment amount (positive or negative)
+- Verify final balance equals initial balance plus adjustment
+
+**Implementation:**
+```typescript
+fc.assert(
+  fc.property(
+    fc.record({
+      shopId: fc.uuid(),
+      initialBalance: fc.integer({ min: 0, max: 100000 }),
+      adjustment: fc.integer({ min: -10000, max: 10000 })
+    }),
+    async ({ shopId, initialBalance, adjustment }) => {
+      const shop = await createTestShop({ 
+        id: shopId, 
+        balance: initialBalance 
+      });
+      
+      await adjustShopBalance(
+        shopId, 
+        adjustment, 
+        'test adjustment', 
+        'admin123'
+      );
+      
+      const updatedShop = await getShop(shopId);
+      expect(updatedShop.balance).toBe(initialBalance + adjustment);
+    }
+  )
+);
+```
+
+**Validates: Requirements 29.6**
+
+### Property 16: Financial Report Accuracy
+
+**Property Statement:** The total revenue in a financial report must equal the sum of all completed order totals within the date range.
+
+**Formal Specification:**
+```
+∀ startDate, endDate ∈ Date:
+  let report = generateFinancialReport(startDate, endDate)
+  let completedOrders = Orders.filter(o => 
+    o.status = COMPLETED ∧ 
+    o.createdAt ≥ startDate ∧ 
+    o.createdAt ≤ endDate
+  )
+  ⟹ report.totalRevenue = Σ(order.totalAmount | order ∈ completedOrders)
+```
+
+**Test Strategy:**
+- Generate random orders with random dates and amounts
+- Generate financial report for date range
+- Manually calculate expected revenue
+- Verify report matches expected value
+
+**Implementation:**
+```typescript
+fc.assert(
+  fc.property(
+    fc.record({
+      orders: fc.array(
+        fc.record({
+          amount: fc.integer({ min: 100, max: 5000 }),
+          date: fc.date(),
+          status: fc.constantFrom('COMPLETED', 'PENDING', 'CANCELLED')
+        }),
+        { minLength: 10, maxLength: 50 }
+      ),
+      startDate: fc.date(),
+      endDate: fc.date()
+    }),
+    async ({ orders, startDate, endDate }) => {
+      fc.pre(startDate <= endDate);
+      
+      // Create test orders
+      for (const orderData of orders) {
+        await createTestOrder({
+          totalAmount: orderData.amount,
+          createdAt: orderData.date,
+          status: orderData.status
+        });
+      }
+      
+      // Generate report
+      const report = await generateFinancialReport(startDate, endDate);
+      
+      // Calculate expected revenue
+      const expectedRevenue = orders
+        .filter(o => 
+          o.status === 'COMPLETED' &&
+          o.date >= startDate &&
+          o.date <= endDate
+        )
+        .reduce((sum, o) => sum + o.amount, 0);
+      
+      expect(report.totalRevenue).toBe(expectedRevenue);
+    }
+  )
+);
+```
+
+**Validates: Requirements 32.1**
+
+## Error Handling
+
+### Server Action Error Handling
+
+All Server Actions follow a consistent error handling pattern:
+
+```typescript
+'use server'
+
+export async function serverAction(params: Params): Promise<Result> {
+  try {
+    // 1. Verify authentication
+    const user = await verifyTelegramUser(params.telegramId);
+    if (!user) {
+      return { error: 'UNAUTHORIZED', message: 'Authentication failed' };
+    }
+    
+    // 2. Check suspension status
+    if (user.suspended) {
+      return { error: 'USER_SUSPENDED', message: 'Your account has been suspended' };
+    }
+    
+    // 3. Validate input
+    const validation = validateInput(params);
+    if (!validation.success) {
+      return { error: 'INVALID_INPUT', message: validation.message };
+    }
+    
+    // 4. Execute business logic
+    const result = await executeBusinessLogic(params);
+    
+    return { success: true, data: result };
+  } catch (error) {
+    // Log error
+    await logError({
+      errorType: 'SERVER_ACTION_ERROR',
+      errorMessage: error.message,
+      stackTrace: error.stack,
+      requestPath: 'serverAction',
+      requestPayload: sanitizePayload(params)
+    });
+    
+    return { 
+      error: 'INTERNAL_ERROR', 
+      message: 'An unexpected error occurred' 
+    };
+  }
+}
+```
+
+### Admin Error Handling
+
+Admin operations include additional error handling:
+
+```typescript
+'use server'
+
+export async function adminAction(params: AdminParams): Promise<Result> {
+  try {
+    // 1. Verify admin access
+    const isAdmin = await verifyAdminAccess(params.adminTelegramId);
+    if (!isAdmin) {
+      await logError({
+        errorType: 'UNAUTHORIZED_ADMIN_ACCESS',
+        errorMessage: 'Non-admin user attempted admin operation',
+        affectedEntityType: 'USER',
+        affectedEntityId: params.adminTelegramId,
+        requestPath: 'adminAction'
+      });
+      return { error: 'UNAUTHORIZED', message: 'Admin access required' };
+    }
+    
+    // 2. Validate target exists
+    const target = await getTarget(params.targetId);
+    if (!target) {
+      return { error: 'NOT_FOUND', message: 'Target not found' };
+    }
+    
+    // 3. Execute with transaction
+    await adminDb.runTransaction(async (transaction) => {
+      // Perform action
+      // Create audit log
+    });
+    
+    return { success: true };
+  } catch (error) {
+    await logError({
+      errorType: 'ADMIN_ACTION_ERROR',
+      errorMessage: error.message,
+      stackTrace: error.stack,
+      requestPath: 'adminAction',
+      requestPayload: sanitizePayload(params)
+    });
+    
+    return { 
+      error: 'INTERNAL_ERROR', 
+      message: 'Admin operation failed' 
+    };
+  }
+}
+```
+
+### Error Logging
+
+All errors are logged to the `errorLogs` collection:
+
+```typescript
+async function logError(errorData: {
+  errorType: string;
+  errorMessage: string;
+  stackTrace?: string;
+  affectedEntityType?: 'USER' | 'SHOP' | 'PRODUCT' | 'ORDER';
+  affectedEntityId?: string;
+  userId?: string;
+  shopId?: string;
+  requestPath?: string;
+  requestPayload?: Record<string, any>;
+}): Promise<void> {
+  await adminDb.collection('errorLogs').add({
+    ...errorData,
+    timestamp: FieldValue.serverTimestamp()
+  });
+}
+```
+
+### Payment Webhook Error Handling
+
+Payment webhooks implement special error handling to ensure idempotency:
+
+```typescript
+export async function handleChapaWebhook(
+  payload: ChapaWebhookPayload
+): Promise<void> {
+  try {
+    // 1. Verify webhook signature
+    const isValid = verifyWebhookSignature(payload);
+    if (!isValid) {
+      await logWebhookCall({
+        provider: 'CHAPA',
+        event: payload.event,
+        orderId: payload.data.tx_ref,
+        payload,
+        responseCode: 401,
+        processed: false,
+        error: 'Invalid webhook signature'
+      });
+      throw new Error('Invalid webhook signature');
+    }
+    
+    // 2. Process with transaction (idempotent)
+    await adminDb.runTransaction(async (transaction) => {
+      const orderRef = adminDb.collection('orders').doc(payload.data.tx_ref);
+      const orderDoc = await transaction.get(orderRef);
+      
+      if (!orderDoc.exists) {
+        throw new Error('Order not found');
+      }
+      
+      const order = orderDoc.data();
+      
+      // Idempotency check
+      if (order.status !== 'PENDING') {
+        // Already processed
+        return;
+      }
+      
+      // Update order status
+      transaction.update(orderRef, {
+        status: 'PAID_ESCROW',
+        chapaTransactionRef: payload.data.reference,
+        updatedAt: FieldValue.serverTimestamp()
+      });
+    });
+    
+    // Log successful webhook
+    await logWebhookCall({
+      provider: 'CHAPA',
+      event: payload.event,
+      orderId: payload.data.tx_ref,
+      payload,
+      responseCode: 200,
+      processed: true
+    });
+  } catch (error) {
+    // Log failed webhook
+    await logWebhookCall({
+      provider: 'CHAPA',
+      event: payload.event,
+      orderId: payload.data.tx_ref,
+      payload,
+      responseCode: 500,
+      processed: false,
+      error: error.message
+    });
+    
+    throw error;
+  }
+}
+```
+
+### Client-Side Error Display
+
+Errors are displayed to users with appropriate messaging:
+
+```typescript
+// User-friendly error messages
+const ERROR_MESSAGES = {
+  UNAUTHORIZED: 'Please log in to continue',
+  USER_SUSPENDED: 'Your account has been suspended. Please contact support.',
+  SHOP_SUSPENDED: 'This shop has been suspended.',
+  INSUFFICIENT_STOCK: 'Not enough items in stock',
+  INVALID_TRANSITION: 'Cannot perform this action at this time',
+  ORDER_LOCKED: 'Too many failed attempts. Please contact support.',
+  PAYMENT_FAILED: 'Payment failed. Please try again.',
+  INTERNAL_ERROR: 'Something went wrong. Please try again later.'
+};
+
+function displayError(errorCode: string) {
+  const message = ERROR_MESSAGES[errorCode] || ERROR_MESSAGES.INTERNAL_ERROR;
+  toast.error(message);
+}
+```
+
+### Retry Logic
+
+Critical operations implement retry logic with exponential backoff:
+
+```typescript
+async function retryWithBackoff<T>(
+  operation: () => Promise<T>,
+  maxRetries: number = 3,
+  baseDelay: number = 1000
+): Promise<T> {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await operation();
+    } catch (error) {
+      if (attempt === maxRetries - 1) {
+        throw error;
+      }
+      
+      const delay = baseDelay * Math.pow(2, attempt);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+  
+  throw new Error('Max retries exceeded');
+}
+
+// Usage
+await retryWithBackoff(
+  () => adminDb.runTransaction(async (transaction) => {
+    // Transaction logic
+  })
+);
+```
+
 ## Testing Strategy
 
 ### Unit Tests
 - Test individual functions and utilities
 - Mock external dependencies (Firebase, Chapa, OpenAI)
 - Focus on business logic correctness
+- Test admin authorization functions
+- Test audit logging utilities
 
 ### Integration Tests
 - Test Server Actions with real Firebase emulator
 - Test payment webhook flow with Chapa sandbox
 - Test AI assistant with OpenAI test API
+- Test admin operations with Firebase emulator
+- Test admin audit log creation
 
 ### Property-Based Tests
-- Implement all 10 correctness properties above
+- Implement all 16 correctness properties above
 - Use fast-check library for property testing
 - Run with high iteration count (1000+ per property)
+- Include admin-specific properties (11-16)
 
 ### End-to-End Tests
 - Test complete user flows (browse → cart → checkout → delivery → completion)
 - Test shop owner flows (product creation → order fulfillment)
 - Test runner flows (delivery → OTP submission)
+- Test admin flows (user management → shop suspension → order refund)
 - Use Playwright for Telegram Mini App testing
+
+### Admin-Specific Tests
+- Test admin authentication and authorization
+- Test user suspension and activation
+- Test shop suspension and activation
+- Test shop balance adjustments
+- Test product removal
+- Test manual order status updates
+- Test manual refunds
+- Test financial report generation
+- Test audit log creation for all admin actions
+- Test error log viewing and filtering
+- Test webhook history viewing
 
 ### Performance Tests
 - Load test with 1000+ concurrent users
 - Test image loading performance on slow networks
 - Test Firestore query performance with large datasets
+- Test admin dashboard with large datasets (10,000+ users, shops, orders)
 
 ## Deployment
 
@@ -1262,6 +2364,9 @@ OPENAI_API_KEY=
 
 # Telegram
 TELEGRAM_BOT_TOKEN=
+
+# Admin Access (comma-separated list of Telegram IDs)
+ADMIN_TELEGRAM_IDS=123456789,987654321
 ```
 
 ### Deployment Steps
@@ -1298,11 +2403,15 @@ TELEGRAM_BOT_TOKEN=
 
 1. **Authentication**: All Server Actions verify telegramId via Firebase Admin SDK
 2. **Authorization**: Multi-tenant isolation enforced server-side
-3. **Payment Security**: Webhook signature verification for Chapa callbacks
-4. **Data Validation**: Input validation on all Server Actions
-5. **Rate Limiting**: Implement rate limiting on sensitive operations (OTP validation, payment initiation)
-6. **HTTPS Only**: All communication over HTTPS
-7. **Environment Variables**: Sensitive keys stored securely, never committed to git
+3. **Admin Access**: Admin operations protected by environment variable whitelist (ADMIN_TELEGRAM_IDS)
+4. **Admin Audit Trail**: All admin actions logged to adminLogs collection with full details
+5. **Payment Security**: Webhook signature verification for Chapa callbacks
+6. **Data Validation**: Input validation on all Server Actions
+7. **Rate Limiting**: Implement rate limiting on sensitive operations (OTP validation, payment initiation, admin operations)
+8. **HTTPS Only**: All communication over HTTPS
+9. **Environment Variables**: Sensitive keys stored securely, never committed to git
+10. **Defense in Depth**: Admin authorization checked in both middleware and Server Actions
+11. **Suspension Enforcement**: Suspended users and shops blocked at Server Action level
 
 ## Performance Optimization
 

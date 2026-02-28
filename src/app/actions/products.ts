@@ -440,6 +440,73 @@ export async function getProductsByShopId(
 }
 
 /**
+ * Uploads a product image to Firebase Storage.
+ * 
+ * SECURITY: Verifies user is shop owner before allowing upload.
+ * STORAGE: Uploads to /products/{shopId}/{productId}/image_{index}.{ext}
+ * 
+ * Requirements: 13.1, 13.2, 13.5
+ */
+export async function uploadProductImage(
+  telegramId: string,
+  shopId: string,
+  productId: string,
+  imageData: string, // base64 without prefix
+  imageIndex: number,
+  mimeType: string
+): Promise<ActionResponse<string>> {
+  try {
+    // 1. Verify user
+    const user = await verifyTelegramUser(telegramId);
+    if (!user) {
+      return {
+        success: false,
+        error: 'User not found or unauthorized',
+      };
+    }
+
+    // 2. Verify user is a shop owner
+    if (user.role !== 'MERCHANT') {
+      return {
+        success: false,
+        error: 'Only shop owners can upload product images',
+      };
+    }
+
+    // 3. Verify shop ownership
+    const userShopId = await getShopIdForOwner(user.id);
+    if (!userShopId || userShopId !== shopId) {
+      return {
+        success: false,
+        error: 'You can only upload images for your own shop',
+      };
+    }
+
+    // 4. Upload image using storage utility
+    const { uploadProductImage: uploadImage } = await import('@/lib/storage/images');
+    const result = await uploadImage(shopId, productId, imageData, imageIndex, mimeType);
+
+    if (!result.success || !result.url) {
+      return {
+        success: false,
+        error: result.error || 'Failed to upload image',
+      };
+    }
+
+    return {
+      success: true,
+      data: result.url,
+    };
+  } catch (error) {
+    console.error('Error uploading product image:', error);
+    return {
+      success: false,
+      error: 'Failed to upload image',
+    };
+  }
+}
+
+/**
  * Validates product input data.
  * Ensures all required fields are present and valid.
  */

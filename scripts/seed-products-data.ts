@@ -1,5 +1,5 @@
 /**
- * Product seed data - 80 products across 8 shops (10 products each)
+ * Product seed data - 72 products across 8 shops (9 products each)
  */
 
 import { Timestamp } from 'firebase-admin/firestore';
@@ -18,7 +18,6 @@ export const generateProducts = () => {
     { name: 'Laptop Cooling Pad', description: 'USB powered cooling pad with dual fans', price: 600, stock: 12 },
     { name: 'Webcam HD 1080p', description: 'High definition webcam for online classes', price: 1200, stock: 8 },
     { name: 'USB Hub 4-Port', description: '4-port USB 3.0 hub for laptops', price: 350, stock: 18 },
-    { name: 'Screen Protector', description: 'Tempered glass screen protector for smartphones', price: 100, stock: 40 },
     { name: 'Bluetooth Speaker', description: 'Portable Bluetooth speaker with bass boost', price: 900, stock: 10 },
   ];
 
@@ -48,7 +47,6 @@ export const generateProducts = () => {
     { name: 'Economics Principles', description: 'Microeconomics and macroeconomics basics', price: 420, stock: 16 },
     { name: 'Biology Textbook', description: 'General biology for life sciences', price: 480, stock: 14 },
     { name: 'History of Ethiopia', description: 'Ethiopian history from ancient to modern', price: 380, stock: 22 },
-    { name: 'Amharic Literature', description: 'Collection of Amharic literary works', price: 320, stock: 18 },
   ];
 
   booksProducts.forEach((p) => {
@@ -77,7 +75,6 @@ export const generateProducts = () => {
     { name: 'Cargo Pants', description: 'Practical cargo pants with multiple pockets', price: 700, stock: 20 },
     { name: 'Sweater', description: 'Cozy knit sweater for cold weather', price: 550, stock: 22 },
     { name: 'Track Pants', description: 'Comfortable track pants for sports', price: 400, stock: 32 },
-    { name: 'Baseball Cap', description: 'Adjustable baseball cap, various designs', price: 180, stock: 45 },
   ];
 
   fashionProducts.forEach((p) => {
@@ -106,7 +103,6 @@ export const generateProducts = () => {
     { name: 'Deodorant Spray', description: 'Long-lasting deodorant spray', price: 200, stock: 45 },
     { name: 'Hair Oil', description: 'Natural hair oil for shine and strength', price: 280, stock: 22 },
     { name: 'Hand Cream', description: 'Intensive hand cream, 100ml', price: 180, stock: 38 },
-    { name: 'Perfume 50ml', description: 'Fresh fragrance for daily wear', price: 600, stock: 15 },
   ];
 
   cosmeticsProducts.forEach((p) => {
@@ -135,7 +131,6 @@ export const generateProducts = () => {
     { name: 'Basketball Shoes', description: 'High-top basketball shoes with ankle support', price: 1400, stock: 15 },
     { name: 'Hiking Boots', description: 'Durable hiking boots for outdoor activities', price: 1800, stock: 10 },
     { name: 'Flip Flops', description: 'Casual flip flops for beach or pool', price: 180, stock: 50 },
-    { name: 'Loafers', description: 'Slip-on loafers for casual style', price: 800, stock: 20 },
   ];
 
   shoesProducts.forEach((p) => {
@@ -164,7 +159,6 @@ export const generateProducts = () => {
     { name: 'Ruler & Compass Set', description: 'Geometry set for technical drawing', price: 180, stock: 30 },
     { name: 'Stapler & Staples', description: 'Heavy duty stapler with 1000 staples', price: 220, stock: 28 },
     { name: 'File Folders (10pc)', description: 'Plastic file folders for documents', price: 160, stock: 40 },
-    { name: 'Whiteboard Markers', description: 'Set of 4 dry-erase markers', price: 140, stock: 38 },
   ];
 
   stationeryProducts.forEach((p) => {
@@ -193,7 +187,6 @@ export const generateProducts = () => {
     { name: 'Yoga Mat', description: 'Non-slip yoga mat with carrying strap', price: 350, stock: 22 },
     { name: 'Dumbbells 5kg Pair', description: 'Rubber coated dumbbells', price: 700, stock: 16 },
     { name: 'Resistance Bands Set', description: 'Set of 5 resistance bands', price: 280, stock: 25 },
-    { name: 'Water Bottle 1L', description: 'BPA-free sports water bottle', price: 150, stock: 40 },
   ];
 
   sportsProducts.forEach((p) => {
@@ -222,7 +215,6 @@ export const generateProducts = () => {
     { name: 'Coffee 3-in-1 (10pc)', description: 'Instant coffee sachets', price: 120, stock: 60 },
     { name: 'Juice Box (6pc)', description: 'Mixed fruit juice boxes', price: 90, stock: 70 },
     { name: 'Peanuts Pack', description: 'Roasted peanuts, 200g', price: 55, stock: 85 },
-    { name: 'Chewing Gum Pack', description: 'Sugar-free chewing gum', price: 25, stock: 110 },
   ];
 
   groceryProducts.forEach((p) => {

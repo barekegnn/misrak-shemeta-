@@ -4,7 +4,7 @@
 
 This implementation plan follows the Eastern Triangle Context Constraint and builds the Misrak Shemeta marketplace platform as a Telegram Mini App using Next.js 15 App Router, Firebase services, and Chapa payment integration. The platform connects shops in Harar and Dire Dawa with students across Haramaya Main Campus, Harar Campus, and DDU, implementing a secure escrow payment system with OTP-based delivery verification.
 
-The implementation is organized into 6 phases following the roadmap: Infrastructure, Merchant Flow, Logistics Engine, Payment Flow, Order Lifecycle, and AI Layer. Each phase builds incrementally with property-based tests to verify correctness properties.
+The implementation is organized into 7 phases following the roadmap: Infrastructure, Merchant Flow, Logistics Engine, Payment Flow, Order Lifecycle, AI Layer, and Admin Platform. Each phase builds incrementally with property-based tests to verify correctness properties.
 
 ## Tasks
 
@@ -431,38 +431,312 @@ The implementation is organized into 6 phases following the roadmap: Infrastruct
     - Translate notifications based on user language preference
     - _Requirements: 9.3, 9.5, 18.4, 26.5_
 
-- [-] 18. Final Integration and Testing
-  - [x] 18.1 Set up Firebase Emulator for local testing
+- [x] 18. Admin Authentication & Authorization
+  - [x] 18.1 Implement admin verification utilities
+    - Create `src/lib/auth/admin.ts` with `isAdmin()` function
+    - Check if telegramId matches ADMIN_TELEGRAM_IDS environment variable
+    - Implement `verifyAdminAccess()` utility for Server Actions
+    - _Requirements: 27.1, 27.2_
+
+  - [x] 18.2 Create admin middleware for route protection
+    - Create `src/middleware/admin.ts` for admin route protection
+    - Protect all `/admin/*` routes with admin verification
+    - Redirect non-admins to home page with error message
+    - _Requirements: 27.1, 27.2_
+
+  - [x] 18.3 Add admin role check to Server Actions
+    - Add `verifyAdminAccess()` call to all admin Server Actions
+    - Throw unauthorized error if user is not admin
+    - Log all admin actions with telegramId and timestamp
+    - _Requirements: 27.1, 27.2, 28.2_
+
+- [x] 19. Admin Dashboard
+  - [x] 19.1 Create AdminLayout with navigation
+    - Create `src/app/admin/layout.tsx` with admin navigation sidebar
+    - Add navigation links: Dashboard, Users, Shops, Products, Orders, Financial Reports, System Monitoring
+    - Display admin user info in header
+    - _Requirements: 27.3_
+
+  - [x] 19.2 Build AdminDashboard with platform statistics
+    - Create `src/app/admin/page.tsx` for admin dashboard
+    - Display key metrics: total users, total shops, total orders, total revenue
+    - Show recent activity feed (last 10 orders, new shops, new users)
+    - Display system health indicators
+    - _Requirements: 27.3, 33.1_
+
+  - [x] 19.3 Implement getPlatformStatistics Server Action
+    - Create `src/app/actions/admin.ts` with `getPlatformStatistics()` Server Action
+    - Query Firestore for user count, shop count, order count
+    - Calculate total revenue from completed orders
+    - Return aggregated statistics
+    - _Requirements: 27.3, 33.1_
+
+  - [x] 19.4 Create AdminNav and StatCard components
+    - Create `src/components/admin/AdminNav.tsx` for navigation
+    - Create `src/components/admin/StatCard.tsx` for metric display
+    - Style with Tailwind CSS for clean admin interface
+    - _Requirements: 27.3_
+
+- [x] 20. User Management
+  - [x] 20.1 Implement user management Server Actions
+    - Create `suspendUser()` Server Action to set user status to suspended
+    - Create `activateUser()` Server Action to set user status to active
+    - Create `changeUserRole()` Server Action to update user role
+    - Create `getUserList()` Server Action with pagination and search
+    - Add audit logging for all user management actions
+    - _Requirements: 28.1, 28.2, 28.3, 28.4_
+
+  - [x] 20.2 Build UserManagement page with table
+    - Create `src/app/admin/users/page.tsx`
+    - Display user list with columns: telegramId, name, role, status, homeLocation, createdAt
+    - Add action buttons: Suspend, Activate, Change Role
+    - Implement pagination (50 users per page)
+    - _Requirements: 28.1, 28.3_
+
+  - [x] 20.3 Create UserTable component with search/filter
+    - Create `src/components/admin/UserTable.tsx`
+    - Add search by telegramId or name
+    - Add filter by role (buyer, shop_owner, runner)
+    - Add filter by status (active, suspended)
+    - Add filter by homeLocation
+    - _Requirements: 28.1, 28.3_
+
+  - [x] 20.4 Add audit logging for user management actions
+    - Create `auditLogs` collection in Firestore
+    - Log all suspend, activate, and role change actions
+    - Include: adminId, action, targetUserId, timestamp, reason
+    - _Requirements: 28.2_
+
+- [x] 21. Shop Management
+  - [x] 21.1 Implement shop management Server Actions
+    - Create `suspendShop()` Server Action to set shop status to suspended
+    - Create `activateShop()` Server Action to set shop status to active
+    - Create `adjustShopBalance()` Server Action to manually adjust balance
+    - Create `getShopList()` Server Action with pagination and search
+    - Add audit logging for all shop management actions
+    - _Requirements: 29.1, 29.2, 29.3, 29.4_
+
+  - [x] 21.2 Build ShopManagement page with table
+    - Create `src/app/admin/shops/page.tsx`
+    - Display shop list with columns: shopId, name, location, balance, status, createdAt
+    - Add action buttons: Suspend, Activate, Adjust Balance
+    - Implement pagination (50 shops per page)
+    - _Requirements: 29.1, 29.3_
+
+  - [x] 21.3 Create ShopTable component with search/filter
+    - Create `src/components/admin/ShopTable.tsx`
+    - Add search by shopId or name
+    - Add filter by location (Harar, Dire_Dawa)
+    - Add filter by status (active, suspended)
+    - Add sort by balance (ascending/descending)
+    - _Requirements: 29.1, 29.3_
+
+  - [x] 21.4 Add audit logging for shop management actions
+    - Log all suspend, activate, and balance adjustment actions
+    - Include: adminId, action, targetShopId, timestamp, reason, balanceChange
+    - _Requirements: 29.2_
+
+- [x] 22. Product Moderation
+  - [x] 22.1 Implement product moderation Server Actions
+    - Create `removeProduct()` Server Action to delete products
+    - Create `getProductList()` Server Action with pagination and search
+    - Create `getFlaggedProducts()` Server Action (future: user reports)
+    - Add audit logging for product removal actions
+    - _Requirements: 30.1, 30.2_
+
+  - [x] 22.2 Build ProductModeration page with table
+    - Create `src/app/admin/products/page.tsx`
+    - Display product list with columns: productId, name, shopName, price, stock, createdAt
+    - Add action button: Remove Product
+    - Implement pagination (50 products per page)
+    - _Requirements: 30.1_
+
+  - [x] 22.3 Create ProductTable component with search/filter
+    - Create `src/components/admin/ProductTable.tsx`
+    - Add search by product name or shopId
+    - Add filter by shop location
+    - Add filter by price range
+    - Add sort by createdAt (newest first)
+    - _Requirements: 30.1_
+
+  - [x] 22.4 Add audit logging for product moderation actions
+    - Log all product removal actions
+    - Include: adminId, action, productId, shopId, timestamp, reason
+    - _Requirements: 30.2_
+
+- [x] 23. Order Management
+  - [x] 23.1 Implement order management Server Actions
+    - Create `manualUpdateOrderStatus()` Server Action for manual status changes
+    - Create `manualRefund()` Server Action to process refunds outside normal flow
+    - Create `getOrderList()` Server Action with pagination and search
+    - Add audit logging for manual order interventions
+    - _Requirements: 31.1, 31.2, 31.3_
+
+  - [x] 23.2 Build OrderManagement page with table
+    - Create `src/app/admin/orders/page.tsx`
+    - Display order list with columns: orderId, buyerId, shopId, status, total, createdAt
+    - Add action buttons: Update Status, Issue Refund
+    - Implement pagination (50 orders per page)
+    - _Requirements: 31.1, 31.3_
+
+  - [x] 23.3 Create OrderTable component with search/filter
+    - Create `src/components/admin/OrderTable.tsx`
+    - Add search by orderId, buyerId, or shopId
+    - Add filter by status (all order statuses)
+    - Add filter by date range
+    - Add sort by total amount (ascending/descending)
+    - _Requirements: 31.1, 31.3_
+
+  - [x] 23.4 Add audit logging for order management actions
+    - Log all manual status updates and refunds
+    - Include: adminId, action, orderId, timestamp, reason, statusChange, refundAmount
+    - _Requirements: 31.2_
+
+- [x] 24. Financial Reporting
+  - [x] 24.1 Implement financial reporting Server Actions
+    - Create `generateFinancialReport()` Server Action with date range parameter
+    - Calculate total revenue, total orders, average order value
+    - Calculate revenue by shop location (Harar vs Dire_Dawa)
+    - Calculate revenue by delivery route
+    - Create `exportReportToCSV()` Server Action for data export
+    - _Requirements: 32.1, 32.2, 32.3_
+
+  - [x] 24.2 Build FinancialReporting page with charts
+    - Create `src/app/admin/financial/page.tsx`
+    - Add date range selector (last 7 days, 30 days, 90 days, custom)
+    - Display revenue metrics with StatCard components
+    - Show revenue trend chart (line chart by day)
+    - Show revenue by location chart (pie chart)
+    - _Requirements: 32.1, 32.2_
+
+  - [x] 24.3 Create RevenueChart component
+    - Create `src/components/admin/RevenueChart.tsx`
+    - Use chart library (recharts or similar)
+    - Display revenue over time as line chart
+    - Display revenue by location as pie chart
+    - _Requirements: 32.2_
+
+  - [x] 24.4 Add export to CSV functionality
+    - Add "Export to CSV" button on financial reporting page
+    - Generate CSV with columns: date, orderId, shopId, buyerId, amount, deliveryFee, status
+    - Trigger browser download of CSV file
+    - _Requirements: 32.3_
+
+- [x] 25. System Monitoring
+  - [x] 25.1 Implement system monitoring Server Actions
+    - Create `getErrorLogs()` Server Action to retrieve recent errors
+    - Create `getWebhookHistory()` Server Action to retrieve webhook logs
+    - Create `getSystemHealth()` Server Action to check Firebase connectivity
+    - Query webhookLogs collection for recent webhook calls
+    - _Requirements: 33.1, 33.2_
+
+  - [x] 25.2 Build SystemMonitoring page with real-time stats
+    - Create `src/app/admin/monitoring/page.tsx`
+    - Display system health indicators (Firebase, Chapa, OpenAI)
+    - Show recent error logs (last 50 errors)
+    - Show webhook history (last 100 webhook calls)
+    - Add auto-refresh every 30 seconds
+    - _Requirements: 33.1, 33.2_
+
+  - [x] 25.3 Create ErrorLogTable and WebhookHistoryTable components
+    - Create `src/components/admin/ErrorLogTable.tsx`
+    - Create `src/components/admin/WebhookHistoryTable.tsx`
+    - Display error logs with columns: timestamp, level, message, stack trace
+    - Display webhook logs with columns: timestamp, event, status, txRef, orderId
+    - _Requirements: 33.2_
+
+  - [x] 25.4 Add auto-refresh functionality
+    - Implement auto-refresh using setInterval or SWR
+    - Add manual refresh button
+    - Show last refresh timestamp
+    - _Requirements: 33.1_
+
+- [ ] 26. Admin Testing
+  - [ ]* 26.1 Write property test for admin authorization enforcement
+    - **Property 11: Admin Authorization Enforcement**
+    - **Validates: Requirements 27.1, 27.2**
+    - Verify non-admin users cannot access admin Server Actions
+    - Verify non-admin users cannot access admin routes
+    - Generate random telegramIds and verify access control
+    - _Requirements: 27.1, 27.2_
+
+  - [ ]* 26.2 Write property test for admin audit logging completeness
+    - **Property 12: Admin Audit Logging Completeness**
+    - **Validates: Requirements 28.2, 29.2, 30.2, 31.2**
+    - Verify all admin actions are logged to auditLogs collection
+    - Verify log entries contain required fields
+    - _Requirements: 28.2, 29.2, 30.2, 31.2_
+
+  - [ ]* 26.3 Write property test for suspended user operation rejection
+    - **Property 13: Suspended User Operation Rejection**
+    - **Validates: Requirements 28.4**
+    - Verify suspended users cannot create orders
+    - Verify suspended users cannot add to cart
+    - Verify suspended users cannot access buyer features
+    - _Requirements: 28.4_
+
+  - [ ]* 26.4 Write property test for suspended shop operation rejection
+    - **Property 14: Suspended Shop Operation Rejection**
+    - **Validates: Requirements 29.4**
+    - Verify suspended shops' products are hidden from catalog
+    - Verify suspended shops cannot receive new orders
+    - Verify suspended shop owners cannot create/edit products
+    - _Requirements: 29.4_
+
+  - [ ]* 26.5 Write property test for shop balance adjustment consistency
+    - **Property 15: Shop Balance Adjustment Consistency**
+    - **Validates: Requirements 29.3**
+    - Verify manual balance adjustments are reflected correctly
+    - Verify balance adjustments are logged in audit trail
+    - Generate random adjustment sequences and verify final balance
+    - _Requirements: 29.3_
+
+  - [ ]* 26.6 Write property test for financial report accuracy
+    - **Property 16: Financial Report Accuracy**
+    - **Validates: Requirements 32.1, 32.2**
+    - Verify total revenue equals sum of completed order amounts
+    - Verify revenue by location matches shop location aggregation
+    - Generate random order sets and verify report calculations
+    - _Requirements: 32.1, 32.2_
+
+- [ ] 27. Checkpoint - Verify admin platform functionality
+  - Ensure all admin tests pass, ask the user if questions arise.
+
+- [-] 28. Final Integration and Testing
+  - [x] 28.1 Set up Firebase Emulator for local testing
     - Configure Firestore, Auth, and Storage emulators
     - Create seed data for testing
     - _Requirements: All_
 
-  - [ ] 18.2 Run all property-based tests
-    - Execute all 10 property tests with 1000+ iterations each
+  - [ ] 28.2 Run all property-based tests
+    - Execute all 16 property tests with 1000+ iterations each
     - Verify all properties pass
     - _Requirements: All correctness properties_
 
-  - [x] 18.3 Perform end-to-end testing
+  - [x] 28.3 Perform end-to-end testing
     - Test complete buyer flow: browse → cart → checkout → delivery → completion
     - Test shop owner flow: product creation → order fulfillment
     - Test runner flow: delivery → OTP submission
     - Test cancellation flows
+    - Test admin flows: user management, shop management, financial reporting
     - _Requirements: All_
 
-  - [ ] 18.4 Deploy to staging environment
+  - [ ] 28.4 Deploy to staging environment
     - Configure production Firebase project
     - Set up Chapa sandbox integration
     - Deploy Next.js application
     - Configure Telegram Mini App
+    - Set ADMIN_TELEGRAM_IDS environment variable
     - _Requirements: All_
 
-- [ ] 19. Final checkpoint - Production readiness verification
+- [ ] 29. Final checkpoint - Production readiness verification
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes
 
 - Tasks marked with `*` are optional property-based tests and can be skipped for faster MVP
 - All Server Actions must verify telegramId using Firebase Admin SDK before processing
+- All admin Server Actions must verify admin access using ADMIN_TELEGRAM_IDS environment variable
 - All critical state transitions must use Firestore Transactions for atomicity
 - The Eastern Triangle Pricing Engine uses fixed fees: 40 ETB (intra-city), 100 ETB (city-to-campus), 180 ETB (inter-city)
 - Payment webhook must implement idempotency checks to prevent double-crediting
@@ -470,4 +744,18 @@ The implementation is organized into 6 phases following the roadmap: Infrastruct
 - Multi-tenancy is enforced at the data model level with shopId associations
 - All UI strings must use i18n translation keys for Amharic, Afaan Oromo, and English
 - Mobile-first design with touch-friendly elements (44x44px minimum)
+- Admin platform includes user management, shop management, product moderation, order management, financial reporting, and system monitoring
+- All admin actions must be logged to auditLogs collection for audit trail
+- Suspended users cannot perform buyer operations; suspended shops are hidden from catalog
 - No placeholder code - all implementations must be functional using Chapa Sandbox for testing
+
+## Implementation Roadmap
+
+1. **Phase 1: Infrastructure** (Tasks 1-3) - Project setup, authentication, user profiles
+2. **Phase 2: Merchant Flow** (Tasks 4-5) - Product management and discovery
+3. **Phase 3: Logistics Engine** (Tasks 6-8) - Cart management and Eastern Triangle Pricing
+4. **Phase 4: Payment Flow** (Tasks 9) - Chapa integration and webhook handling
+5. **Phase 5: Order Lifecycle** (Tasks 10-12) - Order creation, escrow state machine, OTP validation, shop balance
+6. **Phase 6: AI Layer** (Tasks 13-14) - AI sales assistant with RAG, Firestore transaction integrity
+7. **Phase 7: Admin Platform** (Tasks 18-27) - Admin authentication, dashboard, user/shop/product/order management, financial reporting, system monitoring
+8. **Phase 8: Final Integration** (Tasks 15-17, 28-29) - Shop registration, mobile optimization, notifications, testing, deployment

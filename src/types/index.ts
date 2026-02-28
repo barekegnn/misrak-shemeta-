@@ -18,6 +18,9 @@ export interface User {
   homeLocation: Location;
   languagePreference: Language;
   phoneNumber?: string;
+  suspended: boolean; // Admin suspension flag
+  suspendedAt?: Date;
+  suspendedReason?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -30,6 +33,9 @@ export interface Shop {
   city: City; // Shop location
   contactPhone: string;
   balance: number; // Current balance in ETB
+  suspended: boolean; // Admin suspension flag
+  suspendedAt?: Date;
+  suspendedReason?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -198,6 +204,152 @@ export const ALLOWED_TRANSITIONS: StateTransition[] = [
   ['DISPATCHED', 'ARRIVED'],
   ['ARRIVED', 'COMPLETED'],
 ];
+
+// Admin Types
+export type AdminAction =
+  | 'USER_SUSPEND'
+  | 'USER_ACTIVATE'
+  | 'USER_ROLE_CHANGE'
+  | 'SHOP_SUSPEND'
+  | 'SHOP_ACTIVATE'
+  | 'SHOP_BALANCE_ADJUST'
+  | 'PRODUCT_REMOVE'
+  | 'ORDER_STATUS_UPDATE'
+  | 'ORDER_REFUND';
+
+export type AdminTargetType = 'USER' | 'SHOP' | 'PRODUCT' | 'ORDER';
+
+export interface AdminLog {
+  id: string; // Firestore document ID
+  adminId: string; // Reference to User.id (admin who performed action)
+  adminTelegramId: string; // Denormalized for quick lookup
+  action: AdminAction; // Type of admin action
+  targetType: AdminTargetType;
+  targetId: string; // ID of affected entity
+  targetDetails: Record<string, any>; // Snapshot of entity at time of action
+  reason?: string; // Admin-provided reason for action
+  metadata: Record<string, any>; // Additional action-specific data
+  timestamp: Date;
+}
+
+export interface ErrorLog {
+  id: string; // Firestore document ID
+  errorType: string; // Error classification
+  errorMessage: string;
+  stackTrace?: string;
+  affectedEntityType?: AdminTargetType;
+  affectedEntityId?: string;
+  userId?: string; // User who triggered the error (if applicable)
+  shopId?: string; // Shop involved in the error (if applicable)
+  requestPath?: string; // API path or Server Action name
+  requestPayload?: Record<string, any>; // Sanitized request data
+  timestamp: Date;
+}
+
+export interface WebhookCall {
+  id: string; // Firestore document ID
+  provider: 'CHAPA'; // Payment provider
+  event: string; // Webhook event type
+  orderId: string; // Associated order
+  payload: Record<string, any>; // Full webhook payload
+  responseCode: number; // HTTP response code sent back
+  processed: boolean; // Whether webhook was successfully processed
+  error?: string; // Error message if processing failed
+  timestamp: Date;
+}
+
+export interface PlatformStats {
+  totalUsers: number;
+  totalShops: number;
+  totalProducts: number;
+  totalOrders: number;
+  totalRevenue: number; // Sum of all COMPLETED orders
+  pendingEscrow: number; // Sum of PAID_ESCROW + DISPATCHED + ARRIVED orders
+  activeUsers: number; // Users with orders in last 30 days
+  suspendedUsers: number;
+  suspendedShops: number;
+  recentOrders: Order[]; // Last 20 orders
+}
+
+export interface UserFilters {
+  search?: string; // Search by telegramId
+  role?: UserRole;
+  status?: 'active' | 'suspended';
+  homeLocation?: Location;
+  startDate?: Date;
+  endDate?: Date;
+}
+
+export interface ShopFilters {
+  search?: string; // Search by shop name
+  city?: City;
+  status?: 'active' | 'suspended';
+  startDate?: Date;
+  endDate?: Date;
+}
+
+export interface ProductFilters {
+  search?: string; // Search by product name or shop name
+  shopCity?: City;
+  minPrice?: number;
+  maxPrice?: number;
+  startDate?: Date;
+  endDate?: Date;
+}
+
+export interface OrderFilters {
+  search?: string; // Search by orderId, user telegramId, or shop name
+  status?: OrderStatus;
+  startDate?: Date;
+  endDate?: Date;
+}
+
+export interface FinancialReport {
+  totalRevenue: number;
+  totalOrders: number;
+  averageOrderValue: number;
+  revenueByShop: Array<{
+    shopId: string;
+    shopName: string;
+    revenue: number;
+    orderCount: number;
+  }>;
+  revenueByLocation: Array<{
+    location: City;
+    revenue: number;
+    orderCount: number;
+  }>;
+  deliveryFeeRevenue: number;
+  startDate: Date;
+  endDate: Date;
+}
+
+export interface SystemMonitoringData {
+  activeUsers: number;
+  pendingOrders: number;
+  failedPayments: number;
+  recentErrors: ErrorLog[];
+  webhookHistory: WebhookCall[];
+  chapaStats: {
+    successRate: number;
+    averageResponseTime: number;
+    failedRequests: number;
+  };
+}
+
+export interface ErrorLogFilters {
+  errorType?: string;
+  affectedEntityType?: AdminTargetType;
+  startDate?: Date;
+  endDate?: Date;
+}
+
+export interface WebhookFilters {
+  provider?: 'CHAPA';
+  processed?: boolean;
+  startDate?: Date;
+  endDate?: Date;
+}
 
 // Server Action Response Types
 export interface ActionResponse<T = void> {
