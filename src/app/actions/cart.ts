@@ -1,6 +1,6 @@
 'use server';
 
-import { adminDb } from '@/lib/firebase/admin';
+import { adminDb, FieldValue } from '@/lib/firebase/admin';
 import { verifyTelegramUser } from '@/lib/auth/telegram';
 import { Cart, CartItem, ActionResponse, Product } from '@/types';
 
@@ -60,7 +60,7 @@ export async function addToCart(
       // Create new cart
       await cartRef.set({
         items: [{ productId, quantity }],
-        updatedAt: adminDb.FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
       });
     } else {
       // Update existing cart
@@ -88,7 +88,7 @@ export async function addToCart(
 
       await cartRef.update({
         items,
-        updatedAt: adminDb.FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
       });
     }
 
@@ -179,7 +179,7 @@ export async function updateCartItem(
 
     await cartRef.update({
       items,
-      updatedAt: adminDb.FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
     });
 
     return {
@@ -234,7 +234,7 @@ export async function removeFromCart(
 
     await cartRef.update({
       items: filteredItems,
-      updatedAt: adminDb.FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
     });
 
     return {
@@ -407,7 +407,7 @@ export async function clearCart(
     const cartRef = adminDb.collection('carts').doc(user.id);
     await cartRef.update({
       items: [],
-      updatedAt: adminDb.FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
     });
 
     return {

@@ -1,6 +1,6 @@
 'use server';
 
-import { adminDb } from '@/lib/firebase/admin';
+import { adminDb, FieldValue } from '@/lib/firebase/admin';
 import { verifyTelegramUser } from '@/lib/auth/telegram';
 import { calculateDeliveryFee } from '@/lib/logistics/pricing';
 import { generateOTP } from '@/lib/orders/otp';
@@ -129,7 +129,7 @@ export async function createOrder(
     for (const item of orderItems) {
       const productRef = adminDb.collection('products').doc(item.productId);
       batch.update(productRef, {
-        stock: adminDb.FieldValue.increment(-item.quantity)
+        stock: FieldValue.increment(-item.quantity)
       });
     }
     await batch.commit();
@@ -197,10 +197,28 @@ export async function getOrderById(
       return { success: false, error: 'UNAUTHORIZED' };
     }
 
+    const data = orderData!;
     const order: Order = {
       id: orderDoc.id,
-      ...orderData
-    } as Order;
+      userId: data.userId,
+      items: data.items,
+      totalAmount: data.totalAmount,
+      deliveryFee: data.deliveryFee,
+      status: data.status,
+      userHomeLocation: data.userHomeLocation,
+      otpCode: data.otpCode,
+      otpAttempts: data.otpAttempts,
+      chapaTransactionRef: data.chapaTransactionRef,
+      cancellationReason: data.cancellationReason,
+      createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(data.createdAt),
+      updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : new Date(data.updatedAt),
+      statusHistory: data.statusHistory?.map((sh: any) => ({
+        from: sh.from,
+        to: sh.to,
+        timestamp: sh.timestamp?.toDate ? sh.timestamp.toDate() : new Date(sh.timestamp),
+        actor: sh.actor,
+      })) || [],
+    };
 
     return { success: true, data: order };
   } catch (error) {
@@ -229,10 +247,30 @@ export async function getUserOrders(
       .orderBy('createdAt', 'desc')
       .get();
 
-    const orders: Order[] = ordersSnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    })) as Order[];
+    const orders: Order[] = ordersSnapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        userId: data.userId,
+        items: data.items,
+        totalAmount: data.totalAmount,
+        deliveryFee: data.deliveryFee,
+        status: data.status,
+        userHomeLocation: data.userHomeLocation,
+        otpCode: data.otpCode,
+        otpAttempts: data.otpAttempts,
+        chapaTransactionRef: data.chapaTransactionRef,
+        cancellationReason: data.cancellationReason,
+        createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(data.createdAt),
+        updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : new Date(data.updatedAt),
+        statusHistory: data.statusHistory?.map((sh: any) => ({
+          from: sh.from,
+          to: sh.to,
+          timestamp: sh.timestamp?.toDate ? sh.timestamp.toDate() : new Date(sh.timestamp),
+          actor: sh.actor,
+        })) || [],
+      };
+    }) as Order[];
 
     return { success: true, data: orders };
   } catch (error) {
@@ -386,7 +424,7 @@ export async function updateOrderStatus(
       transaction.update(orderRef, {
         status: newStatus,
         updatedAt: new Date(),
-        statusHistory: adminDb.FieldValue.arrayUnion(statusChange)
+        statusHistory: FieldValue.arrayUnion(statusChange)
       });
 
       return {
@@ -470,7 +508,7 @@ export async function validateOTP(
       if (submittedOTP !== orderData!.otpCode) {
         // Increment attempt counter
         transaction.update(orderRef, {
-          otpAttempts: adminDb.FieldValue.increment(1),
+          otpAttempts: FieldValue.increment(1),
           updatedAt: new Date()
         });
 
@@ -488,7 +526,7 @@ export async function validateOTP(
       transaction.update(orderRef, {
         status: 'COMPLETED',
         updatedAt: new Date(),
-        statusHistory: adminDb.FieldValue.arrayUnion(statusChange)
+        statusHistory: FieldValue.arrayUnion(statusChange)
       });
 
       // Release funds to shop balance(s)
@@ -502,7 +540,7 @@ export async function validateOTP(
 
           // Update shop balance
           transaction.update(shopRef, {
-            balance: adminDb.FieldValue.increment(itemTotal),
+            balance: FieldValue.increment(itemTotal),
             updatedAt: new Date()
           });
 
@@ -588,14 +626,14 @@ export async function cancelOrder(
         status: 'CANCELLED',
         cancellationReason: reason,
         updatedAt: new Date(),
-        statusHistory: adminDb.FieldValue.arrayUnion(statusChange)
+        statusHistory: FieldValue.arrayUnion(statusChange)
       });
 
       // Restore product stock
       for (const item of orderData!.items as OrderItem[]) {
         const productRef = adminDb.collection('products').doc(item.productId);
         transaction.update(productRef, {
-          stock: adminDb.FieldValue.increment(item.quantity)
+          stock: FieldValue.increment(item.quantity)
         });
       }
 
@@ -612,6 +650,44 @@ export async function cancelOrder(
         requiresRefund: requiresRefund(currentStatus)
       } as Order & { requiresRefund: boolean };
     });
+
+    // Requirement 18.2: Initiate refund if order was PAID_ESCROW
+    if (result && result.requiresRefund && result.chapaTransactionRef) {
+      try {
+        const { initiateRefund } = await import('@/lib/payment/chapa');
+        const refundAmount = result.totalAmount + result.deliveryFee;
+        
+        console.log(`[Order Cancellation] Initiating refund for order ${orderId}: ${refundAmount} ETB`);
+        
+        await initiateRefund(
+          result.chapaTransactionRef,
+          refundAmount,
+          reason
+        );
+        
+        console.log(`[Order Cancellation] Refund initiated successfully for order ${orderId}`);
+        
+        // Update order with refund status
+        await adminDb.collection('orders').doc(orderId).update({
+          refundInitiated: true,
+          refundAmount,
+          refundInitiatedAt: FieldValue.serverTimestamp()
+        });
+      } catch (refundError: any) {
+        console.error(`[Order Cancellation] Refund failed for order ${orderId}:`, refundError);
+        
+        // Log refund failure but don't fail the cancellation
+        // The order is already cancelled, refund can be processed manually
+        await adminDb.collection('orders').doc(orderId).update({
+          refundFailed: true,
+          refundError: refundError.message || 'REFUND_FAILED',
+          refundFailedAt: FieldValue.serverTimestamp()
+        });
+        
+        // Note: In production, this should trigger an alert for manual refund processing
+        console.warn(`[Order Cancellation] Manual refund required for order ${orderId}`);
+      }
+    }
 
     // Requirement 18.4: Send notification to shop owner(s) when order is cancelled
     if (result) {
@@ -641,6 +717,64 @@ export async function cancelOrder(
     return { success: true, data: result };
   } catch (error: any) {
     console.error('Error cancelling order:', error);
+    return { success: false, error: error.message || 'INTERNAL_ERROR' };
+  }
+}
+
+/**
+ * Get active deliveries for a runner (DISPATCHED or ARRIVED orders)
+ * Requirements: 9.4, 9.5
+ */
+export async function getRunnerOrders(
+  telegramId: string
+): Promise<ActionResponse<Order[]>> {
+  try {
+    // 1. Verify telegramId and check role
+    const user = await verifyTelegramUser(telegramId);
+    if (!user) {
+      return { success: false, error: 'UNAUTHORIZED' };
+    }
+
+    if (user.role !== 'RUNNER') {
+      return { success: false, error: 'FORBIDDEN_NOT_RUNNER' };
+    }
+
+    // 2. Query orders with status DISPATCHED or ARRIVED
+    const ordersSnapshot = await adminDb
+      .collection('orders')
+      .where('status', 'in', ['DISPATCHED', 'ARRIVED'])
+      .orderBy('updatedAt', 'desc')
+      .get();
+
+    // 3. Convert to Order objects with Date conversion
+    const orders: Order[] = ordersSnapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        userId: data.userId,
+        items: data.items,
+        totalAmount: data.totalAmount,
+        deliveryFee: data.deliveryFee,
+        status: data.status,
+        userHomeLocation: data.userHomeLocation,
+        otpCode: data.otpCode,
+        otpAttempts: data.otpAttempts,
+        chapaTransactionRef: data.chapaTransactionRef,
+        cancellationReason: data.cancellationReason,
+        createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(data.createdAt),
+        updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : new Date(data.updatedAt),
+        statusHistory: data.statusHistory?.map((sh: any) => ({
+          from: sh.from,
+          to: sh.to,
+          timestamp: sh.timestamp?.toDate ? sh.timestamp.toDate() : new Date(sh.timestamp),
+          actor: sh.actor
+        })) || []
+      } as Order;
+    });
+
+    return { success: true, data: orders };
+  } catch (error: any) {
+    console.error('Error fetching runner orders:', error);
     return { success: false, error: error.message || 'INTERNAL_ERROR' };
   }
 }

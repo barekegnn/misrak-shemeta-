@@ -11,6 +11,7 @@
   },
   "navigation": {
     "home": "መነሻ",
+    "shops": "ሱቆች",
     "products": "ምርቶች",
     "cart": "ጋሪ",
     "orders": "ትዕዛዞች",
@@ -74,5 +75,26 @@
       "title": "ክፍያ አልተሳካም",
       "message": "ክፍያዎ አልተሳካም። እባክዎ እንደገና ይሞክሩ።"
     }
+  },
+  "shops": {
+    "title": "ሱቆች",
+    "subtitle": "ወደ አካባቢዎ ለማድረስ የሚገኙ ሱቆችን ያስሱ",
+    "noShops": "ምንም ሱቅ የለም",
+    "viewProducts": "ምርቶችን ይመልከቱ"
+  },
+  "products": {
+    "title": "ምርቶች",
+    "items": "እቃዎች",
+    "noProducts": "ምንም ምርት የለም",
+    "addToCart": "ወደ ጋሪ ጨምር",
+    "outOfStock": "ከክምችት ውጭ",
+    "lowStock": "ዝቅተኛ ክምችት",
+    "inStock": "በክምችት ውስጥ",
+    "stock": "ክምችት"
+  },
+  "errors": {
+    "generic": "የሆነ ችግር ተፈጥሯል",
+    "notFound": "አልተገኘም",
+    "notAuthenticated": "ለመቀጠል እባክዎ ይግቡ"
   }
 }

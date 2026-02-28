@@ -1,6 +1,6 @@
 'use server';
 
-import { adminDb } from '@/lib/firebase/admin';
+import { adminDb, FieldValue } from '@/lib/firebase/admin';
 import { verifyTelegramUser, getUserById } from '@/lib/auth/telegram';
 import { User, Location, Language, ActionResponse } from '@/types';
 
@@ -27,7 +27,7 @@ export async function updateHomeLocation(
     // Update home location
     await adminDb.collection('users').doc(user.id).update({
       homeLocation,
-      updatedAt: adminDb.FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
     });
 
     // Get updated user
@@ -75,7 +75,7 @@ export async function updateLanguagePreference(
     // Update language preference
     await adminDb.collection('users').doc(user.id).update({
       languagePreference,
-      updatedAt: adminDb.FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
     });
 
     // Get updated user
@@ -121,7 +121,7 @@ export async function updatePhoneNumber(
     // Update phone number
     await adminDb.collection('users').doc(user.id).update({
       phoneNumber,
-      updatedAt: adminDb.FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
     });
 
     // Get updated user

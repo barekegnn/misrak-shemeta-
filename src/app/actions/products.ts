@@ -388,6 +388,58 @@ export async function getProductsByShop(
 }
 
 /**
+ * Gets all products for a specific shop (for buyers to browse).
+ * Public function - no authentication required.
+ * 
+ * Requirements: 5.1, 5.2
+ */
+export async function getProductsByShopId(
+  shopId: string
+): Promise<ActionResponse<Product[]>> {
+  try {
+    console.log('[getProductsByShopId] Fetching products for shopId:', shopId);
+    
+    // Get products for this shop
+    const snapshot = await adminDb
+      .collection('products')
+      .where('shopId', '==', shopId)
+      .orderBy('createdAt', 'desc')
+      .get();
+
+    console.log('[getProductsByShopId] Found', snapshot.docs.length, 'products');
+
+    const products: Product[] = snapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        shopId: data.shopId,
+        name: data.name,
+        description: data.description,
+        price: data.price,
+        category: data.category,
+        images: data.images,
+        stock: data.stock,
+        createdAt: data.createdAt.toDate(),
+        updatedAt: data.updatedAt.toDate(),
+      };
+    });
+
+    console.log('[getProductsByShopId] Returning', products.length, 'products');
+
+    return {
+      success: true,
+      data: products,
+    };
+  } catch (error) {
+    console.error('[getProductsByShopId] Error getting products by shop ID:', error);
+    return {
+      success: false,
+      error: 'Failed to get products',
+    };
+  }
+}
+
+/**
  * Validates product input data.
  * Ensures all required fields are present and valid.
  */

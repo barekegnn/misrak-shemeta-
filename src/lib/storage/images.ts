@@ -1,5 +1,3 @@
-'use server';
-
 import { adminStorage } from '@/lib/firebase/admin';
 
 /**
@@ -21,6 +19,7 @@ const ALLOWED_MIME_TYPES = [
 
 /**
  * Validates an image file before upload.
+ * This is a client-side utility function, not a Server Action.
  * 
  * Requirements: 13.5
  */
@@ -65,6 +64,8 @@ export async function uploadProductImage(
   imageIndex: number,
   mimeType: string
 ): Promise<{ success: boolean; url?: string; error?: string }> {
+  'use server';
+  
   try {
     // Validate MIME type
     if (!ALLOWED_MIME_TYPES.includes(mimeType)) {
@@ -131,6 +132,8 @@ export async function deleteProductImages(
   shopId: string,
   productId: string
 ): Promise<void> {
+  'use server';
+  
   try {
     const bucket = adminStorage.bucket();
     const prefix = `products/${shopId}/${productId}/`;
@@ -155,6 +158,8 @@ export async function deleteProductImages(
  * @param imageUrl - The public URL of the image to delete
  */
 export async function deleteProductImage(imageUrl: string): Promise<void> {
+  'use server';
+  
   try {
     const bucket = adminStorage.bucket();
     
@@ -186,6 +191,8 @@ export async function deleteProductImage(imageUrl: string): Promise<void> {
  * @returns Signed URL valid for 1 hour
  */
 export async function getImageDownloadUrl(filePath: string): Promise<string | null> {
+  'use server';
+  
   try {
     const bucket = adminStorage.bucket();
     const file = bucket.file(filePath);

@@ -355,3 +355,72 @@ export async function hasShop(
     return { success: false, error: 'INTERNAL_ERROR' };
   }
 }
+
+/**
+ * Get all shops (for buyers to browse)
+ * Public function - no authentication required
+ */
+export async function getShops(): Promise<ActionResponse<Shop[]>> {
+  try {
+    console.log('[getShops] Fetching all shops');
+    const shopsSnapshot = await adminDb
+      .collection('shops')
+      .orderBy('name')
+      .get();
+
+    console.log('[getShops] Found', shopsSnapshot.docs.length, 'shops');
+
+    const shops: Shop[] = shopsSnapshot.docs.map((doc) => {
+      const data = doc.data();
+      console.log('[getShops] Shop:', doc.id, data.name);
+      return {
+        id: doc.id,
+        name: data.name,
+        ownerId: data.ownerId,
+        city: data.city,
+        contactPhone: data.contactPhone,
+        description: data.description,
+        balance: data.balance || 0,
+        createdAt: data.createdAt?.toDate() || new Date(),
+        updatedAt: data.updatedAt?.toDate() || new Date(),
+      };
+    }) as Shop[];
+
+    return { success: true, data: shops };
+  } catch (error) {
+    console.error('[getShops] Error getting shops:', error);
+    return { success: false, error: 'INTERNAL_ERROR' };
+  }
+}
+
+/**
+ * Get shop by ID (for buyers to view shop details)
+ * Public function - no authentication required
+ */
+export async function getShopById(shopId: string): Promise<ActionResponse<Shop>> {
+  try {
+    const shopDoc = await adminDb.collection('shops').doc(shopId).get();
+
+    if (!shopDoc.exists) {
+      return { success: false, error: 'SHOP_NOT_FOUND' };
+    }
+
+    const data = shopDoc.data()!;
+    const shop: Shop = {
+      id: shopDoc.id,
+      name: data.name,
+      ownerId: data.ownerId,
+      city: data.city,
+      contactPhone: data.contactPhone,
+      description: data.description,
+      balance: data.balance || 0,
+      createdAt: data.createdAt?.toDate() || new Date(),
+      updatedAt: data.updatedAt?.toDate() || new Date(),
+    };
+
+    return { success: true, data: shop };
+  } catch (error) {
+    console.error('Error getting shop by ID:', error);
+    return { success: false, error: 'INTERNAL_ERROR' };
+  }
+}

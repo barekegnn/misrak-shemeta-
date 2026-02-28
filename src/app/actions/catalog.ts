@@ -1,6 +1,6 @@
 'use server';
 
-import { adminDb } from '@/lib/firebase/admin';
+import { adminDb, FieldPath } from '@/lib/firebase/admin';
 import { Product, ActionResponse, Location, City } from '@/types';
 
 /**
@@ -217,11 +217,22 @@ async function filterByDeliverability(
   products: Product[],
   userLocation: Location
 ): Promise<Product[]> {
+  // If no products, return empty array
+  if (products.length === 0) {
+    return [];
+  }
+
   // Get shop information for all products
   const shopIds = [...new Set(products.map((p) => p.shopId))];
+  
+  // If no shop IDs, return empty array
+  if (shopIds.length === 0) {
+    return [];
+  }
+
   const shopsSnapshot = await adminDb
     .collection('shops')
-    .where(adminDb.FieldPath.documentId(), 'in', shopIds.slice(0, 10)) // Firestore 'in' limit is 10
+    .where(FieldPath.documentId(), 'in', shopIds.slice(0, 10)) // Firestore 'in' limit is 10
     .get();
 
   const shopCityMap = new Map<string, City>();
@@ -237,7 +248,7 @@ async function filterByDeliverability(
       const batch = remainingShopIds.slice(i, i + 10);
       const batchSnapshot = await adminDb
         .collection('shops')
-        .where(adminDb.FieldPath.documentId(), 'in', batch)
+        .where(FieldPath.documentId(), 'in', batch)
         .get();
       
       batchSnapshot.docs.forEach((doc) => {

@@ -1,5 +1,6 @@
 {
   "title": "Products",
+  "noProducts": "No products available in this shop",
   "addToCart": "Add to Cart",
   "viewDetails": "View Details",
   "price": "Price",

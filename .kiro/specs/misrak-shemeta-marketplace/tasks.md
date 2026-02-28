@@ -202,13 +202,17 @@ The implementation is organized into 6 phases following the roadmap: Infrastruct
     - Store Chapa transaction reference with order
     - _Requirements: 8.1, 8.2, 8.6_
 
-  - [x] 9.3 Implement payment webhook handler
-    - Create `/app/api/webhooks/chapa/route.ts` API route
-    - Verify webhook signature using CHAPA_WEBHOOK_SECRET
-    - Implement idempotency check (prevent duplicate processing)
-    - Update order status to PAID_ESCROW on payment success
-    - Use Firestore Transaction for atomic status update
-    - _Requirements: 8.3, 8.7, 24.1, 24.2, 24.3, 24.4, 24.5_
+  - [x] 9.3 Implement payment webhook handler (COMPLETE)
+    - Created `/app/api/webhooks/chapa/route.ts` API route
+    - Implemented signature verification (sandbox mode skips validation)
+    - Implemented idempotency check (prevents duplicate processing)
+    - Updates order status to PAID_ESCROW on payment success atomically
+    - Handles payment failures (cancels order, restores stock)
+    - Uses Firestore Transaction for atomic status updates
+    - Logs all webhook calls to webhookLogs collection
+    - Created `scripts/test-webhook.ts` for local testing
+    - Created `WEBHOOK_TESTING_GUIDE.md` with 6 test scenarios
+    - _Requirements: 8.3, 8.7, 23.1, 24.1, 24.2, 24.3, 24.4, 24.5_
 
   - [x] 9.4 Build ChapaPaymentButton component
     - Create button to initiate payment flow
@@ -251,11 +255,17 @@ The implementation is organized into 6 phases following the roadmap: Infrastruct
     - Release escrow funds to shop balance using Firestore Transaction
     - _Requirements: 17.1, 17.2, 17.3, 17.4, 17.5, 17.6_
 
-  - [x] 10.4 Build OrderCheckout component
+  - [x] 10.4 Build OrderCheckout component (Checkout Page)
+    - Created `src/app/checkout/page.tsx` with luxury UI
     - Display cart summary with delivery fee breakdown
-    - Show total amount
-    - Add payment button (connects to Chapa)
-    - _Requirements: 7.1, 7.5_
+    - Show total amount with escrow information
+    - Implement Eastern Triangle Pricing Engine integration
+    - Multi-shop delivery fee calculation
+    - Created `src/app/actions/payment.ts` for payment initiation
+    - Created `src/app/api/shops/[shopId]/route.ts` for shop details
+    - Add payment button that connects to Chapa
+    - Stock validation before order creation
+    - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 8.1, 8.2, 8.6, 16.1-16.7_
 
   - [x] 10.5 Build OrderList and OrderDetail components for buyers
     - Display order history in reverse chronological order
@@ -432,7 +442,7 @@ The implementation is organized into 6 phases following the roadmap: Infrastruct
     - Verify all properties pass
     - _Requirements: All correctness properties_
 
-  - [-] 18.3 Perform end-to-end testing
+  - [x] 18.3 Perform end-to-end testing
     - Test complete buyer flow: browse → cart → checkout → delivery → completion
     - Test shop owner flow: product creation → order fulfillment
     - Test runner flow: delivery → OTP submission

@@ -5,8 +5,9 @@
  * Run with: npx ts-node scripts/seed-data.ts
  */
 
-import { initializeApp, cert } from 'firebase-admin/app';
+import { initializeApp } from 'firebase-admin/app';
 import { getFirestore, Timestamp } from 'firebase-admin/firestore';
+import { generateProducts } from './seed-products-data';
 
 // Initialize Firebase Admin (for emulator)
 const app = initializeApp({
@@ -88,26 +89,94 @@ async function seedData() {
     }
     console.log(`✅ Created ${users.length} users\n`);
 
-    // 2. Create test shops
+    // 2. Create test shops (8 diverse categories)
     console.log('Creating shops...');
     
     const shops = [
       {
-        id: 'shop_harar_1',
-        name: 'Harar Electronics',
+        id: 'shop_harar_electronics',
+        name: 'Harar Tech Hub',
         ownerId: 'user_merchant_1',
         city: 'Harar',
-        contactPhone: '+251934567890',
+        description: 'Latest electronics and gadgets for students',
+        contactPhone: '+251911234567',
         balance: 0,
         createdAt: Timestamp.now(),
         updatedAt: Timestamp.now(),
       },
       {
-        id: 'shop_diredawa_1',
-        name: 'Dire Dawa Books & Stationery',
+        id: 'shop_harar_books',
+        name: 'Harar Academic Books',
+        ownerId: 'user_merchant_1',
+        city: 'Harar',
+        description: 'Textbooks and educational materials',
+        contactPhone: '+251911234568',
+        balance: 0,
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now(),
+      },
+      {
+        id: 'shop_harar_fashion',
+        name: 'Harar Fashion Boutique',
+        ownerId: 'user_merchant_1',
+        city: 'Harar',
+        description: 'Trendy clothing and accessories',
+        contactPhone: '+251911234569',
+        balance: 0,
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now(),
+      },
+      {
+        id: 'shop_harar_cosmetics',
+        name: 'Harar Beauty Corner',
+        ownerId: 'user_merchant_1',
+        city: 'Harar',
+        description: 'Cosmetics and personal care products',
+        contactPhone: '+251911234570',
+        balance: 0,
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now(),
+      },
+      {
+        id: 'shop_diredawa_shoes',
+        name: 'Dire Dawa Shoe Palace',
         ownerId: 'user_merchant_2',
         city: 'Dire_Dawa',
-        contactPhone: '+251945678901',
+        description: 'Quality footwear for all occasions',
+        contactPhone: '+251922345678',
+        balance: 0,
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now(),
+      },
+      {
+        id: 'shop_diredawa_stationery',
+        name: 'Dire Dawa Office Supplies',
+        ownerId: 'user_merchant_2',
+        city: 'Dire_Dawa',
+        description: 'Complete stationery and office supplies',
+        contactPhone: '+251922345679',
+        balance: 0,
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now(),
+      },
+      {
+        id: 'shop_diredawa_sports',
+        name: 'Dire Dawa Sports Arena',
+        ownerId: 'user_merchant_2',
+        city: 'Dire_Dawa',
+        description: 'Sports equipment and athletic wear',
+        contactPhone: '+251922345680',
+        balance: 0,
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now(),
+      },
+      {
+        id: 'shop_diredawa_grocery',
+        name: 'Dire Dawa Campus Mart',
+        ownerId: 'user_merchant_2',
+        city: 'Dire_Dawa',
+        description: 'Snacks, drinks, and daily essentials',
+        contactPhone: '+251922345681',
         balance: 0,
         createdAt: Timestamp.now(),
         updatedAt: Timestamp.now(),
@@ -119,85 +188,10 @@ async function seedData() {
     }
     console.log(`✅ Created ${shops.length} shops\n`);
 
-    // 3. Create test products
+    // 3. Create test products (80 products across 8 shops)
     console.log('Creating products...');
     
-    const products = [
-      // Harar Electronics products
-      {
-        id: 'product_1',
-        shopId: 'shop_harar_1',
-        name: 'Wireless Headphones',
-        description: 'High-quality Bluetooth headphones with noise cancellation',
-        price: 1500,
-        category: 'Electronics',
-        images: ['https://via.placeholder.com/400x400?text=Headphones'],
-        stock: 10,
-        createdAt: Timestamp.now(),
-        updatedAt: Timestamp.now(),
-      },
-      {
-        id: 'product_2',
-        shopId: 'shop_harar_1',
-        name: 'USB-C Cable',
-        description: 'Fast charging USB-C cable, 2 meters',
-        price: 150,
-        category: 'Electronics',
-        images: ['https://via.placeholder.com/400x400?text=USB-C+Cable'],
-        stock: 50,
-        createdAt: Timestamp.now(),
-        updatedAt: Timestamp.now(),
-      },
-      {
-        id: 'product_3',
-        shopId: 'shop_harar_1',
-        name: 'Power Bank 20000mAh',
-        description: 'High capacity power bank with dual USB ports',
-        price: 800,
-        category: 'Electronics',
-        images: ['https://via.placeholder.com/400x400?text=Power+Bank'],
-        stock: 15,
-        createdAt: Timestamp.now(),
-        updatedAt: Timestamp.now(),
-      },
-      // Dire Dawa Books products
-      {
-        id: 'product_4',
-        shopId: 'shop_diredawa_1',
-        name: 'Engineering Mathematics Textbook',
-        description: 'Complete guide for engineering students',
-        price: 450,
-        category: 'Books',
-        images: ['https://via.placeholder.com/400x400?text=Math+Book'],
-        stock: 20,
-        createdAt: Timestamp.now(),
-        updatedAt: Timestamp.now(),
-      },
-      {
-        id: 'product_5',
-        shopId: 'shop_diredawa_1',
-        name: 'Notebook Set (5 pieces)',
-        description: 'High-quality notebooks for students',
-        price: 200,
-        category: 'Stationery',
-        images: ['https://via.placeholder.com/400x400?text=Notebooks'],
-        stock: 100,
-        createdAt: Timestamp.now(),
-        updatedAt: Timestamp.now(),
-      },
-      {
-        id: 'product_6',
-        shopId: 'shop_diredawa_1',
-        name: 'Scientific Calculator',
-        description: 'Advanced scientific calculator for engineering',
-        price: 350,
-        category: 'Electronics',
-        images: ['https://via.placeholder.com/400x400?text=Calculator'],
-        stock: 30,
-        createdAt: Timestamp.now(),
-        updatedAt: Timestamp.now(),
-      },
-    ];
+    const products = generateProducts();
 
     for (const product of products) {
       await db.collection('products').doc(product.id).set(product);
@@ -211,7 +205,7 @@ async function seedData() {
       id: 'user_buyer_1',
       items: [
         { productId: 'product_1', quantity: 1 },
-        { productId: 'product_4', quantity: 2 },
+        { productId: 'product_11', quantity: 2 },
       ],
       updatedAt: Timestamp.now(),
     });
@@ -226,7 +220,7 @@ async function seedData() {
       items: [
         {
           productId: 'product_1',
-          shopId: 'shop_harar_1',
+          shopId: 'shop_harar_electronics',
           productName: 'Wireless Headphones',
           quantity: 1,
           priceAtPurchase: 1500,
@@ -260,6 +254,10 @@ async function seedData() {
     console.log(`   - 1 cart`);
     console.log(`   - 1 order`);
     console.log('\n✨ You can now test the application with this data!');
+    console.log('\n📍 Shop Categories:');
+    console.log('   - Harar: Electronics, Books, Fashion, Cosmetics');
+    console.log('   - Dire Dawa: Shoes, Stationery, Sports, Grocery');
+    console.log('\n🛍️  Each shop has 10 products for comprehensive testing');
 
   } catch (error) {
     console.error('❌ Error seeding data:', error);

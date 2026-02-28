@@ -1,6 +1,6 @@
 'use server';
 
-import { adminAuth, adminDb } from '@/lib/firebase/admin';
+import { adminAuth, adminDb, FieldValue } from '@/lib/firebase/admin';
 import { User, Language } from '@/types';
 
 /**
@@ -16,6 +16,8 @@ export async function verifyTelegramUser(
   languageCode?: string
 ): Promise<User | null> {
   try {
+    console.log('[verifyTelegramUser] Starting verification for:', telegramId);
+    
     // Query Firestore for user with this telegramId
     const usersRef = adminDb.collection('users');
     const snapshot = await usersRef
@@ -23,10 +25,17 @@ export async function verifyTelegramUser(
       .limit(1)
       .get();
 
+    console.log('[verifyTelegramUser] Query result:', { 
+      empty: snapshot.empty, 
+      size: snapshot.size 
+    });
+
     if (!snapshot.empty) {
       // User exists, return their profile
       const doc = snapshot.docs[0];
       const data = doc.data();
+      
+      console.log('[verifyTelegramUser] User found:', doc.id);
       
       return {
         id: doc.id,
@@ -41,6 +50,8 @@ export async function verifyTelegramUser(
     }
 
     // User doesn't exist, create new profile
+    console.log('[verifyTelegramUser] User not found, creating new user');
+    
     const newUser: Omit<User, 'id'> = {
       telegramId,
       role: 'STUDENT', // Default role
@@ -52,16 +63,18 @@ export async function verifyTelegramUser(
 
     const docRef = await usersRef.add({
       ...newUser,
-      createdAt: adminDb.FieldValue.serverTimestamp(),
-      updatedAt: adminDb.FieldValue.serverTimestamp(),
+      createdAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
     });
+
+    console.log('[verifyTelegramUser] New user created:', docRef.id);
 
     return {
       id: docRef.id,
       ...newUser,
     };
   } catch (error) {
-    console.error('Error verifying Telegram user:', error);
+    console.error('[verifyTelegramUser] Error verifying Telegram user:', error);
     return null;
   }
 }

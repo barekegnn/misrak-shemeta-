@@ -85,6 +85,12 @@ export interface Order {
   otpAttempts: number; // Number of OTP validation attempts (max 3)
   chapaTransactionRef?: string; // Chapa transaction reference
   cancellationReason?: string;
+  refundInitiated?: boolean; // True if refund was initiated
+  refundAmount?: number; // Amount refunded in ETB
+  refundInitiatedAt?: Date; // Timestamp of refund initiation
+  refundFailed?: boolean; // True if refund failed
+  refundError?: string; // Error message if refund failed
+  refundFailedAt?: Date; // Timestamp of refund failure
   createdAt: Date;
   updatedAt: Date;
   statusHistory: StatusChange[]; // Audit trail

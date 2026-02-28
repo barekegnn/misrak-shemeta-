@@ -11,6 +11,7 @@
   },
   "navigation": {
     "home": "Mana",
+    "shops": "Suuqota",
     "products": "Oomisha",
     "cart": "Gaarii",
     "orders": "Ajaja",
@@ -74,5 +75,26 @@
       "title": "Kaffaltiin Hin Milkoofne",
       "message": "Kaffaltiin keessan hin milkoofne. Mee irra deebitii yaali."
     }
+  },
+  "shops": {
+    "title": "Suuqota",
+    "subtitle": "Suuqota bakka keessanitti dhiyeessan sakatta'aa",
+    "noShops": "Suuqonni hin jiran",
+    "viewProducts": "Oomisha Ilaali"
+  },
+  "products": {
+    "title": "Oomisha",
+    "items": "meeshaalee",
+    "noProducts": "Oomishni hin jiru",
+    "addToCart": "Gara Gaarii Dabali",
+    "outOfStock": "Kuusaa Ala",
+    "lowStock": "Kuusaa Xiqqaa",
+    "inStock": "kuusaa keessa",
+    "stock": "Kuusaa"
+  },
+  "errors": {
+    "generic": "Wanti tokko dogoggoree jira",
+    "notFound": "Hin argamne",
+    "notAuthenticated": "Itti fufuuf mee seenaa"
   }
 }

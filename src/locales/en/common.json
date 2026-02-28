@@ -11,6 +11,7 @@
   },
   "navigation": {
     "home": "Home",
+    "shops": "Shops",
     "products": "Products",
     "cart": "Cart",
     "orders": "Orders",
@@ -74,5 +75,27 @@
       "title": "Payment Failed",
       "message": "Your payment failed. Please try again."
     }
+  },
+  "shops": {
+    "title": "Shops",
+    "subtitle": "Browse shops available for delivery to your location",
+    "noShops": "No shops available",
+    "viewProducts": "View Products"
+  },
+  "products": {
+    "title": "Products",
+    "items": "items",
+    "noProducts": "No products available",
+    "addToCart": "Add to Cart",
+    "adding": "Adding...",
+    "outOfStock": "Out of Stock",
+    "lowStock": "Low Stock",
+    "inStock": "in stock",
+    "stock": "Stock"
+  },
+  "errors": {
+    "generic": "Something went wrong",
+    "notFound": "Not found",
+    "notAuthenticated": "Please log in to continue"
   }
 }

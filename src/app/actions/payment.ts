@@ -2,104 +2,75 @@
 
 import { adminDb } from '@/lib/firebase/admin';
 import { verifyTelegramUser } from '@/lib/auth/telegram';
-import { ActionResponse } from '@/types';
-import { initiateChapaPayment } from '@/lib/payment/chapa';
+import { initiateChapaPayment as chapaInitiatePayment } from '@/lib/payment/chapa';
+import type { ActionResponse, ChapaPaymentRequest } from '@/types';
 
 /**
- * Initiates a payment for an order using Chapa.
- * 
- * SECURITY: Verifies telegramId and order ownership before processing.
- * CRITICAL: This handles real money transactions. All validations must pass.
- * 
- * Flow:
- * 1. Verify user authentication
- * 2. Verify order exists and belongs to user
- * 3. Verify order is in PENDING status
- * 4. Create Chapa payment request
- * 5. Return checkout URL for redirect
- * 
+ * Initiate payment for an order via Chapa
  * Requirements: 8.1, 8.2, 8.6
  */
-export async function initiateChapaPaymentForOrder(
+export async function initiateChapaPayment(
   telegramId: string,
   orderId: string
 ): Promise<ActionResponse<{ checkoutUrl: string }>> {
   try {
-    // 1. Verify user
+    // 1. Verify telegramId
     const user = await verifyTelegramUser(telegramId);
     if (!user) {
-      return {
-        success: false,
-        error: 'User not found or unauthorized',
-      };
+      return { success: false, error: 'UNAUTHORIZED' };
     }
 
-    // 2. Get order and verify ownership
+    // 2. Get order details
     const orderDoc = await adminDb.collection('orders').doc(orderId).get();
+    
     if (!orderDoc.exists) {
-      return {
-        success: false,
-        error: 'Order not found',
-      };
+      return { success: false, error: 'ORDER_NOT_FOUND' };
     }
 
-    const order = orderDoc.data()!;
+    const orderData = orderDoc.data();
 
-    // Verify order belongs to this user
-    if (order.userId !== user.id) {
-      return {
-        success: false,
-        error: 'You cannot pay for orders that do not belong to you',
-      };
+    // 3. Verify order belongs to user
+    if (orderData!.userId !== user.id) {
+      return { success: false, error: 'UNAUTHORIZED' };
     }
 
-    // 3. Verify order status is PENDING
-    if (order.status !== 'PENDING') {
-      return {
-        success: false,
-        error: `Cannot initiate payment for order with status ${order.status}`,
-      };
+    // 4. Verify order is in PENDING status
+    if (orderData!.status !== 'PENDING') {
+      return { success: false, error: 'ORDER_NOT_PENDING' };
     }
 
-    // 4. Calculate total amount (order total + delivery fee)
-    const totalAmount = order.totalAmount + order.deliveryFee;
+    // 5. Calculate total amount (products + delivery fee)
+    const totalAmount = orderData!.totalAmount + orderData!.deliveryFee;
 
-    // 5. Get user details for payment
-    const userDoc = await adminDb.collection('users').doc(user.id).get();
-    const userData = userDoc.data()!;
-
-    // 6. Create Chapa payment request
-    const paymentRequest = {
+    // 6. Prepare Chapa payment request
+    const paymentRequest: ChapaPaymentRequest = {
       amount: totalAmount,
-      currency: 'ETB' as const,
-      email: `user_${user.telegramId}@misrakshemeta.app`, // Generate email from telegramId
-      first_name: userData.phoneNumber || 'User',
-      last_name: user.telegramId,
+      currency: 'ETB',
+      email: `user_${user.telegramId}@misrakshemeta.com`, // Generate email from telegramId
+      first_name: user.telegramId.toString(),
+      last_name: 'User',
       tx_ref: orderId, // Use orderId as transaction reference
       callback_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/webhooks/chapa`,
       return_url: `${process.env.NEXT_PUBLIC_APP_URL}/orders/${orderId}`,
       customization: {
-        title: 'Misrak Shemeta - Order Payment',
-        description: `Payment for order ${orderId}`,
+        title: 'Misrak Shemeta Marketplace',
+        description: `Order #${orderId.substring(0, 8)}`,
       },
     };
 
-    // 7. Initiate payment with Chapa
-    const chapaResponse = await initiateChapaPayment(paymentRequest);
+    console.log('[Payment] Initiating Chapa payment for order:', orderId);
 
-    if (chapaResponse.status !== 'success') {
-      return {
-        success: false,
-        error: chapaResponse.message || 'Failed to initiate payment',
-      };
+    // 7. Initiate payment with Chapa
+    const chapaResponse = await chapaInitiatePayment(paymentRequest);
+
+    if (chapaResponse.status !== 'success' || !chapaResponse.data?.checkout_url) {
+      console.error('[Payment] Chapa payment initiation failed:', chapaResponse);
+      return { success: false, error: 'PAYMENT_INITIATION_FAILED' };
     }
 
-    // 8. Store Chapa transaction reference with order
-    await adminDb.collection('orders').doc(orderId).update({
-      chapaTransactionRef: chapaResponse.data.checkout_url,
-      updatedAt: adminDb.FieldValue.serverTimestamp(),
-    });
+    console.log('[Payment] Chapa payment initiated successfully');
 
+    // 8. Return checkout URL
     return {
       success: true,
       data: {
@@ -107,72 +78,7 @@ export async function initiateChapaPaymentForOrder(
       },
     };
   } catch (error) {
-    console.error('Error initiating Chapa payment:', error);
-    return {
-      success: false,
-      error: 'Failed to initiate payment. Please try again.',
-    };
-  }
-}
-
-/**
- * Gets the payment status for an order.
- * 
- * This can be used to check if payment has been completed
- * without relying solely on webhooks.
- * 
- * SECURITY: Verifies telegramId and order ownership.
- * 
- * Requirements: 8.6
- */
-export async function getOrderPaymentStatus(
-  telegramId: string,
-  orderId: string
-): Promise<ActionResponse<{ status: string; paid: boolean }>> {
-  try {
-    // 1. Verify user
-    const user = await verifyTelegramUser(telegramId);
-    if (!user) {
-      return {
-        success: false,
-        error: 'User not found or unauthorized',
-      };
-    }
-
-    // 2. Get order and verify ownership
-    const orderDoc = await adminDb.collection('orders').doc(orderId).get();
-    if (!orderDoc.exists) {
-      return {
-        success: false,
-        error: 'Order not found',
-      };
-    }
-
-    const order = orderDoc.data()!;
-
-    // Verify order belongs to this user
-    if (order.userId !== user.id) {
-      return {
-        success: false,
-        error: 'You cannot view payment status for orders that do not belong to you',
-      };
-    }
-
-    // 3. Return payment status
-    const paid = ['PAID_ESCROW', 'DISPATCHED', 'ARRIVED', 'COMPLETED'].includes(order.status);
-
-    return {
-      success: true,
-      data: {
-        status: order.status,
-        paid,
-      },
-    };
-  } catch (error) {
-    console.error('Error getting order payment status:', error);
-    return {
-      success: false,
-      error: 'Failed to get payment status',
-    };
+    console.error('[Payment] Error initiating payment:', error);
+    return { success: false, error: 'INTERNAL_ERROR' };
   }
 }
