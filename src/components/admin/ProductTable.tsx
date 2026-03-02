@@ -238,7 +238,98 @@ export function ProductTable({
         </div>
       </div>
       
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+      {/* Products - Mobile Cards */}
+      <div className="md:hidden space-y-4">
+        {products.length === 0 ? (
+          <div className="bg-white rounded-lg border border-gray-200 p-8 text-center text-gray-500">
+            No products found
+          </div>
+        ) : (
+          products.map((product) => (
+            <div key={product.id} className="bg-white rounded-lg border border-gray-200 p-4 space-y-3">
+              {/* Product Image & Name */}
+              <div className="flex items-start gap-3">
+                {product.images && product.images.length > 0 ? (
+                  <div className="h-20 w-20 relative rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                    <img
+                      src={product.images[0]}
+                      alt={product.name}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="h-20 w-20 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                    <ImageIcon className="h-10 w-10 text-gray-400" />
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-base font-semibold text-gray-900 line-clamp-2">
+                    {product.name || 'Unnamed Product'}
+                  </h3>
+                  {product.category && (
+                    <p className="text-xs text-gray-500 mt-1">{product.category}</p>
+                  )}
+                  <p className="text-lg font-bold text-gray-900 mt-1">
+                    {product.price.toLocaleString()} ETB
+                  </p>
+                </div>
+              </div>
+              
+              {/* Product Details Grid */}
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div>
+                  <span className="text-gray-500 block">Shop</span>
+                  {product.shopName ? (
+                    <div className="mt-1">
+                      <div className="font-medium text-gray-900">{product.shopName}</div>
+                      {product.shopCity && (
+                        <div className="text-xs text-gray-500">{product.shopCity}</div>
+                      )}
+                    </div>
+                  ) : (
+                    <span className="text-gray-400 block mt-1">N/A</span>
+                  )}
+                </div>
+                <div>
+                  <span className="text-gray-500 block">Stock</span>
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mt-1 ${
+                    product.stock > 10 ? 'bg-green-100 text-green-800' :
+                    product.stock > 0 ? 'bg-yellow-100 text-yellow-800' :
+                    'bg-red-100 text-red-800'
+                  }`}>
+                    {product.stock}
+                  </span>
+                </div>
+                <div className="col-span-2">
+                  <span className="text-gray-500 block">Created</span>
+                  <span className="text-gray-900 block mt-1">
+                    {product.createdAt ? (
+                      product.createdAt instanceof Date 
+                        ? product.createdAt.toISOString().split('T')[0]
+                        : new Date(product.createdAt).toISOString().split('T')[0]
+                    ) : 'N/A'}
+                  </span>
+                </div>
+              </div>
+              
+              {/* Actions */}
+              <div className="pt-2 border-t border-gray-200">
+                <button
+                  onClick={() => setRemoveDialog({ isOpen: true, productId: product.id, productName: product.name })}
+                  disabled={actionLoading === product.id}
+                  className="w-full min-h-[44px] bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  <Trash2 className="h-5 w-5" />
+                  <span>Remove Product</span>
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+      
+      {/* Products Table - Desktop */}
+      <div className="hidden md:block bg-white rounded-lg border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">

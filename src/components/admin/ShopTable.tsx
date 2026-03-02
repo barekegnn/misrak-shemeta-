@@ -433,8 +433,120 @@ export function ShopTable({
         </div>
       </div>
       
-      {/* Shops Table */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+      {/* Shops - Mobile Cards */}
+      <div className="md:hidden space-y-4">
+        {shops.length === 0 ? (
+          <div className="bg-white rounded-lg border border-gray-200 p-8 text-center text-gray-500">
+            No shops found
+          </div>
+        ) : (
+          shops.map((shop) => (
+            <div key={shop.id} className="bg-white rounded-lg border border-gray-200 p-4 space-y-3">
+              {/* Shop Name & Status */}
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-base font-semibold text-gray-900 truncate">
+                    {shop.name || 'Unnamed Shop'}
+                  </h3>
+                  {shop.ownerTelegramId && (
+                    <p className="text-xs text-gray-500 font-mono mt-1 truncate">
+                      {shop.ownerTelegramId}
+                    </p>
+                  )}
+                </div>
+                {shop.suspended ? (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 whitespace-nowrap">
+                    Suspended
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 whitespace-nowrap">
+                    Active
+                  </span>
+                )}
+              </div>
+              
+              {/* Shop Details Grid */}
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div>
+                  <span className="text-gray-500 block">Location</span>
+                  {shop.city || shop.location ? (
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium mt-1 ${
+                      (shop.city || shop.location) === 'Harar' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
+                    }`}>
+                      {(shop.city || shop.location)?.replace('_', ' ')}
+                    </span>
+                  ) : (
+                    <span className="text-gray-400">N/A</span>
+                  )}
+                </div>
+                <div>
+                  <span className="text-gray-500 block">Balance</span>
+                  <span className="font-semibold text-gray-900 block mt-1">
+                    {(shop.balance || 0).toLocaleString()} ETB
+                  </span>
+                </div>
+                <div>
+                  <span className="text-gray-500 block">Contact</span>
+                  {shop.contactPhone ? (
+                    <a 
+                      href={`tel:${shop.contactPhone}`}
+                      className="text-blue-600 hover:text-blue-800 hover:underline block mt-1"
+                    >
+                      {shop.contactPhone}
+                    </a>
+                  ) : (
+                    <span className="text-gray-400 block mt-1">N/A</span>
+                  )}
+                </div>
+                <div>
+                  <span className="text-gray-500 block">Created</span>
+                  <span className="text-gray-900 block mt-1">
+                    {shop.createdAt ? (
+                      shop.createdAt instanceof Date 
+                        ? shop.createdAt.toISOString().split('T')[0]
+                        : new Date(shop.createdAt).toISOString().split('T')[0]
+                    ) : 'N/A'}
+                  </span>
+                </div>
+              </div>
+              
+              {/* Actions */}
+              <div className="flex items-center gap-2 pt-2 border-t border-gray-200">
+                {shop.suspended ? (
+                  <button
+                    onClick={() => setActivateDialog({ isOpen: true, shopId: shop.id })}
+                    disabled={actionLoading === shop.id}
+                    className="flex-1 min-h-[44px] bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    <CheckCircle className="h-5 w-5" />
+                    <span>Activate</span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setSuspendDialog({ isOpen: true, shopId: shop.id })}
+                    disabled={actionLoading === shop.id}
+                    className="flex-1 min-h-[44px] bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    <Ban className="h-5 w-5" />
+                    <span>Suspend</span>
+                  </button>
+                )}
+                <button
+                  onClick={() => setBalanceDialog({ isOpen: true, shopId: shop.id, currentBalance: shop.balance })}
+                  disabled={actionLoading === shop.id}
+                  className="flex-1 min-h-[44px] bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  <DollarSign className="h-5 w-5" />
+                  <span>Adjust Balance</span>
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+      
+      {/* Shops Table - Desktop */}
+      <div className="hidden md:block bg-white rounded-lg border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">

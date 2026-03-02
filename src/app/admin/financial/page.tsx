@@ -496,6 +496,7 @@ export default function FinancialReportingPage() {
                 </table>
               </div>
             </div>
+          </div>
         </>
       )}
     </div>
