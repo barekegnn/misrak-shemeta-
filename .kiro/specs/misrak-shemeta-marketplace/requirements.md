@@ -442,6 +442,55 @@ Misrak Shemeta is a multi-tenant marketplace platform designed for Eastern Ethio
 5. THE Marketplace_Platform SHALL support filtering error logs by date range, error type, or affected entity
 6. THE Marketplace_Platform SHALL display Chapa API call statistics including success rate, average response time, and failed requests
 
+### Requirement 34: Navigation System
+
+**User Story:** As a user, I want consistent navigation across all pages, so that I can easily move between different sections of the marketplace without getting lost.
+
+#### Acceptance Criteria
+
+1. THE Marketplace_Platform SHALL provide a persistent navigation component on all pages based on the User's role (Buyer, Merchant, Runner, Admin)
+2. WHEN the viewport width is less than 768 pixels, THE Marketplace_Platform SHALL display a bottom navigation bar with icons and labels for primary sections
+3. WHEN the viewport width is 768 pixels or greater, THE Marketplace_Platform SHALL display a top navigation bar with horizontal menu links
+4. THE Marketplace_Platform SHALL display a bottom navigation bar on mobile with 5 items maximum: Home, Browse, Cart (with badge showing item count), Orders, and Profile for Buyers
+5. THE Marketplace_Platform SHALL display a bottom navigation bar on mobile with 5 items for Merchants: Dashboard, Products, Orders, Balance, and Profile
+6. THE Marketplace_Platform SHALL display a bottom navigation bar on mobile with 5 items for Admins: Dashboard, Users, Shops, Orders, and More (dropdown for additional sections)
+7. WHEN a User clicks a navigation item, THE Marketplace_Platform SHALL navigate to the corresponding page using Next.js client-side navigation without full page reload
+8. THE Marketplace_Platform SHALL highlight the active navigation item based on the current page route
+9. THE Marketplace_Platform SHALL provide a back button on detail pages (product detail, order detail, user detail, shop detail) that returns to the previous list view
+10. THE Marketplace_Platform SHALL display breadcrumbs on nested pages showing the navigation path from root to current page
+11. THE Marketplace_Platform SHALL make breadcrumb items clickable to allow navigation to parent routes
+12. THE Marketplace_Platform SHALL hide breadcrumbs on very small screens (viewport width less than 640 pixels) to save space
+13. WHEN a User navigates using the back button, THE Marketplace_Platform SHALL use browser history if available, otherwise navigate to the logical parent route
+14. THE Marketplace_Platform SHALL ensure all navigation elements are touch-friendly with minimum 44x44 pixel touch targets
+15. THE Marketplace_Platform SHALL provide smooth transitions between pages with loading indicators for slow connections
+
+### Requirement 35: Responsive Layout System
+
+**User Story:** As a user on a mobile device, I want all pages to be fully responsive and touch-optimized, so that I can use the marketplace comfortably on my smartphone without zooming or horizontal scrolling.
+
+#### Acceptance Criteria
+
+1. THE Marketplace_Platform SHALL use mobile-first CSS approach with base styles designed for 375 pixel viewport width (iPhone SE, smallest common device)
+2. THE Marketplace_Platform SHALL define responsive breakpoints at 640px (sm), 768px (md), 1024px (lg), and 1280px (xl) using Tailwind CSS
+3. WHEN the viewport width is less than 768 pixels, THE Marketplace_Platform SHALL display all content in single-column layout
+4. WHEN the viewport width is less than 768 pixels, THE Marketplace_Platform SHALL convert data tables to card-based layouts with key-value pairs
+5. WHEN the viewport width is less than 768 pixels, THE Marketplace_Platform SHALL hide desktop-only elements such as sidebars and multi-column layouts
+6. WHEN the viewport width is less than 768 pixels, THE Marketplace_Platform SHALL display forms in single-column layout with full-width input fields
+7. WHEN the viewport width is less than 768 pixels, THE Marketplace_Platform SHALL display action buttons as full-width elements at the bottom of forms
+8. THE Marketplace_Platform SHALL ensure all text is readable without zooming by using minimum 16 pixel font size on mobile devices
+9. THE Marketplace_Platform SHALL ensure all interactive elements (buttons, links, form inputs) have minimum 44x44 pixel touch targets as per Apple Human Interface Guidelines
+10. THE Marketplace_Platform SHALL prevent horizontal scrolling on all pages by ensuring content width does not exceed viewport width
+11. THE Marketplace_Platform SHALL optimize images for mobile by using responsive image techniques (srcset, sizes) and lazy loading
+12. THE Marketplace_Platform SHALL display dialogs and modals as full-screen overlays on mobile devices (viewport width less than 768 pixels)
+13. THE Marketplace_Platform SHALL display dialogs and modals as centered overlays with maximum 600 pixel width on desktop devices
+14. THE Marketplace_Platform SHALL provide collapsible filter drawers that slide from bottom on mobile instead of sidebar filters
+15. THE Marketplace_Platform SHALL use appropriate spacing and padding that scales with viewport size (smaller on mobile, larger on desktop)
+16. THE Marketplace_Platform SHALL test all pages on actual mobile devices (iOS and Android) before production deployment
+17. THE Marketplace_Platform SHALL ensure color contrast ratios meet WCAG 2.1 AA standards (minimum 4.5:1 for normal text, 3:1 for large text)
+18. THE Marketplace_Platform SHALL provide loading states and skeleton screens for content that loads asynchronously
+19. THE Marketplace_Platform SHALL handle poor network conditions gracefully with retry mechanisms and offline indicators
+20. THE Marketplace_Platform SHALL optimize for mobile data usage by minimizing asset sizes and implementing efficient caching strategies
+
 ## Notes
 
 - The platform uses Next.js 15 App Router architecture with Server Actions for all mutations
@@ -470,3 +519,4 @@ The requirements should be implemented in the following order to ensure dependen
 5. Order Lifecycle: OTP generation, validation logic, and escrow state machine
 6. AI Layer: RAG-based AI_Sales_Assistant integration with OpenAI
 7. Admin Platform: Admin authentication, dashboard, user/shop/order management, financial reporting, and system monitoring
+8. Navigation & Responsive Design: Mobile-first navigation system, bottom/top navigation bars, back buttons, breadcrumbs, and responsive layout implementation for all pages (Requirements 34, 35)
