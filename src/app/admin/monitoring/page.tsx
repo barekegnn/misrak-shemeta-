@@ -4,7 +4,9 @@
  * Real-time monitoring dashboard displaying system health, error logs,
  * webhook history, and Chapa API statistics with auto-refresh functionality.
  * 
- * Requirements: 33.1, 33.2
+ * Mobile-first responsive design with proper spacing and typography.
+ * 
+ * Requirements: 33.1, 33.2, 34, 35
  */
 
 'use client';
@@ -75,10 +77,14 @@ export default function SystemMonitoringPage() {
   
   if (loading && !monitoringData) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <RefreshCw className="h-12 w-12 text-blue-500 mx-auto mb-4 animate-spin" />
-          <p className="text-gray-600">Loading monitoring data...</p>
+      <div className="min-h-screen bg-gray-50 px-4 py-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <RefreshCw className="h-10 w-10 sm:h-12 sm:w-12 text-blue-500 mx-auto mb-4 animate-spin" />
+              <p className="text-sm sm:text-base text-gray-600">Loading monitoring data...</p>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -86,19 +92,23 @@ export default function SystemMonitoringPage() {
   
   if (error && !monitoringData) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            Failed to Load Monitoring Data
-          </h3>
-          <p className="text-sm text-gray-600 mb-4">{error}</p>
-          <button
-            onClick={handleManualRefresh}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Retry
-          </button>
+      <div className="min-h-screen bg-gray-50 px-4 py-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <AlertCircle className="h-10 w-10 sm:h-12 sm:w-12 text-red-500 mx-auto mb-4" />
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
+                Failed to Load Monitoring Data
+              </h3>
+              <p className="text-sm text-gray-600 mb-4">{error}</p>
+              <button
+                onClick={handleManualRefresh}
+                className="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors min-h-[44px] font-medium"
+              >
+                Retry
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -107,146 +117,148 @@ export default function SystemMonitoringPage() {
   if (!monitoringData) return null;
   
   return (
-    <div className="space-y-8">
-      {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            System Monitoring
-          </h1>
-          <p className="text-gray-600 mt-2">
-            Real-time system health and activity monitoring
-          </p>
+    <div className="min-h-screen bg-gray-50 px-4 py-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Page Header */}
+        <div className="flex flex-col gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+              System Monitoring
+            </h1>
+            <p className="text-sm sm:text-base text-gray-600 mt-2">
+              Real-time system health and activity monitoring
+            </p>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            {/* Last Refresh */}
+            <div className="text-sm text-gray-600">
+              Last refresh: {lastRefresh.toLocaleTimeString()}
+            </div>
+            
+            {/* Auto-refresh Toggle */}
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={autoRefresh}
+                onChange={(e) => setAutoRefresh(e.target.checked)}
+                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 w-5 h-5"
+              />
+              <span className="text-sm text-gray-700">Auto-refresh (30s)</span>
+            </label>
+            
+            {/* Manual Refresh Button */}
+            <button
+              onClick={handleManualRefresh}
+              disabled={loading}
+              className="flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 min-h-[44px] font-medium sm:ml-auto"
+            >
+              <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
+              <span>Refresh</span>
+            </button>
+          </div>
         </div>
         
-        <div className="flex items-center gap-4">
-          {/* Last Refresh */}
-          <div className="text-sm text-gray-600">
-            Last refresh: {lastRefresh.toLocaleTimeString()}
-          </div>
+        {/* System Health Metrics */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard
+            label="Active Users"
+            value={monitoringData.activeUsers}
+            icon={Activity}
+            colorScheme="blue"
+          />
           
-          {/* Auto-refresh Toggle */}
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={autoRefresh}
-              onChange={(e) => setAutoRefresh(e.target.checked)}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <span className="text-sm text-gray-700">Auto-refresh (30s)</span>
-          </label>
+          <StatCard
+            label="Pending Orders"
+            value={monitoringData.pendingOrders}
+            icon={Clock}
+            colorScheme="yellow"
+          />
           
-          {/* Manual Refresh Button */}
-          <button
-            onClick={handleManualRefresh}
-            disabled={loading}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
-          >
-            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-            Refresh
-          </button>
+          <StatCard
+            label="Failed Payments"
+            value={monitoringData.failedPayments}
+            icon={AlertCircle}
+            colorScheme="red"
+          />
+          
+          <StatCard
+            label="Recent Errors"
+            value={monitoringData.recentErrors.length}
+            icon={XCircle}
+            colorScheme="red"
+          />
         </div>
-      </div>
-      
-      {/* System Health Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard
-          label="Active Users"
-          value={monitoringData.activeUsers}
-          icon={Activity}
-          colorScheme="blue"
-        />
         
-        <StatCard
-          label="Pending Orders"
-          value={monitoringData.pendingOrders}
-          icon={Clock}
-          colorScheme="yellow"
-        />
-        
-        <StatCard
-          label="Failed Payments"
-          value={monitoringData.failedPayments}
-          icon={AlertCircle}
-          colorScheme="red"
-        />
-        
-        <StatCard
-          label="Recent Errors"
-          value={monitoringData.recentErrors.length}
-          icon={XCircle}
-          colorScheme="red"
-        />
-      </div>
-      
-      {/* Chapa API Statistics */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">
-          Chapa API Statistics
-        </h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <TrendingUp className="h-5 w-5 text-green-600" />
-              <span className="text-sm font-medium text-gray-700">Success Rate</span>
-            </div>
-            <div className="text-3xl font-bold text-gray-900">
-              {monitoringData.chapaStats.successRate.toFixed(1)}%
-            </div>
-          </div>
-          
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <Clock className="h-5 w-5 text-blue-600" />
-              <span className="text-sm font-medium text-gray-700">Avg Response Time</span>
-            </div>
-            <div className="text-3xl font-bold text-gray-900">
-              {monitoringData.chapaStats.averageResponseTime > 0 
-                ? `${monitoringData.chapaStats.averageResponseTime}ms`
-                : 'N/A'
-              }
-            </div>
-          </div>
-          
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <XCircle className="h-5 w-5 text-red-600" />
-              <span className="text-sm font-medium text-gray-700">Failed Requests</span>
-            </div>
-            <div className="text-3xl font-bold text-gray-900">
-              {monitoringData.chapaStats.failedRequests}
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      {/* Error Logs */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">
-            Recent Error Logs
+        {/* Chapa API Statistics */}
+        <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
+            Chapa API Statistics
           </h2>
-          <p className="text-sm text-gray-600 mt-1">
-            Last 50 errors across the platform
-          </p>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <TrendingUp className="h-5 w-5 text-green-600" />
+                <span className="text-sm font-medium text-gray-700">Success Rate</span>
+              </div>
+              <div className="text-2xl sm:text-3xl font-bold text-gray-900">
+                {monitoringData.chapaStats.successRate.toFixed(1)}%
+              </div>
+            </div>
+            
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Clock className="h-5 w-5 text-blue-600" />
+                <span className="text-sm font-medium text-gray-700">Avg Response Time</span>
+              </div>
+              <div className="text-2xl sm:text-3xl font-bold text-gray-900">
+                {monitoringData.chapaStats.averageResponseTime > 0 
+                  ? `${monitoringData.chapaStats.averageResponseTime}ms`
+                  : 'N/A'
+                }
+              </div>
+            </div>
+            
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <XCircle className="h-5 w-5 text-red-600" />
+                <span className="text-sm font-medium text-gray-700">Failed Requests</span>
+              </div>
+              <div className="text-2xl sm:text-3xl font-bold text-gray-900">
+                {monitoringData.chapaStats.failedRequests}
+              </div>
+            </div>
+          </div>
         </div>
         
-        <ErrorLogTable errorLogs={monitoringData.recentErrors} />
-      </div>
-      
-      {/* Webhook History */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">
-            Webhook History
-          </h2>
-          <p className="text-sm text-gray-600 mt-1">
-            Last 100 webhook calls from payment providers
-          </p>
+        {/* Error Logs */}
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+          <div className="px-4 py-4 sm:px-6 border-b border-gray-200">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
+              Recent Error Logs
+            </h2>
+            <p className="text-sm text-gray-600 mt-1">
+              Last 50 errors across the platform
+            </p>
+          </div>
+          
+          <ErrorLogTable errorLogs={monitoringData.recentErrors} />
         </div>
         
-        <WebhookHistoryTable webhookCalls={monitoringData.webhookHistory} />
+        {/* Webhook History */}
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+          <div className="px-4 py-4 sm:px-6 border-b border-gray-200">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
+              Webhook History
+            </h2>
+            <p className="text-sm text-gray-600 mt-1">
+              Last 100 webhook calls from payment providers
+            </p>
+          </div>
+          
+          <WebhookHistoryTable webhookCalls={monitoringData.webhookHistory} />
+        </div>
       </div>
     </div>
   );
