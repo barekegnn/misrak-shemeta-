@@ -26,19 +26,18 @@
 1. ✅ Home Page (`/`) - Already mobile-first
 2. ✅ Shops Page (`/shops`) - Responsive grid
 3. ✅ Cart Page (`/cart`) - Responsive design with touch controls
+4. ✅ Shop Products (`/shops/[shopId]`) - Mobile-first header, responsive shop info, touch-friendly buttons
+5. ✅ Checkout Page (`/checkout`) - Already mobile-first with good design
+6. ✅ Orders Page (`/orders`) - Already mobile-first with good design
+7. ✅ Order Detail (`/orders/[orderId]`) - Mobile-first timeline, responsive OTP display, touch-friendly buttons
 
 ## Remaining Work ⏳
 
 ### Runner Pages (Low Priority)
 1. ⏳ Runner Order Detail (`/runner/orders/[orderId]`) - Needs mobile-first check
 
-### Customer Pages (Medium Priority)
-1. ⏳ Products Page (`/products`) - Check ProductCatalog component
-2. ⏳ Shop Products (`/shops/[shopId]`) - Needs mobile-first check
-3. ⏳ Checkout Page (`/checkout`) - Needs mobile-first check
-4. ⏳ Orders Page (`/orders`) - Needs mobile-first check
-5. ⏳ Order Detail (`/orders/[orderId]`) - Needs mobile-first check
-6. ⏳ Shop Order Detail (`/shop/orders/[orderId]`) - Needs mobile-first check
+### Customer Pages (Low Priority)
+1. ⏳ Shop Order Detail (`/shop/orders/[orderId]`) - Needs mobile-first check
 
 ### Components (Critical)
 1. ⏳ ProductCatalog - Main product browsing component
@@ -113,6 +112,7 @@ className="block md:hidden"
 - feat: mobile-first redesign of merchant dashboard
 - feat: mobile-first redesign of merchant product management
 - feat: mobile-first redesign of merchant product forms, settings, and shop orders
+- feat: mobile-first redesign of customer shop products and order detail pages
 
 ## Requirements Addressed
 - Requirement 34: Navigation System (role-based, responsive)
