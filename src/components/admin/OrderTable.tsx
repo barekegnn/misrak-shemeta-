@@ -4,7 +4,13 @@
  * Interactive table for displaying and managing orders with search, filter,
  * and action capabilities (update status, issue refund).
  * 
- * Requirements: 31.1, 31.3
+ * Mobile-first responsive design:
+ * - Card layout on mobile (< 768px)
+ * - Table layout on desktop (>= 768px)
+ * - Collapsible filter drawer on mobile
+ * - Touch-friendly action buttons (44x44px)
+ * 
+ * Requirements: 31.1, 31.3, 34, 35
  */
 
 'use client';
@@ -29,6 +35,7 @@ import {
 } from 'lucide-react';
 import { ConfirmDialog } from './ConfirmDialog';
 import { InputDialog } from './InputDialog';
+import { MobileDrawer } from '@/components/ui/MobileDrawer';
 
 interface OrderTableProps {
   initialOrders: Order[];
@@ -57,6 +64,7 @@ export function OrderTable({
   const [filterEndDate, setFilterEndDate] = useState('');
   const [sortBy, setSortBy] = useState<'date' | 'amount'>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   
   // Action state
   const [actionLoading, setActionLoading] = useState<string | null>(null);
@@ -77,6 +85,7 @@ export function OrderTable({
   
   // Apply filters and fetch orders
   const applyFilters = () => {
+    setIsFilterOpen(false); // Close drawer on mobile
     startTransition(async () => {
       const filters: OrderFilters = {};
       
@@ -120,6 +129,7 @@ export function OrderTable({
     setFilterEndDate('');
     setSortBy('date');
     setSortOrder('desc');
+    setIsFilterOpen(false); // Close drawer on mobile
     startTransition(async () => {
       const result = await getOrderList(adminTelegramId, undefined, 1, pageSize);
       if (result.success && result.data) {

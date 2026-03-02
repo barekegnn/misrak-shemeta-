@@ -4,7 +4,13 @@
  * Interactive table for displaying and managing users with search, filter,
  * and action capabilities (suspend, activate, change role).
  * 
- * Requirements: 28.1, 28.3
+ * Mobile-first responsive design:
+ * - Card layout on mobile (< 768px)
+ * - Table layout on desktop (>= 768px)
+ * - Collapsible filter drawer on mobile
+ * - Touch-friendly action buttons (44x44px)
+ * 
+ * Requirements: 28.1, 28.3, 34, 35
  */
 
 'use client';
@@ -25,10 +31,12 @@ import {
   UserCog,
   ChevronLeft,
   ChevronRight,
-  AlertCircle
+  AlertCircle,
+  X
 } from 'lucide-react';
 import { ConfirmDialog } from './ConfirmDialog';
 import { InputDialog } from './InputDialog';
+import { MobileDrawer } from '@/components/ui/MobileDrawer';
 
 interface UserTableProps {
   initialUsers: User[];
@@ -55,6 +63,7 @@ export function UserTable({
   const [filterRole, setFilterRole] = useState<string>('');
   const [filterStatus, setFilterStatus] = useState<string>('');
   const [filterLocation, setFilterLocation] = useState<string>('');
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   
   // Action state
   const [actionLoading, setActionLoading] = useState<string | null>(null);
@@ -68,6 +77,7 @@ export function UserTable({
   
   // Apply filters and fetch users
   const applyFilters = () => {
+    setIsFilterOpen(false); // Close drawer on mobile
     startTransition(async () => {
       const filters: UserFilters = {};
       
@@ -93,6 +103,7 @@ export function UserTable({
     setFilterRole('');
     setFilterStatus('');
     setFilterLocation('');
+    setIsFilterOpen(false); // Close drawer on mobile
     startTransition(async () => {
       const result = await getUserList(adminTelegramId, undefined, 1, pageSize);
       if (result.success && result.data) {
@@ -212,9 +223,100 @@ export function UserTable({
   
   const totalPages = Math.ceil(total / pageSize);
   
-  return (
+  // Filter form component (reusable for both mobile drawer and desktop)
+  const FilterForm = () => (
     <div className="space-y-4">
-      {/* Dialogs */}
+      {/* Search by Telegram ID */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Search Telegram ID
+        </label>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <input
+            type="text"
+            value={searchTelegramId}
+            onChange={(e) => setSearchTelegramId(e.target.value)}
+            placeholder="Enter Telegram ID"
+            className="w-full pl-10 pr-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+      </div>
+      
+      {/* Filter by Role */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Role
+        </label>
+        <select
+          value={filterRole}
+          onChange={(e) => setFilterRole(e.target.value)}
+          className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        >
+          <option value="">All Roles</option>
+          <option value="STUDENT">Student</option>
+          <option value="MERCHANT">Merchant</option>
+          <option value="RUNNER">Runner</option>
+          <option value="ADMIN">Admin</option>
+        </select>
+      </div>
+      
+      {/* Filter by Status */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Status
+        </label>
+        <select
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+          className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        >
+          <option value="">All Status</option>
+          <option value="active">Active</option>
+          <option value="suspended">Suspended</option>
+        </select>
+      </div>
+      
+      {/* Filter by Location */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Home Location
+        </label>
+        <select
+          value={filterLocation}
+          onChange={(e) => setFilterLocation(e.target.value)}
+          className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        >
+          <option value="">All Locations</option>
+          <option value="Haramaya_Main">Haramaya Main</option>
+          <option value="Harar_Campus">Harar Campus</option>
+          <option value="DDU">DDU</option>
+        </select>
+      </div>
+      
+      {/* Action Buttons */}
+      <div className="flex gap-3 pt-2">
+        <button
+          onClick={applyFilters}
+          disabled={isPending}
+          className="flex-1 bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 font-medium min-h-[44px]"
+        >
+          <Filter className="h-5 w-5" />
+          Apply Filters
+        </button>
+        <button
+          onClick={clearFilters}
+          disabled={isPending}
+          className="px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 font-medium min-h-[44px]"
+        >
+          Clear
+        </button>
+      </div>
+    </div>
+  );
+  
+  return (
+    <div className="space-y-4">{/* Dialogs */}
       <InputDialog
         isOpen={suspendDialog.isOpen}
         onClose={() => setSuspendDialog({ isOpen: false, userId: '' })}
@@ -255,112 +357,140 @@ export function UserTable({
       {/* Action Feedback */}
       {actionSuccess && (
         <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg flex items-center gap-2">
-          <CheckCircle className="h-5 w-5" />
-          {actionSuccess}
+          <CheckCircle className="h-5 w-5 flex-shrink-0" />
+          <span className="text-sm sm:text-base">{actionSuccess}</span>
         </div>
       )}
       
       {actionError && (
         <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg flex items-center gap-2">
-          <AlertCircle className="h-5 w-5" />
-          {actionError}
+          <AlertCircle className="h-5 w-5 flex-shrink-0" />
+          <span className="text-sm sm:text-base">{actionError}</span>
         </div>
       )}
       
-      {/* Search and Filters */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
+      {/* Mobile Filter Button */}
+      <div className="md:hidden">
+        <button
+          onClick={() => setIsFilterOpen(true)}
+          className="w-full bg-white border border-gray-300 text-gray-700 px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 font-medium min-h-[44px]"
+        >
+          <Filter className="h-5 w-5" />
+          Filters & Search
+        </button>
+      </div>
+      
+      {/* Mobile Filter Drawer */}
+      <MobileDrawer
+        isOpen={isFilterOpen}
+        onClose={() => setIsFilterOpen(false)}
+        title="Filters & Search"
+      >
+        <FilterForm />
+      </MobileDrawer>
+      
+      {/* Desktop Filters */}
+      <div className="hidden md:block bg-white rounded-lg border border-gray-200 p-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-          {/* Search by Telegram ID */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Search Telegram ID
-            </label>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input
-                type="text"
-                value={searchTelegramId}
-                onChange={(e) => setSearchTelegramId(e.target.value)}
-                placeholder="Enter Telegram ID"
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-          
-          {/* Filter by Role */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Role
-            </label>
-            <select
-              value={filterRole}
-              onChange={(e) => setFilterRole(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="">All Roles</option>
-              <option value="STUDENT">Student</option>
-              <option value="MERCHANT">Merchant</option>
-              <option value="RUNNER">Runner</option>
-              <option value="ADMIN">Admin</option>
-            </select>
-          </div>
-          
-          {/* Filter by Status */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Status
-            </label>
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="">All Status</option>
-              <option value="active">Active</option>
-              <option value="suspended">Suspended</option>
-            </select>
-          </div>
-          
-          {/* Filter by Location */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Home Location
-            </label>
-            <select
-              value={filterLocation}
-              onChange={(e) => setFilterLocation(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="">All Locations</option>
-              <option value="Haramaya_Main">Haramaya Main</option>
-              <option value="Harar_Campus">Harar Campus</option>
-              <option value="DDU">DDU</option>
-            </select>
-          </div>
-          
-          {/* Action Buttons */}
-          <div className="flex items-end gap-2">
-            <button
-              onClick={applyFilters}
-              disabled={isPending}
-              className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-            >
-              <Filter className="h-4 w-4" />
-              Apply
-            </button>
-            <button
-              onClick={clearFilters}
-              disabled={isPending}
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
-            >
-              Clear
-            </button>
-          </div>
+          <FilterForm />
         </div>
       </div>
       
-      {/* Users Table */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+      {/* Mobile Card Layout */}
+      <div className="md:hidden space-y-3">
+        {users.length === 0 ? (
+          <div className="bg-white rounded-lg border border-gray-200 px-4 py-8 text-center text-gray-500">
+            No users found
+          </div>
+        ) : (
+          users.map((user) => (
+            <div key={user.id} className="bg-white rounded-lg border border-gray-200 p-4 space-y-3">
+              {/* User Header */}
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium text-gray-900 truncate">
+                    {user.telegramId}
+                  </div>
+                  <div className="text-sm text-gray-500 mt-0.5">
+                    {user.createdAt instanceof Date 
+                      ? user.createdAt.toISOString().split('T')[0]
+                      : new Date(user.createdAt).toISOString().split('T')[0]
+                    }
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  {user.suspended ? (
+                    <button
+                      onClick={() => setActivateDialog({ isOpen: true, userId: user.id })}
+                      disabled={actionLoading === user.id}
+                      className="text-green-600 hover:text-green-900 disabled:opacity-50 p-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                      title="Activate User"
+                      aria-label="Activate User"
+                    >
+                      <CheckCircle className="h-6 w-6" />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => setSuspendDialog({ isOpen: true, userId: user.id })}
+                      disabled={actionLoading === user.id}
+                      className="text-red-600 hover:text-red-900 disabled:opacity-50 p-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                      title="Suspend User"
+                      aria-label="Suspend User"
+                    >
+                      <Ban className="h-6 w-6" />
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setRoleDialog({ isOpen: true, userId: user.id, currentRole: user.role })}
+                    disabled={actionLoading === user.id}
+                    className="text-blue-600 hover:text-blue-900 disabled:opacity-50 p-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                    title="Change Role"
+                    aria-label="Change Role"
+                  >
+                    <UserCog className="h-6 w-6" />
+                  </button>
+                </div>
+              </div>
+              
+              {/* User Details */}
+              <div className="grid grid-cols-2 gap-3 pt-3 border-t border-gray-100">
+                <div>
+                  <div className="text-xs text-gray-500 mb-1">Role</div>
+                  <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
+                    user.role === 'ADMIN' ? 'bg-purple-100 text-purple-800' :
+                    user.role === 'SHOP_OWNER' ? 'bg-blue-100 text-blue-800' :
+                    user.role === 'RUNNER' ? 'bg-green-100 text-green-800' :
+                    'bg-gray-100 text-gray-800'
+                  }`}>
+                    {user.role}
+                  </span>
+                </div>
+                <div>
+                  <div className="text-xs text-gray-500 mb-1">Status</div>
+                  {user.suspended ? (
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                      Suspended
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      Active
+                    </span>
+                  )}
+                </div>
+                <div className="col-span-2">
+                  <div className="text-xs text-gray-500 mb-1">Home Location</div>
+                  <div className="text-sm text-gray-900">
+                    {user.homeLocation?.replace('_', ' ') || 'N/A'}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+      
+      {/* Desktop Table Layout */}
+      <div className="hidden md:block bg-white rounded-lg border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
@@ -465,35 +595,39 @@ export function UserTable({
             </tbody>
           </table>
         </div>
-        
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-            <div className="text-sm text-gray-600">
+      </div>
+      
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="bg-white rounded-lg border border-gray-200 px-4 py-3 sm:px-6">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="text-sm text-gray-600 text-center sm:text-left">
               Showing {((page - 1) * pageSize) + 1} to {Math.min(page * pageSize, total)} of {total} users
             </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => goToPage(page - 1)}
                 disabled={page === 1 || isPending}
-                className="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed min-w-[44px] min-h-[44px] flex items-center justify-center"
+                aria-label="Previous page"
               >
-                <ChevronLeft className="h-4 w-4" />
+                <ChevronLeft className="h-5 w-5" />
               </button>
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-gray-600 px-2">
                 Page {page} of {totalPages}
               </span>
               <button
                 onClick={() => goToPage(page + 1)}
                 disabled={page === totalPages || isPending}
-                className="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed min-w-[44px] min-h-[44px] flex items-center justify-center"
+                aria-label="Next page"
               >
-                <ChevronRight className="h-4 w-4" />
+                <ChevronRight className="h-5 w-5" />
               </button>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
