@@ -266,271 +266,273 @@ export default function NewProduct() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      {/* Header */}
-      <div className="mb-8">
-        <Link href="/merchant/products">
-          <Button variant="ghost" size="sm" className="mb-4">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Products
-          </Button>
-        </Link>
-        <div className="flex items-center gap-3">
-          <div className="inline-flex items-center justify-center w-12 h-12 bg-primary/10 rounded-full">
-            <Package className="w-6 h-6 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Add New Product</h1>
-            <p className="text-gray-600">Create a new product listing for your shop</p>
+    <div className="min-h-screen bg-gray-50 px-4 py-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto space-y-6">
+        {/* Header */}
+        <div>
+          <Link href="/merchant/products">
+            <Button variant="ghost" size="sm" className="mb-4 min-h-[44px]">
+              <ArrowLeft className="w-5 h-5 mr-2" />
+              Back to Products
+            </Button>
+          </Link>
+          <div className="flex items-start gap-3">
+            <div className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-full flex-shrink-0">
+              <Package className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Add New Product</h1>
+              <p className="text-sm sm:text-base text-gray-600 mt-1">Create a new product listing for your shop</p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Error Alert */}
-        {error && (
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Error Alert */}
+          {error && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-5 w-5" />
+              <AlertDescription className="text-sm sm:text-base">{error}</AlertDescription>
+            </Alert>
+          )}
 
-        {/* Product Images - REQUIRED (Requirement 4.1, 13.3) */}
-        <Card className="border-2 border-dashed border-primary/30 bg-primary/5">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <ImageIcon className="w-5 h-5" />
-              Product Images
-              <span className="text-red-500 text-sm">*</span>
-            </CardTitle>
-            <CardDescription>
-              Upload 1-5 high-quality images. First image will be the main product photo.
-              <br />
-              <span className="text-xs text-gray-500">
-                Supported: JPEG, PNG, WebP • Max 5MB per image
-              </span>
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {/* Image Previews */}
-            {imagePreviews.length > 0 && (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-4">
-                {imagePreviews.map((preview, index) => (
-                  <div key={index} className="relative group">
-                    <div className="aspect-square rounded-lg overflow-hidden border-2 border-gray-200">
-                      <img
-                        src={preview}
-                        alt={`Preview ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    {index === 0 && (
-                      <div className="absolute top-2 left-2 bg-primary text-white text-xs px-2 py-1 rounded">
-                        Main
+          {/* Product Images - REQUIRED (Requirement 4.1, 13.3) */}
+          <Card className="border-2 border-dashed border-primary/30 bg-primary/5">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <ImageIcon className="w-5 h-5" />
+                Product Images
+                <span className="text-red-500 text-sm">*</span>
+              </CardTitle>
+              <CardDescription className="text-sm">
+                Upload 1-5 high-quality images. First image will be the main product photo.
+                <br />
+                <span className="text-xs text-gray-500">
+                  Supported: JPEG, PNG, WebP • Max 5MB per image
+                </span>
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {/* Image Previews */}
+              {imagePreviews.length > 0 && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-4">
+                  {imagePreviews.map((preview, index) => (
+                    <div key={index} className="relative group">
+                      <div className="aspect-square rounded-lg overflow-hidden border-2 border-gray-200">
+                        <img
+                          src={preview}
+                          alt={`Preview ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => removeImage(index)}
-                      className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                      disabled={loading}
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
+                      {index === 0 && (
+                        <div className="absolute top-1 left-1 sm:top-2 sm:left-2 bg-primary text-white text-xs px-1.5 py-0.5 sm:px-2 sm:py-1 rounded">
+                          Main
+                        </div>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => removeImage(index)}
+                        className="absolute top-1 right-1 sm:top-2 sm:right-2 bg-red-500 text-white p-1.5 sm:p-1 rounded-full opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity min-w-[32px] min-h-[32px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
+                        disabled={loading}
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
               </div>
             )}
 
-            {/* Upload Button */}
-            {formData.images.length < 5 && (
-              <div>
-                <input
-                  type="file"
-                  id="images"
-                  accept="image/jpeg,image/png,image/webp"
-                  multiple
-                  onChange={handleImageSelect}
-                  className="hidden"
-                  disabled={loading || uploadingImages}
-                />
-                <label htmlFor="images">
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-primary hover:bg-primary/5 transition-colors">
-                    {uploadingImages ? (
-                      <Loader2 className="w-12 h-12 mx-auto mb-3 animate-spin text-primary" />
-                    ) : (
-                      <Upload className="w-12 h-12 mx-auto mb-3 text-gray-400" />
-                    )}
-                    <p className="text-sm font-medium text-gray-700 mb-1">
-                      {uploadingImages ? 'Processing images...' : 'Click to upload images'}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {formData.images.length === 0
-                        ? 'Upload 1-5 images (at least 1 required)'
-                        : `${formData.images.length}/5 images uploaded`}
-                    </p>
-                  </div>
-                </label>
-              </div>
-            )}
+              {/* Upload Button */}
+              {formData.images.length < 5 && (
+                <div>
+                  <input
+                    type="file"
+                    id="images"
+                    accept="image/jpeg,image/png,image/webp"
+                    multiple
+                    onChange={handleImageSelect}
+                    className="hidden"
+                    disabled={loading || uploadingImages}
+                  />
+                  <label htmlFor="images">
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 sm:p-8 text-center cursor-pointer hover:border-primary hover:bg-primary/5 transition-colors active:bg-primary/10">
+                      {uploadingImages ? (
+                        <Loader2 className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-3 animate-spin text-primary" />
+                      ) : (
+                        <Upload className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-3 text-gray-400" />
+                      )}
+                      <p className="text-sm sm:text-base font-medium text-gray-700 mb-1">
+                        {uploadingImages ? 'Processing images...' : 'Tap to upload images'}
+                      </p>
+                      <p className="text-xs sm:text-sm text-gray-500">
+                        {formData.images.length === 0
+                          ? 'Upload 1-5 images (at least 1 required)'
+                          : `${formData.images.length}/5 images uploaded`}
+                      </p>
+                    </div>
+                  </label>
+                </div>
+              )}
 
-            {formData.images.length === 5 && (
-              <Alert className="bg-blue-50 border-blue-200">
-                <CheckCircle2 className="h-4 w-4 text-blue-600" />
-                <AlertDescription className="text-blue-800">
-                  Maximum images reached (5/5). Remove an image to add a different one.
-                </AlertDescription>
-              </Alert>
-            )}
-          </CardContent>
-        </Card>
+              {formData.images.length === 5 && (
+                <Alert className="bg-blue-50 border-blue-200">
+                  <CheckCircle2 className="h-5 w-5 text-blue-600" />
+                  <AlertDescription className="text-sm sm:text-base text-blue-800">
+                    Maximum images reached (5/5). Remove an image to add a different one.
+                  </AlertDescription>
+                </Alert>
+              )}
+            </CardContent>
+          </Card>
 
-        {/* Product Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Product Information</CardTitle>
-            <CardDescription>
-              Provide detailed information about your product
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Product Name */}
-            <div className="space-y-2">
-              <Label htmlFor="name">
-                Product Name <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="e.g., Wireless Headphones"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                required
-                disabled={loading}
-                className="text-base"
-                maxLength={200}
-              />
-              <p className="text-xs text-gray-500">{formData.name.length}/200 characters</p>
-            </div>
-
-            {/* Description */}
-            <div className="space-y-2">
-              <Label htmlFor="description">
-                Description <span className="text-red-500">*</span>
-              </Label>
-              <textarea
-                id="description"
-                placeholder="Describe your product in detail..."
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                required
-                disabled={loading}
-                className="w-full min-h-[120px] px-3 py-2 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                maxLength={1000}
-              />
-              <p className="text-xs text-gray-500">{formData.description.length}/1000 characters</p>
-            </div>
-
-            {/* Price and Stock Row */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Price */}
+          {/* Product Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base sm:text-lg">Product Information</CardTitle>
+              <CardDescription className="text-sm">
+                Provide detailed information about your product
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Product Name */}
               <div className="space-y-2">
-                <Label htmlFor="price">
-                  Price (ETB) <span className="text-red-500">*</span>
+                <Label htmlFor="name" className="text-sm sm:text-base">
+                  Product Name <span className="text-red-500">*</span>
                 </Label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
-                    ETB
-                  </span>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="e.g., Wireless Headphones"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  required
+                  disabled={loading}
+                  className="text-base min-h-[44px]"
+                  maxLength={200}
+                />
+                <p className="text-xs text-gray-500">{formData.name.length}/200 characters</p>
+              </div>
+
+              {/* Description */}
+              <div className="space-y-2">
+                <Label htmlFor="description" className="text-sm sm:text-base">
+                  Description <span className="text-red-500">*</span>
+                </Label>
+                <textarea
+                  id="description"
+                  placeholder="Describe your product in detail..."
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  required
+                  disabled={loading}
+                  className="w-full min-h-[120px] px-3 py-2 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary resize-y"
+                  maxLength={1000}
+                />
+                <p className="text-xs text-gray-500">{formData.description.length}/1000 characters</p>
+              </div>
+
+              {/* Price and Stock Row */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Price */}
+                <div className="space-y-2">
+                  <Label htmlFor="price" className="text-sm sm:text-base">
+                    Price (ETB) <span className="text-red-500">*</span>
+                  </Label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">
+                      ETB
+                    </span>
+                    <Input
+                      id="price"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      placeholder="0.00"
+                      value={formData.price}
+                      onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                      required
+                      disabled={loading}
+                      className="text-base pl-14 min-h-[44px]"
+                    />
+                  </div>
+                </div>
+
+                {/* Stock */}
+                <div className="space-y-2">
+                  <Label htmlFor="stock" className="text-sm sm:text-base">
+                    Stock Quantity <span className="text-red-500">*</span>
+                  </Label>
                   <Input
-                    id="price"
+                    id="stock"
                     type="number"
-                    step="0.01"
                     min="0"
-                    placeholder="0.00"
-                    value={formData.price}
-                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                    placeholder="0"
+                    value={formData.stock}
+                    onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
                     required
                     disabled={loading}
-                    className="text-base pl-14"
+                    className="text-base min-h-[44px]"
                   />
                 </div>
               </div>
 
-              {/* Stock */}
+              {/* Category */}
               <div className="space-y-2">
-                <Label htmlFor="stock">
-                  Stock Quantity <span className="text-red-500">*</span>
+                <Label htmlFor="category" className="text-sm sm:text-base">
+                  Category <span className="text-red-500">*</span>
                 </Label>
                 <Input
-                  id="stock"
-                  type="number"
-                  min="0"
-                  placeholder="0"
-                  value={formData.stock}
-                  onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+                  id="category"
+                  type="text"
+                  placeholder="e.g., Electronics, Books, Clothing"
+                  value={formData.category}
+                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                   required
                   disabled={loading}
-                  className="text-base"
+                  className="text-base min-h-[44px]"
+                  maxLength={50}
                 />
+                <p className="text-xs text-gray-500">
+                  Choose a category that best describes your product
+                </p>
               </div>
-            </div>
+            </CardContent>
+          </Card>
 
-            {/* Category */}
-            <div className="space-y-2">
-              <Label htmlFor="category">
-                Category <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="category"
-                type="text"
-                placeholder="e.g., Electronics, Books, Clothing"
-                value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                required
-                disabled={loading}
-                className="text-base"
-                maxLength={50}
-              />
-              <p className="text-xs text-gray-500">
-                Choose a category that best describes your product
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Action Buttons */}
-        <div className="flex gap-3">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.push('/merchant/products')}
-            disabled={loading}
-            className="flex-1"
-            size="lg"
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            disabled={loading || uploadingImages || formData.images.length === 0}
-            className="flex-1"
-            size="lg"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Creating Product...
-              </>
-            ) : (
-              <>
-                <Package className="w-4 h-4 mr-2" />
-                Create Product
-              </>
-            )}
-          </Button>
-        </div>
-      </form>
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => router.push('/merchant/products')}
+              disabled={loading}
+              className="w-full sm:flex-1 min-h-[44px]"
+              size="lg"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={loading || uploadingImages || formData.images.length === 0}
+              className="w-full sm:flex-1 min-h-[44px]"
+              size="lg"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  Creating Product...
+                </>
+              ) : (
+                <>
+                  <Package className="w-5 h-5 mr-2" />
+                  Create Product
+                </>
+              )}
+            </Button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

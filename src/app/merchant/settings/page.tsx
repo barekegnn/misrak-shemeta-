@@ -151,189 +151,191 @@ export default function ShopSettings() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-2xl">
-      {/* Header */}
-      <div className="mb-8">
-        <Link href="/merchant">
-          <Button variant="ghost" size="sm" className="mb-4">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Dashboard
-          </Button>
-        </Link>
-        <div className="flex items-center gap-3">
-          <div className="inline-flex items-center justify-center w-12 h-12 bg-primary/10 rounded-full">
-            <Store className="w-6 h-6 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Shop Settings</h1>
-            <p className="text-gray-600">Update your shop information</p>
+    <div className="min-h-screen bg-gray-50 px-4 py-4 sm:px-6 lg:px-8">
+      <div className="max-w-2xl mx-auto space-y-6">
+        {/* Header */}
+        <div>
+          <Link href="/merchant">
+            <Button variant="ghost" size="sm" className="mb-4 min-h-[44px]">
+              <ArrowLeft className="w-5 h-5 mr-2" />
+              Back to Dashboard
+            </Button>
+          </Link>
+          <div className="flex items-start gap-3">
+            <div className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-full flex-shrink-0">
+              <Store className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Shop Settings</h1>
+              <p className="text-sm sm:text-base text-gray-600 mt-1">Update your shop information</p>
+            </div>
           </div>
         </div>
+
+        {/* Settings Form */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base sm:text-lg">Shop Information</CardTitle>
+            <CardDescription className="text-sm">
+              Keep your shop details up to date
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Success Alert */}
+              {success && (
+                <Alert className="bg-green-50 border-green-200">
+                  <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  <AlertDescription className="text-sm sm:text-base text-green-800">
+                    Shop updated successfully!
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {/* Error Alert */}
+              {error && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-5 w-5" />
+                  <AlertDescription className="text-sm sm:text-base">{error}</AlertDescription>
+                </Alert>
+              )}
+
+              {/* Shop Name */}
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-sm sm:text-base">
+                  Shop Name <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="e.g., Harar Tech Hub"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  required
+                  maxLength={100}
+                  disabled={saving}
+                  className="text-base min-h-[44px]"
+                />
+              </div>
+
+              {/* Description */}
+              <div className="space-y-2">
+                <Label htmlFor="description" className="text-sm sm:text-base">Shop Description</Label>
+                <textarea
+                  id="description"
+                  placeholder="Describe your shop and what you sell..."
+                  value={formData.description}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
+                  disabled={saving}
+                  className="w-full min-h-[100px] px-3 py-2 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary resize-y"
+                  maxLength={500}
+                />
+                <p className="text-xs sm:text-sm text-gray-500">
+                  {formData.description.length}/500 characters
+                </p>
+              </div>
+
+              {/* City Selection */}
+              <div className="space-y-3">
+                <Label className="text-sm sm:text-base">
+                  Shop Location <span className="text-red-500">*</span>
+                </Label>
+                <RadioGroup
+                  value={formData.city}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, city: value as 'Harar' | 'Dire_Dawa' })
+                  }
+                  disabled={saving}
+                >
+                  <div className="flex items-center space-x-3 p-3 sm:p-4 border rounded-lg hover:bg-gray-50 cursor-pointer active:bg-gray-100">
+                    <RadioGroupItem value="Harar" id="harar" className="min-w-[20px] min-h-[20px]" />
+                    <Label htmlFor="harar" className="flex-1 cursor-pointer">
+                      <div className="font-medium text-sm sm:text-base">Harar</div>
+                      <div className="text-xs sm:text-sm text-gray-500">
+                        Serve customers in Harar and Harar Campus
+                      </div>
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-3 p-3 sm:p-4 border rounded-lg hover:bg-gray-50 cursor-pointer active:bg-gray-100">
+                    <RadioGroupItem value="Dire_Dawa" id="dire-dawa" className="min-w-[20px] min-h-[20px]" />
+                    <Label htmlFor="dire-dawa" className="flex-1 cursor-pointer">
+                      <div className="font-medium text-sm sm:text-base">Dire Dawa</div>
+                      <div className="text-xs sm:text-sm text-gray-500">
+                        Serve customers in Dire Dawa and DDU
+                      </div>
+                    </Label>
+                  </div>
+                </RadioGroup>
+              </div>
+
+              {/* Contact Phone */}
+              <div className="space-y-2">
+                <Label htmlFor="phone" className="text-sm sm:text-base">
+                  Contact Phone <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  placeholder="+251912345678 or 0912345678"
+                  value={formData.contactPhone}
+                  onChange={(e) =>
+                    setFormData({ ...formData, contactPhone: e.target.value })
+                  }
+                  required
+                  disabled={saving}
+                  className="text-base min-h-[44px]"
+                />
+              </div>
+
+              {/* Shop ID (Read-only) */}
+              <div className="space-y-2">
+                <Label htmlFor="shopId" className="text-sm sm:text-base">Shop ID</Label>
+                <Input
+                  id="shopId"
+                  type="text"
+                  value={shop?.id || ''}
+                  disabled
+                  className="text-base bg-gray-50 min-h-[44px]"
+                />
+                <p className="text-xs sm:text-sm text-gray-500">
+                  Your unique shop identifier (cannot be changed)
+                </p>
+              </div>
+
+              {/* Submit Button */}
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => router.push('/merchant')}
+                  disabled={saving}
+                  className="w-full sm:flex-1 min-h-[44px]"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={saving}
+                  className="w-full sm:flex-1 min-h-[44px]"
+                >
+                  {saving ? (
+                    <>
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    'Save Changes'
+                  )}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
       </div>
-
-      {/* Settings Form */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Shop Information</CardTitle>
-          <CardDescription>
-            Keep your shop details up to date
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Success Alert */}
-            {success && (
-              <Alert className="bg-green-50 border-green-200">
-                <CheckCircle2 className="h-4 w-4 text-green-600" />
-                <AlertDescription className="text-green-800">
-                  Shop updated successfully!
-                </AlertDescription>
-              </Alert>
-            )}
-
-            {/* Error Alert */}
-            {error && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-
-            {/* Shop Name */}
-            <div className="space-y-2">
-              <Label htmlFor="name">
-                Shop Name <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="e.g., Harar Tech Hub"
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
-                required
-                maxLength={100}
-                disabled={saving}
-                className="text-base"
-              />
-            </div>
-
-            {/* Description */}
-            <div className="space-y-2">
-              <Label htmlFor="description">Shop Description</Label>
-              <textarea
-                id="description"
-                placeholder="Describe your shop and what you sell..."
-                value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
-                disabled={saving}
-                className="w-full min-h-[100px] px-3 py-2 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                maxLength={500}
-              />
-              <p className="text-sm text-gray-500">
-                {formData.description.length}/500 characters
-              </p>
-            </div>
-
-            {/* City Selection */}
-            <div className="space-y-3">
-              <Label>
-                Shop Location <span className="text-red-500">*</span>
-              </Label>
-              <RadioGroup
-                value={formData.city}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, city: value as 'Harar' | 'Dire_Dawa' })
-                }
-                disabled={saving}
-              >
-                <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-gray-50 cursor-pointer">
-                  <RadioGroupItem value="Harar" id="harar" />
-                  <Label htmlFor="harar" className="flex-1 cursor-pointer">
-                    <div className="font-medium">Harar</div>
-                    <div className="text-sm text-gray-500">
-                      Serve customers in Harar and Harar Campus
-                    </div>
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-gray-50 cursor-pointer">
-                  <RadioGroupItem value="Dire_Dawa" id="dire-dawa" />
-                  <Label htmlFor="dire-dawa" className="flex-1 cursor-pointer">
-                    <div className="font-medium">Dire Dawa</div>
-                    <div className="text-sm text-gray-500">
-                      Serve customers in Dire Dawa and DDU
-                    </div>
-                  </Label>
-                </div>
-              </RadioGroup>
-            </div>
-
-            {/* Contact Phone */}
-            <div className="space-y-2">
-              <Label htmlFor="phone">
-                Contact Phone <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="phone"
-                type="tel"
-                placeholder="+251912345678 or 0912345678"
-                value={formData.contactPhone}
-                onChange={(e) =>
-                  setFormData({ ...formData, contactPhone: e.target.value })
-                }
-                required
-                disabled={saving}
-                className="text-base"
-              />
-            </div>
-
-            {/* Shop ID (Read-only) */}
-            <div className="space-y-2">
-              <Label htmlFor="shopId">Shop ID</Label>
-              <Input
-                id="shopId"
-                type="text"
-                value={shop?.id || ''}
-                disabled
-                className="text-base bg-gray-50"
-              />
-              <p className="text-sm text-gray-500">
-                Your unique shop identifier (cannot be changed)
-              </p>
-            </div>
-
-            {/* Submit Button */}
-            <div className="flex gap-3">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => router.push('/merchant')}
-                disabled={saving}
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disabled={saving}
-                className="flex-1"
-              >
-                {saving ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Saving...
-                  </>
-                ) : (
-                  'Save Changes'
-                )}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
     </div>
   );
 }

@@ -1,6 +1,9 @@
 /**
  * Product Management Page for Merchants
- * Requirements: 1.5, 4.4, 4.5
+ * 
+ * Mobile-first responsive design with proper spacing and typography.
+ * 
+ * Requirements: 1.5, 4.4, 4.5, 34, 35
  */
 'use client';
 
@@ -115,186 +118,190 @@ export default function ProductManagement() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      <div className="flex items-center justify-center min-h-screen bg-gray-50 px-4">
+        <Loader2 className="w-8 h-8 sm:w-10 sm:h-10 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Product Management</h1>
-          <p className="text-gray-600 mt-1">
-            Manage your product listings ({products.length} total)
-          </p>
-        </div>
-        <Link href="/merchant/products/new">
-          <Button size="lg">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Product
-          </Button>
-        </Link>
-      </div>
-
-      {/* Error Alert */}
-      {error && (
-        <Alert variant="destructive" className="mb-6">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-
-      {/* Search Bar */}
-      <Card className="mb-6">
-        <CardContent className="pt-6">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <Input
-              type="text"
-              placeholder="Search products by name, description, or category..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 text-base"
-            />
+    <div className="min-h-screen bg-gray-50 px-4 py-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Product Management</h1>
+            <p className="text-sm sm:text-base text-gray-600 mt-1">
+              Manage your product listings ({products.length} total)
+            </p>
           </div>
-        </CardContent>
-      </Card>
+          <Link href="/merchant/products/new">
+            <Button size="lg" className="w-full sm:w-auto min-h-[44px]">
+              <Plus className="w-5 h-5 mr-2" />
+              Add Product
+            </Button>
+          </Link>
+        </div>
 
-      {/* Products List */}
-      {filteredProducts.length === 0 ? (
+        {/* Error Alert */}
+        {error && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-5 w-5" />
+            <AlertDescription className="text-sm sm:text-base">{error}</AlertDescription>
+          </Alert>
+        )}
+
+        {/* Search Bar */}
         <Card>
-          <CardContent className="py-16">
-            <div className="text-center text-gray-500">
-              <Package className="w-16 h-16 mx-auto mb-4 opacity-50" />
-              {searchQuery ? (
-                <>
-                  <p className="text-lg font-medium">No products found</p>
-                  <p className="text-sm mt-1">
-                    Try adjusting your search query
-                  </p>
-                </>
-              ) : (
-                <>
-                  <p className="text-lg font-medium">No products yet</p>
-                  <p className="text-sm mt-1 mb-4">
-                    Start by adding your first product
-                  </p>
-                  <Link href="/merchant/products/new">
-                    <Button>
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add Your First Product
-                    </Button>
-                  </Link>
-                </>
-              )}
+          <CardContent className="pt-6">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Input
+                type="text"
+                placeholder="Search products by name, description, or category..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 text-base py-3 min-h-[44px]"
+              />
             </div>
           </CardContent>
         </Card>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProducts.map((product) => (
-            <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-              {/* Product Image */}
-              <div className="aspect-square bg-gray-100 relative">
-                {product.images && product.images.length > 0 ? (
-                  <img
-                    src={product.images[0]}
-                    alt={product.name}
-                    className="w-full h-full object-cover"
-                  />
+
+        {/* Products List */}
+        {filteredProducts.length === 0 ? (
+          <Card>
+            <CardContent className="py-12 sm:py-16">
+              <div className="text-center text-gray-500">
+                <Package className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 opacity-50" />
+                {searchQuery ? (
+                  <>
+                    <p className="text-base sm:text-lg font-medium">No products found</p>
+                    <p className="text-sm mt-1">
+                      Try adjusting your search query
+                    </p>
+                  </>
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <Package className="w-16 h-16 text-gray-300" />
-                  </div>
+                  <>
+                    <p className="text-base sm:text-lg font-medium">No products yet</p>
+                    <p className="text-sm mt-1 mb-4">
+                      Start by adding your first product
+                    </p>
+                    <Link href="/merchant/products/new">
+                      <Button className="min-h-[44px]">
+                        <Plus className="w-5 h-5 mr-2" />
+                        Add Your First Product
+                      </Button>
+                    </Link>
+                  </>
                 )}
-                {/* Stock Badge */}
-                <div className="absolute top-2 right-2">
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      product.stock > 10
-                        ? 'bg-green-100 text-green-800'
-                        : product.stock > 0
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-red-100 text-red-800'
-                    }`}
-                  >
-                    {product.stock} in stock
-                  </span>
-                </div>
               </div>
-
-              {/* Product Info */}
-              <CardContent className="p-4">
-                <h3 className="font-semibold text-lg mb-1 line-clamp-1">
-                  {product.name}
-                </h3>
-                <p className="text-sm text-gray-600 mb-2 line-clamp-2">
-                  {product.description}
-                </p>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-2xl font-bold text-primary">
-                    {product.price.toFixed(2)} ETB
-                  </span>
-                  <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                    {product.category}
-                  </span>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {filteredProducts.map((product) => (
+              <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                {/* Product Image */}
+                <div className="aspect-square bg-gray-100 relative">
+                  {product.images && product.images.length > 0 ? (
+                    <img
+                      src={product.images[0]}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Package className="w-12 h-12 sm:w-16 sm:h-16 text-gray-300" />
+                    </div>
+                  )}
+                  {/* Stock Badge */}
+                  <div className="absolute top-2 right-2">
+                    <span
+                      className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                        product.stock > 10
+                          ? 'bg-green-100 text-green-800'
+                          : product.stock > 0
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-red-100 text-red-800'
+                      }`}
+                    >
+                      {product.stock} in stock
+                    </span>
+                  </div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="flex gap-2">
-                  <Link href={`/merchant/products/${product.id}/edit`} className="flex-1">
-                    <Button variant="outline" className="w-full" size="sm">
-                      <Edit className="w-4 h-4 mr-2" />
-                      Edit
+                {/* Product Info */}
+                <CardContent className="p-4">
+                  <h3 className="font-semibold text-base sm:text-lg mb-1 line-clamp-1">
+                    {product.name}
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-2 line-clamp-2">
+                    {product.description}
+                  </p>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-xl sm:text-2xl font-bold text-primary">
+                      {product.price.toFixed(2)} ETB
+                    </span>
+                    <span className="text-xs sm:text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                      {product.category}
+                    </span>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-2">
+                    <Link href={`/merchant/products/${product.id}/edit`} className="flex-1">
+                      <Button variant="outline" className="w-full min-h-[44px]" size="sm">
+                        <Edit className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                        Edit
+                      </Button>
+                    </Link>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDeleteClick(product)}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50 min-w-[44px] min-h-[44px]"
+                    >
+                      <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
                     </Button>
-                  </Link>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleDeleteClick(product)}
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
 
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Product?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete "{productToDelete?.name}"? This action
-              cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteConfirm}
-              disabled={deleting}
-              className="bg-red-600 hover:bg-red-700"
-            >
-              {deleting ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Deleting...
-                </>
-              ) : (
-                'Delete'
-              )}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <AlertDialogContent className="max-w-md mx-4">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-lg sm:text-xl">Delete Product?</AlertDialogTitle>
+              <AlertDialogDescription className="text-sm sm:text-base">
+                Are you sure you want to delete "{productToDelete?.name}"? This action
+                cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+              <AlertDialogCancel disabled={deleting} className="w-full sm:w-auto min-h-[44px]">
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteConfirm}
+                disabled={deleting}
+                className="bg-red-600 hover:bg-red-700 w-full sm:w-auto min-h-[44px]"
+              >
+                {deleting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  'Delete'
+                )}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
     </div>
   );
 }

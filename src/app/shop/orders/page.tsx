@@ -251,30 +251,30 @@ export default function ShopOrdersPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
       {/* Header */}
       <div className="bg-white border-b border-slate-200 sticky top-0 z-10 backdrop-blur-lg bg-white/90">
-        <div className="max-w-6xl mx-auto px-4 py-6">
+        <div className="max-w-6xl mx-auto px-4 py-4 sm:py-6">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/30">
-              <Store className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/30">
+              <Store className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">Shop Orders</h1>
-              <p className="text-sm text-slate-600">
+              <h1 className="text-xl sm:text-2xl font-bold text-slate-900">Shop Orders</h1>
+              <p className="text-xs sm:text-sm text-slate-600">
                 {filteredOrders.length} {filteredOrders.length === 1 ? 'order' : 'orders'}
               </p>
             </div>
           </div>
 
           {/* Status Filter */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
-            <Filter className="w-5 h-5 text-slate-400 flex-shrink-0" />
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
+            <Filter className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400 flex-shrink-0" />
             {STATUS_FILTERS.map((filter) => (
               <button
                 key={filter.value}
                 onClick={() => setStatusFilter(filter.value)}
-                className={`px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap transition-all ${
+                className={`px-3 py-2 sm:px-4 rounded-lg font-medium text-xs sm:text-sm whitespace-nowrap transition-all min-h-[44px] flex items-center ${
                   statusFilter === filter.value
                     ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/30'
-                    : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'
+                    : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200 active:bg-slate-100'
                 }`}
               >
                 {filter.label}
@@ -314,37 +314,37 @@ export default function ShopOrdersPage() {
                 className="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden hover:shadow-xl transition-all"
               >
                 {/* Order Header */}
-                <div className="p-6 border-b border-slate-100">
-                  <div className="flex items-start justify-between mb-4">
+                <div className="p-4 sm:p-6 border-b border-slate-100">
+                  <div className="flex flex-col sm:flex-row items-start justify-between gap-3 sm:gap-0 mb-4">
                     <div>
                       <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">
                         Order #{order.id.substring(0, 8)}
                       </p>
-                      <p className="text-sm text-slate-600">
+                      <p className="text-xs sm:text-sm text-slate-600">
                         {formatDate(order.createdAt)}
                       </p>
                     </div>
-                    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${statusConfig.bgColor} ${statusConfig.borderColor}`}>
+                    <div className={`flex items-center gap-2 px-2.5 py-1.5 sm:px-3 rounded-full border ${statusConfig.bgColor} ${statusConfig.borderColor}`}>
                       <span className={statusConfig.color}>
                         {statusConfig.icon}
                       </span>
-                      <span className={`text-sm font-semibold ${statusConfig.color}`}>
+                      <span className={`text-xs sm:text-sm font-semibold ${statusConfig.color}`}>
                         {statusConfig.label}
                       </span>
                     </div>
                   </div>
 
                   {/* Delivery Information */}
-                  <div className="bg-slate-50 rounded-xl p-4 mb-4">
+                  <div className="bg-slate-50 rounded-xl p-3 sm:p-4 mb-4">
                     <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <MapPin className="w-5 h-5 text-emerald-600" />
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-emerald-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600" />
                       </div>
                       <div className="flex-1">
                         <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">
                           Delivery Location
                         </p>
-                        <p className="font-semibold text-slate-900">{order.userHomeLocation}</p>
+                        <p className="font-semibold text-sm sm:text-base text-slate-900">{order.userHomeLocation}</p>
                       </div>
                     </div>
                   </div>
@@ -356,14 +356,14 @@ export default function ShopOrdersPage() {
                     </p>
                     {order.items.map((item) => (
                       <div key={item.productId} className="flex items-center justify-between py-2">
-                        <div className="flex items-center gap-3">
-                          <div className="w-2 h-2 bg-emerald-500 rounded-full" />
-                          <div>
-                            <p className="text-sm font-medium text-slate-900">{item.productName}</p>
+                        <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                          <div className="w-2 h-2 bg-emerald-500 rounded-full flex-shrink-0" />
+                          <div className="min-w-0 flex-1">
+                            <p className="text-xs sm:text-sm font-medium text-slate-900 truncate">{item.productName}</p>
                             <p className="text-xs text-slate-500">Quantity: {item.quantity}</p>
                           </div>
                         </div>
-                        <p className="text-sm font-semibold text-slate-900">
+                        <p className="text-xs sm:text-sm font-semibold text-slate-900 ml-2 flex-shrink-0">
                           {formatCurrency(item.priceAtPurchase * item.quantity)}
                         </p>
                       </div>
@@ -372,19 +372,19 @@ export default function ShopOrdersPage() {
                 </div>
 
                 {/* Order Footer */}
-                <div className="px-6 py-4 bg-slate-50 flex items-center justify-between">
+                <div className="px-4 py-3 sm:px-6 sm:py-4 bg-slate-50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                   <div>
                     <p className="text-xs text-slate-500 mb-1">Your Earnings</p>
-                    <p className="text-lg font-bold text-emerald-600">
+                    <p className="text-lg sm:text-xl font-bold text-emerald-600">
                       {formatCurrency(order.items.reduce((sum, item) => sum + (item.priceAtPurchase * item.quantity), 0))}
                     </p>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
                     {canDispatch && (
                       <button
                         onClick={() => handleDispatchOrder(order.id)}
                         disabled={isDispatching}
-                        className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold py-3 px-6 rounded-xl transition-all shadow-lg shadow-emerald-500/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                        className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg shadow-emerald-500/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 min-h-[44px] text-sm sm:text-base"
                       >
                         {isDispatching ? (
                           <>
@@ -393,7 +393,7 @@ export default function ShopOrdersPage() {
                           </>
                         ) : (
                           <>
-                            <Truck className="w-5 h-5" />
+                            <Truck className="w-4 h-4 sm:w-5 sm:h-5" />
                             <span>Mark as Dispatched</span>
                           </>
                         )}
@@ -401,10 +401,10 @@ export default function ShopOrdersPage() {
                     )}
                     <button
                       onClick={() => router.push(`/shop/orders/${order.id}`)}
-                      className="flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-semibold transition-colors"
+                      className="flex items-center justify-center gap-2 text-emerald-600 hover:text-emerald-700 font-semibold transition-colors min-h-[44px] text-sm sm:text-base"
                     >
                       <span>View Details</span>
-                      <ChevronRight className="w-5 h-5" />
+                      <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                     </button>
                   </div>
                 </div>
