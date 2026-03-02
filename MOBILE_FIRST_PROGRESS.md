@@ -11,8 +11,13 @@
 6. ✅ Financial Reporting (`/admin/financial`) - Mobile cards for tables, responsive date picker
 7. ✅ System Monitoring (`/admin/monitoring`) - Responsive grids, stacked controls
 
-### Merchant Pages
+### Merchant Pages (All Complete)
 1. ✅ Merchant Dashboard (`/merchant`) - Responsive grids, stacked layout, touch buttons
+2. ✅ Product Management (`/merchant/products`) - Mobile-first grid (1→2→3 cols), touch buttons, responsive search
+3. ✅ Product New (`/merchant/products/new`) - Mobile-first form, full-width inputs, touch-friendly upload, 44px buttons
+4. ✅ Product Edit (`/merchant/products/[id]/edit`) - Mobile-first form, responsive image grid, touch-friendly controls
+5. ✅ Shop Settings (`/merchant/settings`) - Mobile-first form, full-width inputs, responsive radio buttons, 44px buttons
+6. ✅ Shop Orders (`/shop/orders`) - Mobile-first cards, responsive filters, stacked buttons, touch-friendly
 
 ### Runner Pages
 1. ✅ Runner Orders List (`/runner/orders`) - Already mobile-first with excellent design
@@ -24,27 +29,8 @@
 
 ## Remaining Work ⏳
 
-### Merchant Pages (High Priority)
-1. ⏳ Product Management (`/merchant/products`) - Needs mobile-first update
-   - Search bar needs full-width on mobile
-   - Product grid needs 1 col → 2 cols → 3 cols
-   - Touch-friendly buttons (44px)
-   
-2. ⏳ Product New/Edit (`/merchant/products/new`, `/merchant/products/[id]/edit`)
-   - Forms need mobile-first styling
-   - Full-width inputs on mobile
-   - Touch-friendly file upload
-   
-3. ⏳ Shop Settings (`/merchant/settings`)
-   - Form needs mobile-first styling
-   - Full-width inputs
-   
-4. ⏳ Shop Orders (`/shop/orders`)
-   - Needs card layout on mobile
-   - Filter drawer on mobile
-   
-5. ⏳ Shop Order Detail (`/shop/orders/[orderId]`)
-   - Needs mobile-first layout
+### Runner Pages (Low Priority)
+1. ⏳ Runner Order Detail (`/runner/orders/[orderId]`) - Needs mobile-first check
 
 ### Customer Pages (Medium Priority)
 1. ⏳ Products Page (`/products`) - Check ProductCatalog component
@@ -52,9 +38,7 @@
 3. ⏳ Checkout Page (`/checkout`) - Needs mobile-first check
 4. ⏳ Orders Page (`/orders`) - Needs mobile-first check
 5. ⏳ Order Detail (`/orders/[orderId]`) - Needs mobile-first check
-
-### Runner Pages (Low Priority)
-1. ⏳ Runner Order Detail (`/runner/orders/[orderId]`) - Needs mobile-first check
+6. ⏳ Shop Order Detail (`/shop/orders/[orderId]`) - Needs mobile-first check
 
 ### Components (Critical)
 1. ⏳ ProductCatalog - Main product browsing component
@@ -62,8 +46,6 @@
 3. ⏳ ShopTable - Admin shop management table
 4. ⏳ ErrorLogTable - Monitoring error logs
 5. ⏳ WebhookHistoryTable - Monitoring webhook history
-6. ⏳ BottomNav - Navigation component (check if mobile-first)
-7. ⏳ TopNav - Desktop navigation (check if responsive)
 
 ## Mobile-First Design Principles Applied
 
@@ -129,6 +111,8 @@ className="block md:hidden"
 - feat: mobile-first redesign of admin products, shops, and financial pages
 - feat: mobile-first redesign of admin monitoring page
 - feat: mobile-first redesign of merchant dashboard
+- feat: mobile-first redesign of merchant product management
+- feat: mobile-first redesign of merchant product forms, settings, and shop orders
 
 ## Requirements Addressed
 - Requirement 34: Navigation System (role-based, responsive)
