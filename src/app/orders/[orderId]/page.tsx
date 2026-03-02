@@ -198,37 +198,37 @@ export default function OrderDetailPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 pb-20">
       {/* Header */}
       <div className="bg-white border-b border-slate-200 sticky top-0 z-10 backdrop-blur-lg bg-white/90">
-        <div className="max-w-4xl mx-auto px-4 py-4">
+        <div className="max-w-4xl mx-auto px-4 py-4 sm:py-6">
           <button
             onClick={() => router.push('/orders')}
-            className="flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors mb-4"
+            className="flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors mb-3 sm:mb-4 min-h-[44px]"
           >
-            <ArrowLeft className="w-5 h-5" />
-            <span className="font-medium">Back to Orders</span>
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="font-medium text-sm sm:text-base">Back to Orders</span>
           </button>
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/30">
-              <Package className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/30">
+              <Package className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-slate-900">
+              <h1 className="text-lg sm:text-xl font-bold text-slate-900">
                 Order #{order.id.substring(0, 8)}
               </h1>
-              <p className="text-sm text-slate-600">{formatDate(order.createdAt)}</p>
+              <p className="text-xs sm:text-sm text-slate-600">{formatDate(order.createdAt)}</p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+      <div className="max-w-4xl mx-auto px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* Status Timeline */}
         {order.status !== 'CANCELLED' && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-2xl shadow-lg border border-slate-200 p-6"
+            className="bg-white rounded-2xl shadow-lg border border-slate-200 p-4 sm:p-6"
           >
-            <h2 className="text-lg font-bold text-slate-900 mb-6">Order Status</h2>
+            <h2 className="text-base sm:text-lg font-bold text-slate-900 mb-4 sm:mb-6">Order Status</h2>
             <div className="relative">
               {STATUS_TIMELINE.map((step, index) => {
                 const isCompleted = index <= currentStatusIndex;
@@ -239,16 +239,16 @@ export default function OrderDetailPage() {
                     {/* Connector Line */}
                     {index < STATUS_TIMELINE.length - 1 && (
                       <div
-                        className={`absolute left-6 top-12 w-0.5 h-16 transition-colors ${
+                        className={`absolute left-5 sm:left-6 top-12 w-0.5 h-12 sm:h-16 transition-colors ${
                           isCompleted ? 'bg-emerald-500' : 'bg-slate-200'
                         }`}
                       />
                     )}
 
                     {/* Step */}
-                    <div className="flex items-start gap-4 pb-8">
+                    <div className="flex items-start gap-3 sm:gap-4 pb-6 sm:pb-8">
                       <div
-                        className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
+                        className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all flex-shrink-0 ${
                           isCompleted
                             ? 'bg-gradient-to-br from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/30'
                             : 'bg-slate-100'
@@ -258,16 +258,16 @@ export default function OrderDetailPage() {
                           {step.icon}
                         </span>
                       </div>
-                      <div className="flex-1 pt-2">
+                      <div className="flex-1 pt-1 sm:pt-2 min-w-0">
                         <h3
-                          className={`font-semibold mb-1 ${
+                          className={`font-semibold mb-1 text-sm sm:text-base ${
                             isCompleted ? 'text-slate-900' : 'text-slate-400'
                           }`}
                         >
                           {step.label}
                         </h3>
                         <p
-                          className={`text-sm ${
+                          className={`text-xs sm:text-sm ${
                             isCompleted ? 'text-slate-600' : 'text-slate-400'
                           }`}
                         >
@@ -354,27 +354,27 @@ export default function OrderDetailPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl shadow-2xl p-8 text-white"
+            className="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl shadow-2xl p-6 sm:p-8 text-white"
           >
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                <Key className="w-6 h-6" />
+            <div className="flex items-center gap-3 mb-4 sm:mb-6">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm flex-shrink-0">
+                <Key className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
               <div>
-                <h2 className="text-xl font-bold">Your Delivery OTP</h2>
-                <p className="text-purple-100 text-sm">Share this code with the runner</p>
+                <h2 className="text-lg sm:text-xl font-bold">Your Delivery OTP</h2>
+                <p className="text-purple-100 text-xs sm:text-sm">Share this code with the runner</p>
               </div>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
-              <p className="text-center text-5xl font-bold tracking-[0.5em] mb-2">
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-white/20">
+              <p className="text-center text-3xl sm:text-5xl font-bold tracking-[0.3em] sm:tracking-[0.5em] mb-2">
                 {order.otpCode}
               </p>
-              <p className="text-center text-purple-100 text-sm">
+              <p className="text-center text-purple-100 text-xs sm:text-sm">
                 Verify your product before sharing this code
               </p>
             </div>
-            <div className="mt-6 bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-              <p className="text-sm text-purple-100">
+            <div className="mt-4 sm:mt-6 bg-white/10 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-white/20">
+              <p className="text-xs sm:text-sm text-purple-100">
                 <strong className="text-white">Important:</strong> Only provide this OTP after inspecting your product. Once verified, funds will be released to the seller.
               </p>
             </div>
@@ -386,23 +386,23 @@ export default function OrderDetailPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white rounded-2xl shadow-lg border border-slate-200 p-6"
+          className="bg-white rounded-2xl shadow-lg border border-slate-200 p-4 sm:p-6"
         >
-          <h2 className="text-lg font-bold text-slate-900 mb-4">Order Items</h2>
+          <h2 className="text-base sm:text-lg font-bold text-slate-900 mb-4">Order Items</h2>
           <div className="space-y-4">
             {order.items.map((item) => (
               <div
                 key={item.productId}
-                className="flex items-center justify-between py-4 border-b border-slate-100 last:border-0"
+                className="flex items-start sm:items-center justify-between py-3 sm:py-4 border-b border-slate-100 last:border-0 gap-3"
               >
-                <div className="flex-1">
-                  <h3 className="font-semibold text-slate-900 mb-1">{item.productName}</h3>
-                  <p className="text-sm text-slate-600">
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-slate-900 mb-1 text-sm sm:text-base truncate">{item.productName}</h3>
+                  <p className="text-xs sm:text-sm text-slate-600">
                     Quantity: {item.quantity} × {formatCurrency(item.priceAtPurchase)}
                   </p>
                   <p className="text-xs text-slate-500 mt-1">From {item.shopCity}</p>
                 </div>
-                <p className="text-lg font-bold text-slate-900">
+                <p className="text-base sm:text-lg font-bold text-slate-900 flex-shrink-0">
                   {formatCurrency(item.priceAtPurchase * item.quantity)}
                 </p>
               </div>
@@ -415,21 +415,21 @@ export default function OrderDetailPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white rounded-2xl shadow-lg border border-slate-200 p-6"
+          className="bg-white rounded-2xl shadow-lg border border-slate-200 p-4 sm:p-6"
         >
-          <h2 className="text-lg font-bold text-slate-900 mb-4">Price Breakdown</h2>
+          <h2 className="text-base sm:text-lg font-bold text-slate-900 mb-4">Price Breakdown</h2>
           <div className="space-y-3">
-            <div className="flex items-center justify-between text-slate-700">
+            <div className="flex items-center justify-between text-slate-700 text-sm sm:text-base">
               <span>Subtotal</span>
               <span className="font-semibold">{formatCurrency(order.totalAmount)}</span>
             </div>
-            <div className="flex items-center justify-between text-slate-700">
+            <div className="flex items-center justify-between text-slate-700 text-sm sm:text-base">
               <span>Delivery Fee</span>
               <span className="font-semibold">{formatCurrency(order.deliveryFee)}</span>
             </div>
             <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
-              <span className="text-lg font-bold text-slate-900">Total</span>
-              <span className="text-2xl font-bold text-emerald-600">
+              <span className="text-base sm:text-lg font-bold text-slate-900">Total</span>
+              <span className="text-xl sm:text-2xl font-bold text-emerald-600">
                 {formatCurrency(totalWithDelivery)}
               </span>
             </div>
@@ -466,7 +466,7 @@ export default function OrderDetailPage() {
           >
             <button
               onClick={() => setShowCancelConfirm(true)}
-              className="w-full bg-red-50 hover:bg-red-100 text-red-600 font-semibold py-4 px-6 rounded-xl transition-colors border border-red-200"
+              className="w-full bg-red-50 hover:bg-red-100 text-red-600 font-semibold py-3 sm:py-4 px-6 rounded-xl transition-colors border border-red-200 min-h-[44px] text-sm sm:text-base"
             >
               Cancel Order
             </button>
@@ -502,7 +502,7 @@ export default function OrderDetailPage() {
                   ? 'Your payment will be refunded within 3-5 business days.'
                   : 'This action cannot be undone.'}
               </p>
-              <div className="mb-6">
+              <div className="mb-4 sm:mb-6">
                 <label className="block text-sm font-medium text-slate-700 mb-2">
                   Reason for cancellation
                 </label>
@@ -510,23 +510,23 @@ export default function OrderDetailPage() {
                   value={cancelReason}
                   onChange={(e) => setCancelReason(e.target.value)}
                   placeholder="Please tell us why you're cancelling..."
-                  className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none"
+                  className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none text-sm sm:text-base min-h-[80px]"
                   rows={3}
                   disabled={cancelling}
                 />
               </div>
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   onClick={() => setShowCancelConfirm(false)}
                   disabled={cancelling}
-                  className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-3 px-6 rounded-xl transition-colors disabled:opacity-50"
+                  className="w-full sm:flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-3 px-6 rounded-xl transition-colors disabled:opacity-50 min-h-[44px] text-sm sm:text-base"
                 >
                   Keep Order
                 </button>
                 <button
                   onClick={handleCancelOrder}
                   disabled={cancelling || !cancelReason.trim()}
-                  className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full sm:flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] text-sm sm:text-base"
                 >
                   {cancelling ? 'Cancelling...' : 'Cancel Order'}
                 </button>
