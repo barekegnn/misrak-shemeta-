@@ -4,7 +4,9 @@
  * Admin interface for viewing and managing all shops on the platform.
  * Supports searching, filtering, suspending, activating, and adjusting balances.
  * 
- * Requirements: 29.1, 29.3
+ * Mobile-first responsive design with proper spacing and typography.
+ * 
+ * Requirements: 29.1, 29.3, 34, 35
  */
 
 import { getShopList } from '@/app/actions/admin/shops';
@@ -20,15 +22,19 @@ export default async function ShopManagementPage() {
   
   if (!result.success || !result.data) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            Failed to Load Shops
-          </h3>
-          <p className="text-sm text-gray-600">
-            {result.error || 'Unable to retrieve shop list'}
-          </p>
+      <div className="min-h-screen bg-gray-50 px-4 py-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <AlertCircle className="h-10 w-10 sm:h-12 sm:w-12 text-red-500 mx-auto mb-4" />
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
+                Failed to Load Shops
+              </h3>
+              <p className="text-sm text-gray-600">
+                {result.error || 'Unable to retrieve shop list'}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -37,28 +43,26 @@ export default async function ShopManagementPage() {
   const { shops, total, page, pageSize } = result.data;
   
   return (
-    <div className="space-y-6">
-      {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <Store className="h-8 w-8" />
-            Shop Management
-          </h1>
-          <p className="text-gray-600 mt-2">
+    <div className="min-h-screen bg-gray-50 px-4 py-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="mb-6">
+          <div className="flex items-center gap-3 mb-2">
+            <Store className="h-6 w-6 sm:h-8 sm:w-8 text-gray-900" />
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Shop Management</h1>
+          </div>
+          <p className="text-sm sm:text-base text-gray-600">
             Manage all shops on the platform - {total.toLocaleString()} total shops
           </p>
         </div>
+        
+        <ShopTable
+          initialShops={shops}
+          initialTotal={total}
+          initialPage={page}
+          pageSize={pageSize}
+          adminTelegramId={adminTelegramId}
+        />
       </div>
-      
-      {/* Shop Table */}
-      <ShopTable
-        initialShops={shops}
-        initialTotal={total}
-        initialPage={page}
-        pageSize={pageSize}
-        adminTelegramId={adminTelegramId}
-      />
     </div>
   );
 }
