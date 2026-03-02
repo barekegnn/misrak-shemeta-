@@ -1,0 +1,114 @@
+═══════════════════════════════════════════════════════════════
+  TELEGRAM MINI APP TESTING - QUICK CHECKLIST
+═══════════════════════════════════════════════════════════════
+
+✅ STEP 1: DEV SERVER (ALREADY RUNNING!)
+   Your dev server is running on http://localhost:3000
+   Keep this terminal open!
+
+□ STEP 2: INSTALL NGROK
+   Option A: Download from https://ngrok.com/download
+   Option B: Run: npm install -g ngrok
+
+□ STEP 3: SIGN UP FOR NGROK
+   Go to: https://dashboard.ngrok.com/signup
+   Get your authtoken from dashboard
+
+□ STEP 4: AUTHENTICATE NGROK
+   Run: ngrok config add-authtoken YOUR_TOKEN
+
+□ STEP 5: START NGROK (NEW TERMINAL)
+   Run: ngrok http 3000
+   Copy the HTTPS URL (e.g., https://abc123.ngrok-free.app)
+
+□ STEP 6: CREATE TELEGRAM BOT
+   1. Open Telegram → Search @BotFather
+   2. Send: /newbot
+   3. Bot name: Misrak Shemeta Test
+   4. Username: misrak_shemeta_test_bot
+   5. Save the bot token
+
+□ STEP 7: CONFIGURE MENU BUTTON
+   1. Send to BotFather: /mybots
+   2. Select your bot
+   3. Bot Settings → Menu Button → Configure Menu Button
+   4. Paste ngrok HTTPS URL
+   5. Button text: Open Marketplace
+
+□ STEP 8: TEST IN TELEGRAM
+   1. Search for your bot in Telegram
+   2. Click START
+   3. Click menu button (☰) at bottom left
+   4. Your app opens! 🎉
+
+═══════════════════════════════════════════════════════════════
+  WHAT TO TEST IN TELEGRAM
+═══════════════════════════════════════════════════════════════
+
+AUTHENTICATION:
+□ Real Telegram ID captured (not 123456789)
+□ User name displays correctly
+□ Profile data loads
+
+TELEGRAM FEATURES:
+□ Haptic feedback on buttons (mobile only)
+□ Full viewport height
+□ Telegram theme colors
+
+BUYER FEATURES:
+□ Browse products
+□ Search and filter
+□ Add to cart
+□ Checkout
+□ Payment (Chapa sandbox)
+□ Track orders
+
+MERCHANT FEATURES:
+□ Register shop
+□ Add products
+□ Upload images
+□ View orders
+□ Mark as dispatched
+
+ADMIN FEATURES:
+□ Access /admin dashboard
+□ View statistics
+□ Manage users
+□ Manage shops
+□ Financial reports
+□ System monitoring
+
+═══════════════════════════════════════════════════════════════
+  TROUBLESHOOTING
+═══════════════════════════════════════════════════════════════
+
+Can't reach site:
+→ Check dev server is running
+→ Check ngrok is running
+→ Use HTTPS URL (not HTTP)
+
+Menu button not visible:
+→ Update Telegram app
+→ Send /start to refresh
+→ Try different device
+
+ngrok URL changed:
+→ Copy new URL from ngrok terminal
+→ Update in BotFather menu button
+
+═══════════════════════════════════════════════════════════════
+  QUICK REFERENCE
+═══════════════════════════════════════════════════════════════
+
+Dev Server: http://localhost:3000 (RUNNING ✅)
+ngrok Inspector: http://127.0.0.1:4040
+Bot Link: https://t.me/your_bot_username/app
+
+Commands:
+  Start ngrok: ngrok http 3000
+  Stop ngrok: Ctrl+C
+  View logs: Check ngrok terminal
+
+═══════════════════════════════════════════════════════════════
+
+Ready to start? Follow the checklist above! 🚀

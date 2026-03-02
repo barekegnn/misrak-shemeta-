@@ -3,6 +3,7 @@ import './globals.css';
 import { TelegramAuthProvider } from '@/components/TelegramAuthProvider';
 import { I18nProvider } from '@/i18n/provider';
 import { ViewportAdapter } from '@/components/ViewportAdapter';
+import { AppShell } from '@/components/AppShell';
 
 export const metadata: Metadata = {
   title: 'Misrak Shemeta - Eastern Ethiopia Marketplace',
@@ -24,12 +25,19 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <script src="https://telegram.org/js/telegram-web-app.js" async></script>
+        {/* Mobile-first meta tags */}
+        <meta name="theme-color" content="#2563eb" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
-      <body className="overflow-x-hidden">
+      <body className="overflow-x-hidden bg-gray-50">
         <I18nProvider>
           <TelegramAuthProvider>
             <ViewportAdapter>
-              {children}
+              <AppShell>
+                {children}
+              </AppShell>
             </ViewportAdapter>
           </TelegramAuthProvider>
         </I18nProvider>

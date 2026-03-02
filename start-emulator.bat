@@ -1,5 +1,13 @@
 @echo off
-echo Starting Firebase Emulator...
-set JAVA_HOME=%CD%\jdk-21.0.6+7
-set PATH=%JAVA_HOME%\bin;%PATH%
-npm run emulator
+echo Starting Firebase Emulators...
+echo.
+
+REM Set environment variables
+set FIRESTORE_EMULATOR_HOST=127.0.0.1:8080
+set FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099
+set FIREBASE_STORAGE_EMULATOR_HOST=127.0.0.1:9199
+
+REM Start Firebase Emulators
+firebase emulators:start --only firestore,auth,storage --project demo-misrak-shemeta
+
+pause

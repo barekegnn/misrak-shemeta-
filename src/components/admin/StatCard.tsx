@@ -1,10 +1,10 @@
 /**
- * Stat Card Component
+ * Stat Card Component - Mobile-First Responsive
  * 
  * Reusable component for displaying metrics and statistics in the admin dashboard.
- * Supports different color schemes and optional trend indicators.
+ * Designed mobile-first (375px) with touch-friendly sizing and responsive text.
  * 
- * Requirements: 27.3
+ * Requirements: 27.3, 35
  */
 
 import { LucideIcon } from 'lucide-react';
@@ -63,20 +63,24 @@ export function StatCard({
   const colors = colorSchemes[colorScheme];
   
   return (
-    <div className={`${colors.bg} rounded-lg p-6 border border-gray-200`}>
-      <div className="flex items-center justify-between">
-        <div className="flex-1">
-          <p className="text-sm font-medium text-gray-600 mb-1">
+    <div className={`${colors.bg} rounded-lg p-4 sm:p-6 border border-gray-200 transition-shadow hover:shadow-md`}>
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex-1 min-w-0">
+          {/* Label - Mobile optimized text size */}
+          <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1 truncate">
             {label}
           </p>
-          <p className="text-3xl font-bold text-gray-900">
+          
+          {/* Value - Responsive text size */}
+          <p className="text-2xl sm:text-3xl font-bold text-gray-900 break-words">
             {typeof value === 'number' ? value.toLocaleString() : value}
           </p>
           
+          {/* Trend indicator */}
           {trend && (
             <div className="mt-2 flex items-center gap-1">
               <span 
-                className={`text-sm font-medium ${
+                className={`text-xs sm:text-sm font-medium ${
                   trend.isPositive ? 'text-green-600' : 'text-red-600'
                 }`}
               >
@@ -89,8 +93,9 @@ export function StatCard({
           )}
         </div>
         
-        <div className={`${colors.icon} p-3 rounded-lg`}>
-          <Icon className="h-6 w-6" />
+        {/* Icon - Touch-friendly size */}
+        <div className={`${colors.icon} p-2.5 sm:p-3 rounded-lg flex-shrink-0`}>
+          <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
         </div>
       </div>
     </div>
