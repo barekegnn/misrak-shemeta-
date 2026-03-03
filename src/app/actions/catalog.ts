@@ -18,8 +18,7 @@ export interface ProductFilters {
 /**
  * Gets products for the catalog with filtering and search.
  * 
- * IMPORTANT: Filters products based on user's home location to show only
- * products that can be delivered to them (deliverability check).
+ * PERFORMANCE OPTIMIZED: Uses denormalized shopCity to avoid N+1 queries.
  * 
  * Requirements: 5.1, 5.2, 5.3, 5.4, 15.1, 15.2, 15.3, 15.4
  */
@@ -28,13 +27,6 @@ export async function getProducts(
 ): Promise<ActionResponse<Product[]>> {
   try {
     let query = adminDb.collection('products');
-
-    // Filter by shop location if specified
-    if (filters.shopLocation && filters.shopLocation !== 'all') {
-      // We need to join with shops collection to filter by shop city
-      // Since Firestore doesn't support joins, we'll filter in memory
-      // For production, consider denormalizing shop city to product document
-    }
 
     // Filter by category if specified
     if (filters.category) {
@@ -49,6 +41,7 @@ export async function getProducts(
       return {
         id: doc.id,
         shopId: data.shopId,
+        shopCity: data.shopCity as City, // Denormalized for performance
         name: data.name,
         description: data.description,
         price: data.price,
@@ -78,23 +71,16 @@ export async function getProducts(
       products = products.filter((p) => p.price <= filters.maxPrice!);
     }
 
-    // Filter by shop location (if we have originCity in product)
-    // Note: We need to add originCity to Product type or fetch shop data
+    // Filter by shop location using denormalized shopCity (NO DATABASE QUERIES!)
     if (filters.shopLocation && filters.shopLocation !== 'all') {
-      // Get shop IDs for the specified city
-      const shopsSnapshot = await adminDb
-        .collection('shops')
-        .where('city', '==', filters.shopLocation)
-        .get();
-      
-      const shopIds = new Set(shopsSnapshot.docs.map((doc) => doc.id));
-      products = products.filter((p) => shopIds.has(p.shopId));
+      products = products.filter((p) => p.shopCity === filters.shopLocation);
     }
 
-    // Filter by deliverability (based on user location)
-    // This ensures users only see products that can be delivered to them
+    // Filter by deliverability (based on user location) - now uses denormalized shopCity
     if (filters.userLocation) {
-      products = await filterByDeliverability(products, filters.userLocation);
+      products = products.filter((product) => 
+        isDeliverable(product.shopCity, filters.userLocation!)
+      );
     }
 
     // Sort by creation date (newest first)
@@ -147,6 +133,7 @@ export async function getProductById(
     const product = {
       id: productDoc.id,
       shopId: data.shopId,
+      shopCity: data.shopCity as City, // Denormalized for performance
       name: data.name,
       description: data.description,
       price: data.price,
@@ -156,7 +143,6 @@ export async function getProductById(
       createdAt: data.createdAt.toDate(),
       updatedAt: data.updatedAt.toDate(),
       shopName: shopData.name,
-      shopCity: shopData.city as City,
     };
 
     return {
@@ -199,72 +185,6 @@ export async function getCategories(): Promise<ActionResponse<string[]>> {
       error: 'Failed to get categories',
     };
   }
-}
-
-/**
- * Filters products by deliverability based on user location.
- * 
- * This is a critical business logic function that ensures users only see
- * products that can actually be delivered to their location.
- * 
- * Deliverability rules:
- * - Products from Harar can be delivered to: Harar_Campus, Haramaya_Main, DDU (inter-city)
- * - Products from Dire Dawa can be delivered to: DDU, Haramaya_Main, Harar_Campus (inter-city)
- * 
- * Requirements: 2.5 (implicit - filter based on home location)
- */
-async function filterByDeliverability(
-  products: Product[],
-  userLocation: Location
-): Promise<Product[]> {
-  // If no products, return empty array
-  if (products.length === 0) {
-    return [];
-  }
-
-  // Get shop information for all products
-  const shopIds = [...new Set(products.map((p) => p.shopId))];
-  
-  // If no shop IDs, return empty array
-  if (shopIds.length === 0) {
-    return [];
-  }
-
-  const shopsSnapshot = await adminDb
-    .collection('shops')
-    .where(FieldPath.documentId(), 'in', shopIds.slice(0, 10)) // Firestore 'in' limit is 10
-    .get();
-
-  const shopCityMap = new Map<string, City>();
-  shopsSnapshot.docs.forEach((doc) => {
-    const data = doc.data();
-    shopCityMap.set(doc.id, data.city as City);
-  });
-
-  // If we have more than 10 shops, fetch the rest
-  if (shopIds.length > 10) {
-    const remainingShopIds = shopIds.slice(10);
-    for (let i = 0; i < remainingShopIds.length; i += 10) {
-      const batch = remainingShopIds.slice(i, i + 10);
-      const batchSnapshot = await adminDb
-        .collection('shops')
-        .where(FieldPath.documentId(), 'in', batch)
-        .get();
-      
-      batchSnapshot.docs.forEach((doc) => {
-        const data = doc.data();
-        shopCityMap.set(doc.id, data.city as City);
-      });
-    }
-  }
-
-  // Filter products based on deliverability
-  return products.filter((product) => {
-    const shopCity = shopCityMap.get(product.shopId);
-    if (!shopCity) return false; // Shop not found, exclude product
-
-    return isDeliverable(shopCity, userLocation);
-  });
 }
 
 /**

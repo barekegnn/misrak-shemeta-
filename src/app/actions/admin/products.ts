@@ -10,7 +10,7 @@
 'use server';
 
 import { adminDb, adminStorage } from '@/lib/firebase/admin';
-import { requireAdminAccess } from '@/lib/auth/admin';
+import { requireAdminAccess, getAdminUser } from '@/lib/auth/admin';
 import { logAdminAction } from '@/lib/admin/audit';
 import type { Product, ActionResponse, ProductFilters } from '@/types';
 
@@ -33,8 +33,11 @@ export async function removeProduct(
   reason: string
 ): Promise<ActionResponse<void>> {
   try {
-    // Verify admin access
-    await requireAdminAccess(adminTelegramId);
+    // Verify admin access and get admin user
+    const admin = await getAdminUser(adminTelegramId);
+    if (!admin) {
+      return { success: false, error: 'UNAUTHORIZED: Admin access required' };
+    }
     
     // Get product data before deletion
     const productDoc = await adminDb.collection('products').doc(productId).get();
@@ -74,11 +77,12 @@ export async function removeProduct(
     
     // Log admin action
     await logAdminAction({
+      adminId: admin.id,
       adminTelegramId,
-      action: 'REMOVE_PRODUCT',
+      action: 'PRODUCT_REMOVE',
       targetType: 'PRODUCT',
       targetId: productId,
-      details: { 
+      targetDetails: { 
         reason,
         productName: productData.name,
         shopId: productData.shopId,
@@ -130,13 +134,8 @@ export async function getProductList(
     let query: FirebaseFirestore.Query = adminDb.collection('products');
     
     // Apply filters
-    if (filters?.shopId) {
-      query = query.where('shopId', '==', filters.shopId);
-    }
-    
-    if (filters?.productName) {
-      query = query.where('name', '>=', filters.productName)
-                   .where('name', '<=', filters.productName + '\uf8ff');
+    if (filters?.shopCity) {
+      query = query.where('shopCity', '==', filters.shopCity);
     }
     
     if (filters?.minPrice !== undefined) {
@@ -252,6 +251,7 @@ export async function getProductById(
     const product: Product = {
       id: productDoc.id,
       shopId: data.shopId,
+      shopCity: data.shopCity,
       name: data.name,
       description: data.description,
       price: data.price,

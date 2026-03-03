@@ -9,7 +9,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { getProductById, updateProduct } from '@/app/actions/products';
+import { getProductById } from '@/app/actions/catalog';
+import { updateProduct } from '@/app/actions/products';
 import type { Product } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -38,7 +39,7 @@ interface ProductFormData {
   newImages: File[];
 }
 
-export default function EditProduct({ params }: { params: { productId: string } }) {
+export default function EditProduct({ params }: { params: Promise<{ productId: string }> }) {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -47,6 +48,7 @@ export default function EditProduct({ params }: { params: { productId: string } 
   const [uploadingImages, setUploadingImages] = useState(false);
   const [newImagePreviews, setNewImagePreviews] = useState<string[]>([]);
   const [product, setProduct] = useState<Product | null>(null);
+  const [productId, setProductId] = useState<string>('');
 
   const [formData, setFormData] = useState<ProductFormData>({
     name: '',
@@ -62,13 +64,16 @@ export default function EditProduct({ params }: { params: { productId: string } 
   const telegramId = '111222333';
 
   useEffect(() => {
-    loadProduct();
-  }, [params.productId]);
+    params.then(({ productId }) => {
+      setProductId(productId);
+      loadProduct(productId);
+    });
+  }, [params]);
 
-  const loadProduct = async () => {
+  const loadProduct = async (id: string) => {
     try {
       setLoading(true);
-      const result = await getProductById(params.productId);
+      const result = await getProductById(id);
 
       if (!result.success || !result.data) {
         setError('Product not found');
@@ -240,7 +245,7 @@ export default function EditProduct({ params }: { params: { productId: string } 
           const uploadResult = await uploadProductImage(
             telegramId,
             product.shopId,
-            params.productId,
+            productId,
             base64,
             formData.existingImages.length + i, // Continue numbering from existing images
             imageFile.type
@@ -260,7 +265,7 @@ export default function EditProduct({ params }: { params: { productId: string } 
       const allImages = [...formData.existingImages, ...newImageUrls];
 
       // Update product via Server Action
-      const result = await updateProduct(telegramId, params.productId, {
+      const result = await updateProduct(telegramId, productId, {
         name: formData.name.trim(),
         description: formData.description.trim(),
         price,
@@ -278,7 +283,7 @@ export default function EditProduct({ params }: { params: { productId: string } 
       
       // Reload product data
       setTimeout(() => {
-        loadProduct();
+        loadProduct(productId);
         setSuccess(false);
       }, 2000);
 

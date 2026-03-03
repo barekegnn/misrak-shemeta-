@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "demo-misrak-shemeta"
+    "default": "misrak-shemeta-marketpla-fdbcf",
+    "development": "demo-misrak-shemeta",
+    "production": "misrak-shemeta-marketpla-fdbcf"
   }
 }

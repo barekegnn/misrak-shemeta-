@@ -211,7 +211,7 @@ export function ShopRegistrationForm({
           >
             <option value="">{t.cityPlaceholder}</option>
             <option value="Harar">{t.harar}</option>
-            <option value="Dire_Dawa">{t.direDawa}</option>
+            <option value="Dire Dawa">{t.direDawa}</option>
           </select>
           {errors.city && (
             <p className="text-red-600 text-sm mt-1">{errors.city}</p>

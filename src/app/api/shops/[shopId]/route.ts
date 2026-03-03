@@ -8,10 +8,10 @@ import { adminDb } from '@/lib/firebase/admin';
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { shopId: string } }
+  { params }: { params: Promise<{ shopId: string }> }
 ) {
   try {
-    const { shopId } = params;
+    const { shopId } = await params;
 
     if (!shopId) {
       return NextResponse.json(

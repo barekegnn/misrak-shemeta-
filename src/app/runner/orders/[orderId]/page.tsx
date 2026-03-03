@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 
 export default function RunnerOrderDetailPage() {
-  const { telegramId, isLoading: authLoading } = useTelegramAuth();
+  const { user, isLoading: authLoading } = useTelegramAuth();
   const router = useRouter();
   const params = useParams();
   const orderId = params.orderId as string;
@@ -33,18 +33,18 @@ export default function RunnerOrderDetailPage() {
   const [otpError, setOtpError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!authLoading && telegramId) {
+    if (!authLoading && user) {
       loadOrder();
     }
-  }, [authLoading, telegramId, orderId]);
+  }, [authLoading, user, orderId]);
 
   const loadOrder = async () => {
-    if (!telegramId) return;
+    if (!user) return;
 
     setIsLoading(true);
     setError(null);
 
-    const result = await getOrderById(orderId, telegramId);
+    const result = await getOrderById(orderId, user.telegramId);
 
     if (result.success && result.data) {
       setOrder(result.data);
@@ -56,15 +56,16 @@ export default function RunnerOrderDetailPage() {
   };
 
   const handleMarkAsArrived = async () => {
-    if (!telegramId || !order) return;
+    if (!user || !order) return;
 
     setIsUpdating(true);
     setError(null);
 
     const result = await updateOrderStatus(
+      user.telegramId,
       order.id,
       'ARRIVED',
-      telegramId
+      'RUNNER'
     );
 
     if (result.success) {
@@ -77,7 +78,7 @@ export default function RunnerOrderDetailPage() {
   };
 
   const handleSubmitOTP = async () => {
-    if (!telegramId || !order || !otpInput) return;
+    if (!user || !order || !otpInput) return;
 
     if (otpInput.length !== 6) {
       setOtpError('OTP must be 6 digits');
@@ -87,7 +88,7 @@ export default function RunnerOrderDetailPage() {
     setIsUpdating(true);
     setOtpError(null);
 
-    const result = await validateOTP(order.id, otpInput, telegramId);
+    const result = await validateOTP(order.id, otpInput, user.telegramId);
 
     if (result.success) {
       await loadOrder();

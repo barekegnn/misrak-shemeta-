@@ -17,6 +17,20 @@
 .DS_Store
 *.pem
 
+# Documentation (exclude all .md files except README.md)
+*.md
+!README.md
+
+# Kiro specs and development files (not needed in production)
+.kiro/
+.vercel/
+
+# Test and development scripts (not needed in production)
+scripts/test-*.ts
+scripts/test-*.js
+scripts/verify-*.js
+scripts/simulate-*.ts
+
 # Debug
 npm-debug.log*
 yarn-debug.log*

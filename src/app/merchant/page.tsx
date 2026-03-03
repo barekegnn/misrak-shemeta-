@@ -76,9 +76,9 @@ export default function MerchantDashboard() {
       }
 
       // Load recent orders
-      const ordersResult = await getShopOrders(telegramId, 'all', 5);
+      const ordersResult = await getShopOrders(telegramId);
       if (ordersResult.success && ordersResult.data) {
-        setRecentOrders(ordersResult.data);
+        setRecentOrders(ordersResult.data.slice(0, 5));
       }
 
     } catch (error) {

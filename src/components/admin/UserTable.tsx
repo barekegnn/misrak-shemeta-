@@ -81,10 +81,10 @@ export function UserTable({
     startTransition(async () => {
       const filters: UserFilters = {};
       
-      if (searchTelegramId) filters.telegramId = searchTelegramId;
+      if (searchTelegramId) filters.search = searchTelegramId;
       if (filterRole) filters.role = filterRole as any;
-      if (filterStatus === 'active') filters.suspended = false;
-      if (filterStatus === 'suspended') filters.suspended = true;
+      if (filterStatus === 'active') filters.status = 'active';
+      if (filterStatus === 'suspended') filters.status = 'suspended';
       if (filterLocation) filters.homeLocation = filterLocation as any;
       
       const result = await getUserList(adminTelegramId, filters, 1, pageSize);
@@ -118,10 +118,10 @@ export function UserTable({
   const goToPage = (newPage: number) => {
     startTransition(async () => {
       const filters: UserFilters = {};
-      if (searchTelegramId) filters.telegramId = searchTelegramId;
+      if (searchTelegramId) filters.search = searchTelegramId;
       if (filterRole) filters.role = filterRole as any;
-      if (filterStatus === 'active') filters.suspended = false;
-      if (filterStatus === 'suspended') filters.suspended = true;
+      if (filterStatus === 'active') filters.status = 'active';
+      if (filterStatus === 'suspended') filters.status = 'suspended';
       if (filterLocation) filters.homeLocation = filterLocation as any;
       
       const result = await getUserList(adminTelegramId, filters, newPage, pageSize);
@@ -458,7 +458,7 @@ export function UserTable({
                   <div className="text-xs text-gray-500 mb-1">Role</div>
                   <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
                     user.role === 'ADMIN' ? 'bg-purple-100 text-purple-800' :
-                    user.role === 'SHOP_OWNER' ? 'bg-blue-100 text-blue-800' :
+                    user.role === 'MERCHANT' ? 'bg-blue-100 text-blue-800' :
                     user.role === 'RUNNER' ? 'bg-green-100 text-green-800' :
                     'bg-gray-100 text-gray-800'
                   }`}>
@@ -531,7 +531,7 @@ export function UserTable({
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                         user.role === 'ADMIN' ? 'bg-purple-100 text-purple-800' :
-                        user.role === 'SHOP_OWNER' ? 'bg-blue-100 text-blue-800' :
+                        user.role === 'MERCHANT' ? 'bg-blue-100 text-blue-800' :
                         user.role === 'RUNNER' ? 'bg-green-100 text-green-800' :
                         'bg-gray-100 text-gray-800'
                       }`}>

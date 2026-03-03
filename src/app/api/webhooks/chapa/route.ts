@@ -83,9 +83,13 @@ export async function POST(request: NextRequest) {
     if (webhookData.event === 'charge.success' && webhookData.data.status === 'success') {
       console.log('[Webhook] Processing successful payment for order:', orderId);
 
+      if (!orderId) {
+        throw new Error('ORDER_ID_MISSING');
+      }
+
       // Use Firestore Transaction for atomic update (Requirement 8.3, 23.1, 24.5)
       const result = await adminDb.runTransaction(async (transaction) => {
-        const orderRef = adminDb.collection('orders').doc(orderId);
+        const orderRef = adminDb.collection('orders').doc(orderId!);
         const orderDoc = await transaction.get(orderRef);
 
         if (!orderDoc.exists) {
@@ -158,9 +162,13 @@ export async function POST(request: NextRequest) {
     if (webhookData.event === 'charge.failed' || webhookData.data.status === 'failed') {
       console.log('[Webhook] Processing failed payment for order:', orderId);
 
+      if (!orderId) {
+        throw new Error('ORDER_ID_MISSING');
+      }
+
       // Update order status to FAILED
       const result = await adminDb.runTransaction(async (transaction) => {
-        const orderRef = adminDb.collection('orders').doc(orderId);
+        const orderRef = adminDb.collection('orders').doc(orderId!);
         const orderDoc = await transaction.get(orderRef);
 
         if (!orderDoc.exists) {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { initiateChapaPaymentForOrder } from '@/app/actions/payment';
+import { initiateChapaPayment } from '@/app/actions/payment';
 import { useTelegramAuth } from './TelegramAuthProvider';
 import { useI18n } from '@/i18n/provider';
 
@@ -54,7 +54,7 @@ export function ChapaPaymentButton({
 
     try {
       // Initiate payment with Chapa
-      const result = await initiateChapaPaymentForOrder(user.telegramId, orderId);
+      const result = await initiateChapaPayment(user.telegramId, orderId);
 
       if (result.success && result.data) {
         // Trigger success haptic feedback (Requirement 21.5)

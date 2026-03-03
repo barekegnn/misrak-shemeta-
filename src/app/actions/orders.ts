@@ -16,7 +16,8 @@ import type {
   OrderStatus, 
   ActionResponse,
   City,
-  Location
+  Location,
+  Campus
 } from '@/types';
 
 /**
@@ -81,7 +82,8 @@ export async function createOrder(
       const shopCity = shop!.city as City;
 
       // Calculate delivery fee for this item's shop
-      const route = calculateDeliveryFee(shopCity, user.homeLocation as Location);
+      // Note: homeLocation should be a Campus (validated during user registration)
+      const route = calculateDeliveryFee(shopCity, user.homeLocation as Campus);
       deliveryFee = Math.max(deliveryFee, route.fee); // Use highest delivery fee
 
       // Create order item
@@ -100,10 +102,14 @@ export async function createOrder(
     // 4. Generate OTP
     const otpCode = generateOTP();
 
-    // 5. Create order document
+    // 5. Extract unique shop IDs for efficient queries
+    const shopIds = [...new Set(orderItems.map(item => item.shopId))];
+
+    // 6. Create order document
     const orderData = {
       userId: user.id,
       items: orderItems,
+      shopIds, // Denormalized for efficient shop owner queries
       totalAmount,
       deliveryFee,
       status: 'PENDING' as OrderStatus,
@@ -114,7 +120,7 @@ export async function createOrder(
       updatedAt: new Date(),
       statusHistory: [
         {
-          from: null,
+          from: 'PENDING' as OrderStatus,
           to: 'PENDING' as OrderStatus,
           timestamp: new Date(),
           actor: user.id
@@ -124,7 +130,7 @@ export async function createOrder(
 
     const orderRef = await adminDb.collection('orders').add(orderData);
 
-    // 6. Decrement product stock
+    // 7. Decrement product stock
     const batch = adminDb.batch();
     for (const item of orderItems) {
       const productRef = adminDb.collection('products').doc(item.productId);
@@ -134,10 +140,10 @@ export async function createOrder(
     }
     await batch.commit();
 
-    // 7. Clear cart
+    // 8. Clear cart
     await adminDb.collection('carts').doc(user.id).delete();
 
-    // 8. Return created order
+    // 9. Return created order
     const order: Order = {
       id: orderRef.id,
       ...orderData
@@ -202,6 +208,7 @@ export async function getOrderById(
       id: orderDoc.id,
       userId: data.userId,
       items: data.items,
+      shopIds: data.shopIds || [], // Backward compatibility
       totalAmount: data.totalAmount,
       deliveryFee: data.deliveryFee,
       status: data.status,
@@ -253,6 +260,7 @@ export async function getUserOrders(
         id: doc.id,
         userId: data.userId,
         items: data.items,
+        shopIds: data.shopIds || [], // Backward compatibility
         totalAmount: data.totalAmount,
         deliveryFee: data.deliveryFee,
         status: data.status,
@@ -281,6 +289,8 @@ export async function getUserOrders(
 
 /**
  * Get all orders for a shop owner
+ * PERFORMANCE OPTIMIZED: Uses denormalized shopIds array for efficient queries
+ * 
  * Requirements: 9.1, 9.6
  */
 export async function getShopOrders(
@@ -307,13 +317,13 @@ export async function getShopOrders(
 
     const shopId = shopSnapshot.docs[0].id;
 
-    // Get all orders containing items from this shop
+    // PERFORMANCE: Use denormalized shopIds array for efficient query
     let query = adminDb
       .collection('orders')
-      .where('items', 'array-contains', { shopId });
+      .where('shopIds', 'array-contains', shopId);
 
     if (statusFilter) {
-      query = query.where('status', '==', statusFilter);
+      query = query.where('status', '==', statusFilter) as any;
     }
 
     const ordersSnapshot = await query.orderBy('createdAt', 'desc').get();
@@ -330,8 +340,25 @@ export async function getShopOrders(
 
         return {
           id: doc.id,
-          ...orderData,
-          items: shopItems
+          userId: orderData.userId,
+          items: shopItems,
+          shopIds: orderData.shopIds || [],
+          totalAmount: orderData.totalAmount,
+          deliveryFee: orderData.deliveryFee,
+          status: orderData.status,
+          userHomeLocation: orderData.userHomeLocation,
+          otpCode: orderData.otpCode,
+          otpAttempts: orderData.otpAttempts,
+          chapaTransactionRef: orderData.chapaTransactionRef,
+          cancellationReason: orderData.cancellationReason,
+          createdAt: orderData.createdAt?.toDate ? orderData.createdAt.toDate() : new Date(orderData.createdAt),
+          updatedAt: orderData.updatedAt?.toDate ? orderData.updatedAt.toDate() : new Date(orderData.updatedAt),
+          statusHistory: orderData.statusHistory?.map((sh: any) => ({
+            from: sh.from,
+            to: sh.to,
+            timestamp: sh.timestamp?.toDate ? sh.timestamp.toDate() : new Date(sh.timestamp),
+            actor: sh.actor,
+          })) || [],
         } as Order;
       })
       .filter(order => order !== null) as Order[];
@@ -753,6 +780,7 @@ export async function getRunnerOrders(
         id: doc.id,
         userId: data.userId,
         items: data.items,
+        shopIds: data.shopIds || [],
         totalAmount: data.totalAmount,
         deliveryFee: data.deliveryFee,
         status: data.status,

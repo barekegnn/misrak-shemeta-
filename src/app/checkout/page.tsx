@@ -173,7 +173,7 @@ export default function CheckoutPage() {
       );
 
       if (!orderResult.success || !orderResult.data) {
-        triggerHaptic('error');
+        triggerHaptic('heavy');
         setError(orderResult.error || 'Failed to create order');
         return;
       }
@@ -186,7 +186,7 @@ export default function CheckoutPage() {
       const paymentResult = await initiateChapaPayment(user.telegramId, order.id);
 
       if (!paymentResult.success || !paymentResult.data) {
-        triggerHaptic('error');
+        triggerHaptic('heavy');
         setError(paymentResult.error || 'Failed to initiate payment');
         return;
       }
@@ -195,12 +195,12 @@ export default function CheckoutPage() {
       console.log('[CheckoutPage] Payment initiated, redirecting to:', checkoutUrl);
 
       // Step 3: Redirect to Chapa payment interface (Requirement 8.2)
-      triggerHaptic('success');
+      triggerHaptic('medium');
       window.location.href = checkoutUrl;
 
     } catch (err) {
       console.error('[CheckoutPage] Error placing order:', err);
-      triggerHaptic('error');
+      triggerHaptic('heavy');
       setError('An unexpected error occurred');
     } finally {
       setIsProcessing(false);

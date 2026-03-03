@@ -85,13 +85,13 @@ export default function CartPage() {
           setCartTotal(totalResult.data);
         }
         
-        triggerHaptic('success');
+        triggerHaptic('medium');
       } else {
-        triggerHaptic('error');
+        triggerHaptic('heavy');
         alert(result.error || 'Failed to update quantity');
       }
     } catch (error) {
-      triggerHaptic('error');
+      triggerHaptic('heavy');
       alert('Failed to update quantity');
     } finally {
       setUpdatingItems(prev => {
@@ -120,13 +120,13 @@ export default function CartPage() {
           setCartTotal(totalResult.data);
         }
         
-        triggerHaptic('success');
+        triggerHaptic('medium');
       } else {
-        triggerHaptic('error');
+        triggerHaptic('heavy');
         alert(result.error || 'Failed to remove item');
       }
     } catch (error) {
-      triggerHaptic('error');
+      triggerHaptic('heavy');
       alert('Failed to remove item');
     } finally {
       setUpdatingItems(prev => {

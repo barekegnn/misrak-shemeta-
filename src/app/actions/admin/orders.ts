@@ -10,7 +10,7 @@
 'use server';
 
 import { adminDb } from '@/lib/firebase/admin';
-import { requireAdminAccess } from '@/lib/auth/admin';
+import { requireAdminAccess, getAdminUser } from '@/lib/auth/admin';
 import { logAdminAction } from '@/lib/admin/audit';
 import type { Order, ActionResponse, OrderFilters, OrderStatus } from '@/types';
 import { ALLOWED_TRANSITIONS } from '@/types';
@@ -36,8 +36,11 @@ export async function manualUpdateOrderStatus(
   reason: string
 ): Promise<ActionResponse<Order>> {
   try {
-    // Verify admin access
-    await requireAdminAccess(adminTelegramId);
+    // Verify admin access and get admin user
+    const admin = await getAdminUser(adminTelegramId);
+    if (!admin) {
+      return { success: false, error: 'UNAUTHORIZED: Admin access required' };
+    }
     
     // Update order status using transaction
     const updatedOrder = await adminDb.runTransaction(async (transaction) => {
@@ -110,11 +113,12 @@ export async function manualUpdateOrderStatus(
     
     // Log admin action
     await logAdminAction({
+      adminId: admin.id,
       adminTelegramId,
       action: 'ORDER_STATUS_UPDATE',
       targetType: 'ORDER',
       targetId: orderId,
-      details: { 
+      targetDetails: { 
         oldStatus: updatedOrder.statusHistory[updatedOrder.statusHistory.length - 2]?.to || 'UNKNOWN',
         newStatus,
         reason,
@@ -155,8 +159,11 @@ export async function manualRefund(
   reason: string
 ): Promise<ActionResponse<void>> {
   try {
-    // Verify admin access
-    await requireAdminAccess(adminTelegramId);
+    // Verify admin access and get admin user
+    const admin = await getAdminUser(adminTelegramId);
+    if (!admin) {
+      return { success: false, error: 'UNAUTHORIZED: Admin access required' };
+    }
     
     // Get order
     const orderDoc = await adminDb.collection('orders').doc(orderId).get();
@@ -192,11 +199,12 @@ export async function manualRefund(
     
     // Log admin action
     await logAdminAction({
+      adminId: admin.id,
       adminTelegramId,
       action: 'ORDER_REFUND',
       targetType: 'ORDER',
       targetId: orderId,
-      details: { 
+      targetDetails: { 
         reason,
         refundAmount: orderData.totalAmount + orderData.deliveryFee,
         originalStatus: orderData.status,
@@ -401,6 +409,7 @@ export async function getOrderById(
       id: orderDoc.id,
       userId: data.userId,
       items: data.items,
+      shopIds: data.shopIds || [],
       totalAmount: data.totalAmount,
       deliveryFee: data.deliveryFee,
       status: data.status,

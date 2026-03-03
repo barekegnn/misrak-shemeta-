@@ -75,10 +75,10 @@ export function ShopTable({
     startTransition(async () => {
       const filters: ShopFilters = {};
       
-      if (searchName) filters.shopName = searchName;
-      if (filterLocation) filters.location = filterLocation as any;
-      if (filterStatus === 'active') filters.suspended = false;
-      if (filterStatus === 'suspended') filters.suspended = true;
+      if (searchName) filters.search = searchName;
+      if (filterLocation) filters.city = filterLocation as any;
+      if (filterStatus === 'active') filters.status = 'active';
+      if (filterStatus === 'suspended') filters.status = 'suspended';
       
       const result = await getShopList(adminTelegramId, filters, 1, pageSize);
       
@@ -119,10 +119,10 @@ export function ShopTable({
   const goToPage = (newPage: number) => {
     startTransition(async () => {
       const filters: ShopFilters = {};
-      if (searchName) filters.shopName = searchName;
-      if (filterLocation) filters.location = filterLocation as any;
-      if (filterStatus === 'active') filters.suspended = false;
-      if (filterStatus === 'suspended') filters.suspended = true;
+      if (searchName) filters.search = searchName;
+      if (filterLocation) filters.city = filterLocation as any;
+      if (filterStatus === 'active') filters.status = 'active';
+      if (filterStatus === 'suspended') filters.status = 'suspended';
       
       const result = await getShopList(adminTelegramId, filters, newPage, pageSize);
       if (result.success && result.data) {
@@ -469,11 +469,11 @@ export function ShopTable({
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div>
                   <span className="text-gray-500 block">Location</span>
-                  {shop.city || shop.location ? (
+                  {shop.city ? (
                     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium mt-1 ${
-                      (shop.city || shop.location) === 'Harar' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
+                      shop.city === 'Harar' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
                     }`}>
-                      {(shop.city || shop.location)?.replace('_', ' ')}
+                      {shop.city.replace('_', ' ')}
                     </span>
                   ) : (
                     <span className="text-gray-400">N/A</span>
@@ -612,11 +612,11 @@ export function ShopTable({
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      {shop.city || shop.location ? (
+                      {shop.city ? (
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          (shop.city || shop.location) === 'Harar' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
+                          shop.city === 'Harar' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
                         }`}>
-                          {(shop.city || shop.location)?.replace('_', ' ')}
+                          {shop.city.replace('_', ' ')}
                         </span>
                       ) : (
                         <span className="text-gray-400">N/A</span>

@@ -1,0 +1,59 @@
+# Dependencies
+node_modules
+
+# Build outputs
+.next
+out
+build
+dist
+
+# Firebase cache and emulator data (LARGE FILES)
+.firebase-cache/
+.firebase-cache/**
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# Environment files (will be set via Vercel dashboard)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Testing
+coverage
+.nyc_output
+
+# Misc
+.DS_Store
+*.pem
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Git
+.git
+.gitignore
+
+# Documentation (not needed in production)
+*.md
+!README.md
+
+# Kiro specs (not needed in production)
+.kiro/
+
+# Test and development scripts (not needed in production)
+scripts/test-*.ts
+scripts/test-*.js
+scripts/verify-*.js
+scripts/simulate-*.ts
+scripts/clear-*.ts

@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 
 export default function RunnerOrdersPage() {
-  const { telegramId, isLoading: authLoading } = useTelegramAuth();
+  const { user, isLoading: authLoading } = useTelegramAuth();
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -25,18 +25,18 @@ export default function RunnerOrdersPage() {
   const [filter, setFilter] = useState<'ALL' | 'DISPATCHED' | 'ARRIVED'>('ALL');
 
   useEffect(() => {
-    if (!authLoading && telegramId) {
+    if (!authLoading && user) {
       loadOrders();
     }
-  }, [authLoading, telegramId]);
+  }, [authLoading, user]);
 
   const loadOrders = async () => {
-    if (!telegramId) return;
+    if (!user) return;
 
     setIsLoading(true);
     setError(null);
 
-    const result = await getRunnerOrders(telegramId);
+    const result = await getRunnerOrders(user.telegramId);
 
     if (result.success && result.data) {
       setOrders(result.data);

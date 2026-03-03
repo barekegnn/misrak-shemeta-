@@ -53,7 +53,7 @@ export function ProductTable({
   const applyFilters = () => {
     startTransition(async () => {
       const filters: ProductFilters = {};
-      if (searchName) filters.productName = searchName;
+      if (searchName) filters.search = searchName;
       if (filterLocation) filters.shopCity = filterLocation as any;
       if (minPrice) filters.minPrice = parseFloat(minPrice);
       if (maxPrice) filters.maxPrice = parseFloat(maxPrice);
@@ -89,7 +89,7 @@ export function ProductTable({
   const goToPage = (newPage: number) => {
     startTransition(async () => {
       const filters: ProductFilters = {};
-      if (searchName) filters.productName = searchName;
+      if (searchName) filters.search = searchName;
       if (filterLocation) filters.shopCity = filterLocation as any;
       if (minPrice) filters.minPrice = parseFloat(minPrice);
       if (maxPrice) filters.maxPrice = parseFloat(maxPrice);

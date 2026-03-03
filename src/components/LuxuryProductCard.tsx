@@ -39,9 +39,9 @@ export function LuxuryProductCard({
     
     try {
       await onAddToCart?.(product.id, 1);
-      triggerHaptic('success');
+      triggerHaptic('medium');
     } catch (error) {
-      triggerHaptic('error');
+      triggerHaptic('heavy');
     } finally {
       setIsAddingToCart(false);
     }

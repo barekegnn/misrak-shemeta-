@@ -203,7 +203,7 @@ export async function uploadImage(
     // Validate file
     const validation = validateImageFile(file);
     if (!validation.valid) {
-      return validation;
+      return { success: false, error: validation.error };
     }
 
     // Compress image if needed

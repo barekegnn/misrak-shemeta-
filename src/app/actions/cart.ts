@@ -2,7 +2,7 @@
 
 import { adminDb, FieldValue } from '@/lib/firebase/admin';
 import { verifyTelegramUser } from '@/lib/auth/telegram';
-import { Cart, CartItem, ActionResponse, Product } from '@/types';
+import { Cart, CartItem, ActionResponse, Product, City } from '@/types';
 
 /**
  * Adds a product to the user's cart.
@@ -289,39 +289,63 @@ export async function getCart(
     const cartData = cartDoc.data()!;
     const items: CartItem[] = cartData.items || [];
 
-    // 3. Enrich cart items with product details
-    const enrichedItems = await Promise.all(
-      items.map(async (item) => {
-        const productDoc = await adminDb.collection('products').doc(item.productId).get();
+    // 3. Enrich cart items with product details (OPTIMIZED: Batch fetch)
+    // Instead of fetching products one by one, batch fetch all at once
+    const productIds = items.map(item => item.productId);
+    
+    if (productIds.length === 0) {
+      return {
+        success: true,
+        data: {
+          id: user.id,
+          items: [],
+          enrichedItems: [],
+          updatedAt: cartData.updatedAt.toDate(),
+        },
+      };
+    }
+
+    // Batch fetch all products (max 10 per batch due to Firestore 'in' limit)
+    const productDocs = await adminDb.getAll(
+      ...productIds.map(id => adminDb.collection('products').doc(id))
+    );
+
+    // Create product map for quick lookup
+    const productMap = new Map<string, Product>();
+    productDocs.forEach(doc => {
+      if (doc.exists) {
+        const data = doc.data()!;
+        productMap.set(doc.id, {
+          id: doc.id,
+          shopId: data.shopId,
+          shopCity: data.shopCity as City,
+          name: data.name,
+          description: data.description,
+          price: data.price,
+          category: data.category,
+          images: data.images,
+          stock: data.stock,
+          createdAt: data.createdAt.toDate(),
+          updatedAt: data.updatedAt.toDate(),
+        });
+      }
+    });
+
+    // Enrich cart items with product data
+    const enrichedItems = items
+      .map(item => {
+        const product = productMap.get(item.productId);
+        if (!product) return null; // Product no longer exists
         
-        if (!productDoc.exists) {
-          // Product no longer exists, skip it
-          return null;
-        }
-
-        const productData = productDoc.data()!;
-        const product: Product = {
-          id: productDoc.id,
-          shopId: productData.shopId,
-          name: productData.name,
-          description: productData.description,
-          price: productData.price,
-          category: productData.category,
-          images: productData.images,
-          stock: productData.stock,
-          createdAt: productData.createdAt.toDate(),
-          updatedAt: productData.updatedAt.toDate(),
-        };
-
         return {
           ...item,
           product,
         };
       })
-    );
+      .filter(item => item !== null) as Array<CartItem & { product: Product }>;
 
     // Filter out null values (deleted products)
-    const validEnrichedItems = enrichedItems.filter(item => item !== null) as Array<CartItem & { product: Product }>;
+    const validEnrichedItems = enrichedItems;
 
     const cart: Cart = {
       id: user.id,

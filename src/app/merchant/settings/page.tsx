@@ -28,7 +28,7 @@ export default function ShopSettings() {
 
   const [formData, setFormData] = useState({
     name: '',
-    city: 'Harar' as 'Harar' | 'Dire_Dawa',
+    city: 'Harar' as 'Harar' | 'Dire Dawa',
     contactPhone: '',
     description: '',
   });
@@ -247,7 +247,7 @@ export default function ShopSettings() {
                 <RadioGroup
                   value={formData.city}
                   onValueChange={(value) =>
-                    setFormData({ ...formData, city: value as 'Harar' | 'Dire_Dawa' })
+                    setFormData({ ...formData, city: value as 'Harar' | 'Dire Dawa' })
                   }
                   disabled={saving}
                 >
@@ -261,7 +261,7 @@ export default function ShopSettings() {
                     </Label>
                   </div>
                   <div className="flex items-center space-x-3 p-3 sm:p-4 border rounded-lg hover:bg-gray-50 cursor-pointer active:bg-gray-100">
-                    <RadioGroupItem value="Dire_Dawa" id="dire-dawa" className="min-w-[20px] min-h-[20px]" />
+                    <RadioGroupItem value="Dire Dawa" id="dire-dawa" className="min-w-[20px] min-h-[20px]" />
                     <Label htmlFor="dire-dawa" className="flex-1 cursor-pointer">
                       <div className="font-medium text-sm sm:text-base">Dire Dawa</div>
                       <div className="text-xs sm:text-sm text-gray-500">

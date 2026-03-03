@@ -16,7 +16,7 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
   const generateBreadcrumbs = () => {
     const paths = pathname.split('/').filter(Boolean);
     
-    const breadcrumbs = [
+    const breadcrumbs: Array<{ label: string; href: string; icon?: typeof Home }> = [
       { label: 'Home', href: '/', icon: Home }
     ];
 
@@ -32,8 +32,7 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
       
       breadcrumbs.push({
         label,
-        href: currentPath,
-        icon: undefined
+        href: currentPath
       });
     });
 

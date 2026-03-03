@@ -43,7 +43,7 @@ export function AIChatInterface({
     if (result.success && result.data) {
       setIsAvailable(result.data.available);
       if (!result.data.available) {
-        setError(result.data.message);
+        setError(result.data.message || 'AI chat is not available');
       }
     }
   };

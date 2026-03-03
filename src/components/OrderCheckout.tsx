@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createOrder } from '@/app/actions/orders';
-import { initiateChapaPaymentForOrder } from '@/app/actions/payment';
+import { initiateChapaPayment } from '@/app/actions/payment';
 import type { CartItem, Product } from '@/types';
 
 interface OrderCheckoutProps {
@@ -53,7 +53,7 @@ export function OrderCheckout({
       const order = orderResult.data;
 
       // 2. Initiate payment
-      const paymentResult = await initiateChapaPaymentForOrder(
+      const paymentResult = await initiateChapaPayment(
         telegramId,
         order.id
       );

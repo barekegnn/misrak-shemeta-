@@ -80,6 +80,7 @@ export async function getPlatformStatistics(
         id: doc.id,
         userId: data.userId,
         items: data.items || [],
+        shopIds: data.shopIds || [],
         totalAmount: data.totalAmount,
         deliveryFee: data.deliveryFee,
         status: data.status,

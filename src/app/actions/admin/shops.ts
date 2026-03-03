@@ -10,7 +10,7 @@
 'use server';
 
 import { adminDb } from '@/lib/firebase/admin';
-import { requireAdminAccess } from '@/lib/auth/admin';
+import { requireAdminAccess, getAdminUser } from '@/lib/auth/admin';
 import { logAdminAction } from '@/lib/admin/audit';
 import type { Shop, ActionResponse, ShopFilters } from '@/types';
 
@@ -33,8 +33,11 @@ export async function suspendShop(
   reason: string
 ): Promise<ActionResponse<void>> {
   try {
-    // Verify admin access
-    await requireAdminAccess(adminTelegramId);
+    // Verify admin access and get admin user
+    const admin = await getAdminUser(adminTelegramId);
+    if (!admin) {
+      return { success: false, error: 'UNAUTHORIZED: Admin access required' };
+    }
     
     // Update shop record
     await adminDb.collection('shops').doc(shopId).update({
@@ -46,11 +49,12 @@ export async function suspendShop(
     
     // Log admin action
     await logAdminAction({
+      adminId: admin.id,
       adminTelegramId,
-      action: 'SUSPEND_SHOP',
+      action: 'SHOP_SUSPEND',
       targetType: 'SHOP',
       targetId: shopId,
-      details: { reason },
+      targetDetails: { reason },
     });
     
     return { success: true };
@@ -81,8 +85,11 @@ export async function activateShop(
   shopId: string
 ): Promise<ActionResponse<void>> {
   try {
-    // Verify admin access
-    await requireAdminAccess(adminTelegramId);
+    // Verify admin access and get admin user
+    const admin = await getAdminUser(adminTelegramId);
+    if (!admin) {
+      return { success: false, error: 'UNAUTHORIZED: Admin access required' };
+    }
     
     // Update shop record
     await adminDb.collection('shops').doc(shopId).update({
@@ -94,11 +101,12 @@ export async function activateShop(
     
     // Log admin action
     await logAdminAction({
+      adminId: admin.id,
       adminTelegramId,
-      action: 'ACTIVATE_SHOP',
+      action: 'SHOP_ACTIVATE',
       targetType: 'SHOP',
       targetId: shopId,
-      details: {},
+      targetDetails: {},
     });
     
     return { success: true };
@@ -134,8 +142,11 @@ export async function adjustShopBalance(
   reason: string
 ): Promise<ActionResponse<void>> {
   try {
-    // Verify admin access
-    await requireAdminAccess(adminTelegramId);
+    // Verify admin access and get admin user
+    const admin = await getAdminUser(adminTelegramId);
+    if (!admin) {
+      return { success: false, error: 'UNAUTHORIZED: Admin access required' };
+    }
     
     // Get current shop data
     const shopDoc = await adminDb.collection('shops').doc(shopId).get();
@@ -167,11 +178,12 @@ export async function adjustShopBalance(
     
     // Log admin action
     await logAdminAction({
+      adminId: admin.id,
       adminTelegramId,
-      action: 'ADJUST_SHOP_BALANCE',
+      action: 'SHOP_BALANCE_ADJUST',
       targetType: 'SHOP',
       targetId: shopId,
-      details: { amount, reason, oldBalance: currentBalance, newBalance },
+      targetDetails: { amount, reason, oldBalance: currentBalance, newBalance },
     });
     
     return { success: true };
@@ -219,19 +231,20 @@ export async function getShopList(
     let query: FirebaseFirestore.Query = adminDb.collection('shops');
     
     // Apply filters
-    if (filters?.location) {
-      query = query.where('city', '==', filters.location);
+    if (filters?.city) {
+      query = query.where('city', '==', filters.city);
     }
     
-    if (filters?.suspended !== undefined) {
-      query = query.where('suspended', '==', filters.suspended);
+    if (filters?.status) {
+      const isSuspended = filters.status === 'suspended';
+      query = query.where('suspended', '==', isSuspended);
     }
     
-    if (filters?.shopName) {
+    if (filters?.search) {
       // Note: Firestore doesn't support case-insensitive search natively
       // For production, consider using Algolia or similar for better search
-      query = query.where('name', '>=', filters.shopName)
-                   .where('name', '<=', filters.shopName + '\uf8ff');
+      query = query.where('name', '>=', filters.search)
+                   .where('name', '<=', filters.search + '\uf8ff');
     }
     
     // Get total count
@@ -328,7 +341,8 @@ export async function getShopById(
     const shop: Shop = {
       id: shopDoc.id,
       name: data.name,
-      location: data.location,
+      ownerId: data.ownerId,
+      city: data.city,
       contactPhone: data.contactPhone,
       balance: data.balance || 0,
       suspended: data.suspended || false,

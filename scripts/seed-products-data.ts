@@ -5,7 +5,7 @@
 import { Timestamp } from 'firebase-admin/firestore';
 
 export const generateProducts = () => {
-  const products = [];
+  const products: any[] = [];
   let productId = 1;
 
   // Shop 1: Harar Tech Hub (Electronics)

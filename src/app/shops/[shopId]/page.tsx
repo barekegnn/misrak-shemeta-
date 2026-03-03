@@ -28,7 +28,7 @@ const BRAND_COLORS = {
     gradient: 'from-orange-500/20 via-red-500/10 to-transparent',
     glow: 'shadow-orange-500/20',
   },
-  'Dire_Dawa': {
+  'Dire Dawa': {
     primary: '#4F46E5',
     gradient: 'from-indigo-500/20 via-purple-500/10 to-transparent',
     glow: 'shadow-indigo-500/20',
@@ -55,16 +55,16 @@ export default function ShopProductsPage() {
       const result = await addToCart(user.telegramId, productId, quantity);
       if (result.success) {
         // Show success feedback
-        triggerHaptic('success');
+        triggerHaptic('medium');
         setSuccessMessage('Item added to cart!');
         setTimeout(() => setSuccessMessage(null), 3000); // Hide after 3 seconds
       } else {
         // Show error feedback
-        triggerHaptic('error');
+        triggerHaptic('heavy');
         alert(result.error || 'Failed to add to cart');
       }
     } catch (error) {
-      triggerHaptic('error');
+      triggerHaptic('heavy');
       alert('Failed to add to cart');
     }
   };

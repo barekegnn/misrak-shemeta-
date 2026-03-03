@@ -27,7 +27,7 @@ const BRAND_COLORS = {
     glow: 'shadow-orange-500/20',
     border: 'border-orange-500/30',
   },
-  'Dire_Dawa': {
+  'Dire Dawa': {
     primary: '#4F46E5',
     gradient: 'from-indigo-500/20 via-purple-500/10 to-transparent',
     glow: 'shadow-indigo-500/20',

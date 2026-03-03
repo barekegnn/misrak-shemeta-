@@ -10,7 +10,7 @@
 'use server';
 
 import { adminDb } from '@/lib/firebase/admin';
-import { requireAdminAccess } from '@/lib/auth/admin';
+import { requireAdminAccess, getAdminUser } from '@/lib/auth/admin';
 import { logAdminAction } from '@/lib/admin/audit';
 import type { User, ActionResponse, UserFilters } from '@/types';
 
@@ -33,8 +33,11 @@ export async function suspendUser(
   reason: string
 ): Promise<ActionResponse<void>> {
   try {
-    // Verify admin access
-    await requireAdminAccess(adminTelegramId);
+    // Verify admin access and get admin user
+    const admin = await getAdminUser(adminTelegramId);
+    if (!admin) {
+      return { success: false, error: 'UNAUTHORIZED: Admin access required' };
+    }
     
     // Update user record
     await adminDb.collection('users').doc(userId).update({
@@ -46,11 +49,12 @@ export async function suspendUser(
     
     // Log admin action
     await logAdminAction({
+      adminId: admin.id,
       adminTelegramId,
-      action: 'SUSPEND_USER',
+      action: 'USER_SUSPEND',
       targetType: 'USER',
       targetId: userId,
-      details: { reason },
+      targetDetails: { reason },
     });
     
     return { success: true };
@@ -81,8 +85,11 @@ export async function activateUser(
   userId: string
 ): Promise<ActionResponse<void>> {
   try {
-    // Verify admin access
-    await requireAdminAccess(adminTelegramId);
+    // Verify admin access and get admin user
+    const admin = await getAdminUser(adminTelegramId);
+    if (!admin) {
+      return { success: false, error: 'UNAUTHORIZED: Admin access required' };
+    }
     
     // Update user record
     await adminDb.collection('users').doc(userId).update({
@@ -94,11 +101,12 @@ export async function activateUser(
     
     // Log admin action
     await logAdminAction({
+      adminId: admin.id,
       adminTelegramId,
-      action: 'ACTIVATE_USER',
+      action: 'USER_ACTIVATE',
       targetType: 'USER',
       targetId: userId,
-      details: {},
+      targetDetails: {},
     });
     
     return { success: true };
@@ -131,8 +139,11 @@ export async function changeUserRole(
   newRole: 'STUDENT' | 'MERCHANT' | 'RUNNER' | 'ADMIN'
 ): Promise<ActionResponse<void>> {
   try {
-    // Verify admin access
-    await requireAdminAccess(adminTelegramId);
+    // Verify admin access and get admin user
+    const admin = await getAdminUser(adminTelegramId);
+    if (!admin) {
+      return { success: false, error: 'UNAUTHORIZED: Admin access required' };
+    }
     
     // Get current user data
     const userDoc = await adminDb.collection('users').doc(userId).get();
@@ -146,11 +157,12 @@ export async function changeUserRole(
     
     // Log admin action
     await logAdminAction({
+      adminId: admin.id,
       adminTelegramId,
-      action: 'CHANGE_USER_ROLE',
+      action: 'USER_ROLE_CHANGE',
       targetType: 'USER',
       targetId: userId,
-      details: { oldRole, newRole },
+      targetDetails: { oldRole, newRole },
     });
     
     return { success: true };
@@ -202,16 +214,17 @@ export async function getUserList(
       query = query.where('role', '==', filters.role);
     }
     
-    if (filters?.suspended !== undefined) {
-      query = query.where('suspended', '==', filters.suspended);
+    if (filters?.status) {
+      const isSuspended = filters.status === 'suspended';
+      query = query.where('suspended', '==', isSuspended);
     }
     
     if (filters?.homeLocation) {
       query = query.where('homeLocation', '==', filters.homeLocation);
     }
     
-    if (filters?.telegramId) {
-      query = query.where('telegramId', '==', filters.telegramId);
+    if (filters?.search) {
+      query = query.where('telegramId', '==', filters.search);
     }
     
     // Get total count

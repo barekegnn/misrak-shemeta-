@@ -29,6 +29,7 @@ export interface User {
 export interface Shop {
   id: string; // Firestore document ID (shopId)
   name: string;
+  description?: string; // Optional shop description
   ownerId: string; // Reference to User.id
   city: City; // Shop location
   contactPhone: string;
@@ -44,6 +45,7 @@ export interface Shop {
 export interface Product {
   id: string; // Firestore document ID
   shopId: string; // Reference to Shop.id (tenant isolation)
+  shopCity: City; // Denormalized shop city for performance (eliminates N+1 queries)
   name: string;
   description: string;
   price: number; // Price in ETB
@@ -83,6 +85,7 @@ export interface Order {
   id: string; // Firestore document ID (orderId)
   userId: string; // Reference to User.id (buyer)
   items: OrderItem[];
+  shopIds: string[]; // Denormalized array of unique shop IDs for efficient queries
   totalAmount: number; // Sum of all item prices
   deliveryFee: number; // Calculated by Eastern Triangle Pricing Engine
   status: OrderStatus;

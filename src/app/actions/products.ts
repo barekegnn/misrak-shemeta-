@@ -1,6 +1,6 @@
 'use server';
 
-import { adminDb } from '@/lib/firebase/admin';
+import { adminDb, FieldValue } from '@/lib/firebase/admin';
 import { verifyTelegramUser, getShopIdForOwner } from '@/lib/auth/telegram';
 import { Product, ActionResponse, City } from '@/types';
 import { deleteProductImages } from '@/lib/storage/images';
@@ -78,15 +78,15 @@ export async function createProduct(
     // 6. Create product with shopId association (TENANT ISOLATION)
     const productRef = await adminDb.collection('products').add({
       shopId, // CRITICAL: Associate with shop for tenant isolation
+      shopCity: shopData.city as City, // Denormalized for performance (eliminates N+1 queries)
       name: productData.name,
       description: productData.description,
       price: productData.price,
       category: productData.category,
       images: productData.images,
       stock: productData.stock,
-      originCity: shopData.city as City, // Denormalized for delivery fee calculation
-      createdAt: adminDb.FieldValue.serverTimestamp(),
-      updatedAt: adminDb.FieldValue.serverTimestamp(),
+      createdAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
     });
 
     // 7. Get created product
@@ -96,6 +96,7 @@ export async function createProduct(
     const product: Product = {
       id: productRef.id,
       shopId: productDataFromDb.shopId,
+      shopCity: productDataFromDb.shopCity as City,
       name: productDataFromDb.name,
       description: productDataFromDb.description,
       price: productDataFromDb.price,
@@ -203,7 +204,7 @@ export async function updateProduct(
     // 6. Update product
     await adminDb.collection('products').doc(productId).update({
       ...productData,
-      updatedAt: adminDb.FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
     });
 
     // 7. Get updated product
@@ -213,6 +214,7 @@ export async function updateProduct(
     const product: Product = {
       id: productId,
       shopId: updatedData.shopId,
+      shopCity: updatedData.shopCity as City,
       name: updatedData.name,
       description: updatedData.description,
       price: updatedData.price,
@@ -363,6 +365,7 @@ export async function getProductsByShop(
       return {
         id: doc.id,
         shopId: data.shopId,
+        shopCity: data.shopCity as City,
         name: data.name,
         description: data.description,
         price: data.price,
@@ -413,6 +416,7 @@ export async function getProductsByShopId(
       return {
         id: doc.id,
         shopId: data.shopId,
+        shopCity: data.shopCity as City,
         name: data.name,
         description: data.description,
         price: data.price,

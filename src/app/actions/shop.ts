@@ -2,7 +2,7 @@
 
 import { adminDb } from '@/lib/firebase/admin';
 import { verifyTelegramUser } from '@/lib/auth/telegram';
-import type { Shop, ShopTransaction, ActionResponse } from '@/types';
+import type { Shop, ShopTransaction, ActionResponse, City } from '@/types';
 
 /**
  * Get shop balance for authenticated shop owner
@@ -236,7 +236,7 @@ export async function registerShop(
   telegramId: string,
   shopData: {
     name: string;
-    city: 'Harar' | 'Dire_Dawa';
+    city: City;
     contactPhone: string;
   }
 ): Promise<ActionResponse<Shop>> {
@@ -256,7 +256,7 @@ export async function registerShop(
       return { success: false, error: 'SHOP_NAME_TOO_LONG' };
     }
 
-    if (!shopData.city || (shopData.city !== 'Harar' && shopData.city !== 'Dire_Dawa')) {
+    if (!shopData.city || (shopData.city !== 'Harar' && shopData.city !== 'Dire Dawa')) {
       return { success: false, error: 'INVALID_CITY' };
     }
 
@@ -294,6 +294,7 @@ export async function registerShop(
       city: shopData.city,
       contactPhone: shopData.contactPhone.trim(),
       balance: 0,
+      suspended: false,
       createdAt: new Date(),
       updatedAt: new Date()
     });
@@ -305,6 +306,7 @@ export async function registerShop(
       city: shopData.city,
       contactPhone: shopData.contactPhone.trim(),
       balance: 0,
+      suspended: false,
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -379,8 +381,10 @@ export async function getShops(): Promise<ActionResponse<Shop[]>> {
         ownerId: data.ownerId,
         city: data.city,
         contactPhone: data.contactPhone,
-        description: data.description,
         balance: data.balance || 0,
+        suspended: data.suspended || false,
+        suspendedAt: data.suspendedAt?.toDate(),
+        suspendedReason: data.suspendedReason,
         createdAt: data.createdAt?.toDate() || new Date(),
         updatedAt: data.updatedAt?.toDate() || new Date(),
       };
@@ -412,8 +416,10 @@ export async function getShopById(shopId: string): Promise<ActionResponse<Shop>>
       ownerId: data.ownerId,
       city: data.city,
       contactPhone: data.contactPhone,
-      description: data.description,
       balance: data.balance || 0,
+      suspended: data.suspended || false,
+      suspendedAt: data.suspendedAt?.toDate(),
+      suspendedReason: data.suspendedReason,
       createdAt: data.createdAt?.toDate() || new Date(),
       updatedAt: data.updatedAt?.toDate() || new Date(),
     };

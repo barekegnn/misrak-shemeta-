@@ -44,6 +44,9 @@ export async function verifyTelegramUser(
         homeLocation: data.homeLocation,
         languagePreference: data.languagePreference,
         phoneNumber: data.phoneNumber,
+        suspended: data.suspended || false,
+        suspendedAt: data.suspendedAt?.toDate(),
+        suspendedReason: data.suspendedReason,
         createdAt: data.createdAt.toDate(),
         updatedAt: data.updatedAt.toDate(),
       };
@@ -57,6 +60,7 @@ export async function verifyTelegramUser(
       role: 'STUDENT', // Default role
       homeLocation: 'Haramaya_Main', // Default location (will be updated on first login)
       languagePreference: mapTelegramLanguage(languageCode),
+      suspended: false,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -117,6 +121,9 @@ export async function getUserById(userId: string): Promise<User | null> {
       homeLocation: data.homeLocation,
       languagePreference: data.languagePreference,
       phoneNumber: data.phoneNumber,
+      suspended: data.suspended || false,
+      suspendedAt: data.suspendedAt?.toDate(),
+      suspendedReason: data.suspendedReason,
       createdAt: data.createdAt.toDate(),
       updatedAt: data.updatedAt.toDate(),
     };
