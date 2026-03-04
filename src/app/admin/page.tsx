@@ -7,6 +7,8 @@
  * Requirements: 27.3, 33.1, 34, 35
  */
 
+export const dynamic = 'force-dynamic';
+
 import { getPlatformStatistics } from '@/app/actions/admin';
 import { StatCard } from '@/components/admin/StatCard';
 import { BackButton } from '@/components/navigation';

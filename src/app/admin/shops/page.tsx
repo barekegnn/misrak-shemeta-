@@ -9,6 +9,8 @@
  * Requirements: 29.1, 29.3, 34, 35
  */
 
+export const dynamic = 'force-dynamic';
+
 import { getShopList } from '@/app/actions/admin/shops';
 import { ShopTable } from '@/components/admin/ShopTable';
 import { Store, AlertCircle } from 'lucide-react';

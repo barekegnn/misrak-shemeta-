@@ -7,6 +7,8 @@
  * Requirements: 28.1, 28.3, 34, 35
  */
 
+export const dynamic = 'force-dynamic';
+
 import { getUserList } from '@/app/actions/admin/users';
 import { UserTable } from '@/components/admin/UserTable';
 import { Users, AlertCircle } from 'lucide-react';

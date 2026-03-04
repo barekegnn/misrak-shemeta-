@@ -9,6 +9,8 @@
  * Requirements: 31.1, 31.3, 34, 35
  */
 
+export const dynamic = 'force-dynamic';
+
 import { getOrderList } from '@/app/actions/admin/orders';
 import { OrderTable } from '@/components/admin/OrderTable';
 import { Package } from 'lucide-react';

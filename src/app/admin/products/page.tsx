@@ -9,6 +9,8 @@
  * Requirements: 30.1, 34, 35
  */
 
+export const dynamic = 'force-dynamic';
+
 import { getProductList } from '@/app/actions/admin/products';
 import { ProductTable } from '@/components/admin/ProductTable';
 import { Package, AlertCircle } from 'lucide-react';
