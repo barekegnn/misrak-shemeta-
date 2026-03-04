@@ -78,76 +78,101 @@ export function BottomNav({ role, cartCount = 0 }: BottomNavProps) {
       className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
       aria-label="Mobile navigation"
     >
-      {/* Background with glassmorphism effect */}
-      <div className="relative bg-white/95 backdrop-blur-lg border-t border-gray-200 shadow-lg">
+      {/* Background with premium glassmorphism effect */}
+      <div className="relative bg-white/98 backdrop-blur-2xl border-t border-gray-200/50 shadow-2xl">
+        {/* Gradient accent line at top */}
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600" />
+        
         {/* Subtle gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-50/30 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-50/20 to-transparent pointer-events-none" />
         
         {/* Navigation items container */}
-        <div className="relative flex items-center justify-around h-16 px-2 safe-area-inset-bottom">
+        <div className="relative flex items-center justify-around h-20 px-2 safe-area-inset-bottom">
           {navItems.map((item) => {
             const active = isActive(item.href);
             const Icon = item.icon;
             
             return (
-              <Link
+              <motion.div
                 key={item.href}
-                href={item.href}
-                className={cn(
-                  "relative flex flex-col items-center justify-center flex-1 h-full group",
-                  "min-w-[44px] min-h-[44px]", // Touch-friendly minimum size
-                  "transition-all duration-200"
-                )}
-                aria-label={item.label}
-                aria-current={active ? 'page' : undefined}
+                whileHover={{ y: -4 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex-1 flex flex-col items-center justify-center h-full"
               >
-                {/* Active indicator line at top */}
-                {active && (
-                  <motion.div
-                    layoutId="bottomNavActiveIndicator"
-                    className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full"
-                    transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                  />
-                )}
+                <Link
+                  href={item.href}
+                  className={cn(
+                    "relative flex flex-col items-center justify-center w-full h-full group",
+                    "min-w-[50px] min-h-[50px]", // Touch-friendly minimum size
+                    "transition-all duration-200"
+                  )}
+                  aria-label={item.label}
+                  aria-current={active ? 'page' : undefined}
+                >
+                  {/* Active indicator pill at top */}
+                  {active && (
+                    <motion.div
+                      layoutId="bottomNavActiveIndicator"
+                      className="absolute top-1 left-1/2 -translate-x-1/2 w-10 h-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full"
+                      transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                    />
+                  )}
 
-                {/* Icon container */}
-                <div className="relative flex items-center justify-center">
-                  <Icon 
+                  {/* Icon container with background */}
+                  <motion.div
+                    animate={active ? { scale: 1.1 } : { scale: 1 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                     className={cn(
-                      "w-6 h-6 transition-colors duration-200",
+                      "relative flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-200",
+                      active 
+                        ? "bg-gradient-to-br from-blue-100 to-indigo-100 shadow-md" 
+                        : "group-hover:bg-gray-100"
+                    )}
+                  >
+                    <motion.div
+                      animate={active ? { rotate: 0 } : { rotate: 0 }}
+                      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                    >
+                      <Icon 
+                        className={cn(
+                          "w-5 h-5 transition-all duration-200",
+                          active 
+                            ? "text-blue-600 scale-110" 
+                            : "text-gray-600 group-hover:text-blue-600"
+                        )}
+                        strokeWidth={active ? 2.5 : 2}
+                        aria-hidden="true"
+                      />
+                    </motion.div>
+                    
+                    {/* Badge for cart count or notifications */}
+                    {item.badge !== undefined && item.badge > 0 && (
+                      <motion.span
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="absolute -top-1 -right-1 flex items-center justify-center min-w-[20px] h-[20px] px-1 text-[10px] font-bold text-white bg-gradient-to-r from-red-500 to-red-600 rounded-full shadow-lg"
+                        aria-label={`${item.badge} items`}
+                      >
+                        {item.badge > 99 ? '99+' : item.badge}
+                      </motion.span>
+                    )}
+                  </motion.div>
+
+                  {/* Label */}
+                  <motion.span 
+                    animate={active ? { scale: 1.05 } : { scale: 1 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                    className={cn(
+                      "mt-1 text-[10px] font-semibold transition-all duration-200",
                       active 
                         ? "text-blue-600" 
-                        : "text-gray-500 group-hover:text-gray-700"
+                        : "text-gray-600 group-hover:text-gray-800"
                     )}
-                    strokeWidth={active ? 2.5 : 2}
-                    aria-hidden="true"
-                  />
-                  
-                  {/* Badge for cart count or notifications */}
-                  {item.badge !== undefined && item.badge > 0 && (
-                    <motion.span
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className="absolute -top-1 -right-2 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-white bg-red-500 rounded-full"
-                      aria-label={`${item.badge} items`}
-                    >
-                      {item.badge > 99 ? '99+' : item.badge}
-                    </motion.span>
-                  )}
-                </div>
-
-                {/* Label */}
-                <span 
-                  className={cn(
-                    "mt-0.5 text-[11px] font-medium transition-colors duration-200",
-                    active 
-                      ? "text-blue-600" 
-                      : "text-gray-600 group-hover:text-gray-800"
-                  )}
-                >
-                  {item.label}
-                </span>
-              </Link>
+                  >
+                    {item.label}
+                  </motion.span>
+                </Link>
+              </motion.div>
             );
           })}
         </div>
