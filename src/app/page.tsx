@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import { useTelegramAuth } from '@/components/TelegramAuthProvider';
 import { HomeLocationSelector } from '@/components/HomeLocationSelector';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-import { BottomNav } from '@/components/BottomNav';
 import { useI18n } from '@/i18n/provider';
 import { useState, useEffect } from 'react';
 import { Sparkles, MapPin, User } from 'lucide-react';
@@ -149,8 +148,6 @@ export default function Home() {
           </div>
         </motion.div>
       )}
-
-      <BottomNav />
     </main>
   );
 }
