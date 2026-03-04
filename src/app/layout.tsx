@@ -4,6 +4,7 @@ import { TelegramAuthProvider } from '@/components/TelegramAuthProvider';
 import { I18nProvider } from '@/i18n/provider';
 import { ViewportAdapter } from '@/components/ViewportAdapter';
 import { AppShell } from '@/components/AppShell';
+import { seedDatabase } from '@/lib/firebase/seed';
 
 export const metadata: Metadata = {
   title: 'Misrak Shemeta - Eastern Ethiopia Marketplace',
@@ -21,6 +22,9 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // Seed database on app startup
+  seedDatabase().catch(console.error);
+
   return (
     <html lang="en">
       <head>
