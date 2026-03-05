@@ -27,7 +27,7 @@ export function BottomNav({ role, cartCount = 0 }: BottomNavProps) {
       case 'buyer':
         return [
           { href: '/', label: 'Home', icon: Home },
-          { href: '/products', label: 'Browse', icon: Store },
+          { href: '/shops', label: 'Shops', icon: Store },
           { href: '/cart', label: 'Cart', icon: ShoppingCart, badge: cartCount },
           { href: '/orders', label: 'Orders', icon: Package },
           { href: '/profile', label: 'Profile', icon: User },
