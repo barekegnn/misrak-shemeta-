@@ -222,14 +222,6 @@ const SAMPLE_PRODUCTS: SampleProduct[] = [
 
 export async function POST(request: NextRequest) {
   try {
-    // Check if this is a development environment
-    if (process.env.NODE_ENV === 'production') {
-      return NextResponse.json(
-        { error: 'Seeding is not allowed in production' },
-        { status: 403 }
-      );
-    }
-
     // Check for authorization header (simple protection)
     const authHeader = request.headers.get('authorization');
     const expectedToken = process.env.SEED_API_TOKEN || 'dev-seed-token';

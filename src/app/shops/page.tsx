@@ -25,28 +25,33 @@ export default function ShopsPage() {
 
   useEffect(() => {
     async function loadShops() {
-      if (!user) return;
-
       try {
         setIsLoading(true);
+        setError(null);
+        
+        console.log('[ShopsPage] Loading shops...');
         const result = await getShops();
         
+        console.log('[ShopsPage] Result:', result);
+        
         if (result.success && result.data) {
+          console.log('[ShopsPage] Loaded shops:', result.data.length);
           setShops(result.data);
         } else {
+          console.error('[ShopsPage] Error:', result.error);
           setError(result.error || t('errors.generic'));
         }
       } catch (err) {
+        console.error('[ShopsPage] Exception:', err);
         setError(t('errors.generic'));
       } finally {
         setIsLoading(false);
       }
     }
 
-    if (user) {
-      loadShops();
-    }
-  }, [user, t]);
+    // Load shops immediately, don't wait for user
+    loadShops();
+  }, [t]);
 
   if (authLoading || isLoading) {
     return (

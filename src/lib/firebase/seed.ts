@@ -506,6 +506,7 @@ const SAMPLE_PRODUCTS: SampleProduct[] = [
   },
 ];
 
+let seedingPromise: Promise<void> | null = null;
 let hasSeeded = false;
 
 /**
@@ -513,87 +514,97 @@ let hasSeeded = false;
  * Only runs once per application instance
  */
 export async function seedDatabase() {
-  // Prevent multiple seeding attempts
+  // If already seeding, wait for it to complete
+  if (seedingPromise) {
+    return seedingPromise;
+  }
+
+  // If already seeded, return immediately
   if (hasSeeded) {
-    return;
+    return Promise.resolve();
   }
 
-  try {
-    // Check if shops already exist
-    const shopsSnapshot = await adminDb.collection('shops').limit(1).get();
-    
-    if (!shopsSnapshot.empty) {
-      console.log('✓ Database already seeded, skipping...');
+  // Create the seeding promise
+  seedingPromise = (async () => {
+    try {
+      // Check if shops already exist
+      const shopsSnapshot = await adminDb.collection('shops').limit(1).get();
+      
+      if (!shopsSnapshot.empty) {
+        console.log('✓ Database already seeded, skipping...');
+        hasSeeded = true;
+        return;
+      }
+
+      console.log('🌱 Seeding database with sample shops and products...');
+
+      // Create shops
+      const shopMap = new Map<string, string>(); // shopName -> shopId
+
+      for (const shop of SAMPLE_SHOPS) {
+        const shopRef = await adminDb.collection('shops').add({
+          name: shop.name,
+          city: shop.city,
+          description: shop.description,
+          contactPhone: shop.contactPhone,
+          ownerId: `owner_${shop.name.replace(/\s+/g, '_').toLowerCase()}`,
+          balance: 0,
+          suspended: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+
+        shopMap.set(shop.name, shopRef.id);
+        console.log(`  ✓ Created shop: ${shop.name}`);
+      }
+
+      // Create products
+      let productCount = 0;
+
+      for (const product of SAMPLE_PRODUCTS) {
+        const shopId = shopMap.get(product.shopName);
+        if (!shopId) {
+          console.warn(`  ⚠️  Shop not found for product: ${product.name}`);
+          continue;
+        }
+
+        // Get shop city from SAMPLE_SHOPS
+        const shop = SAMPLE_SHOPS.find((s) => s.name === product.shopName);
+        if (!shop) {
+          console.warn(`  ⚠️  Shop details not found for: ${product.shopName}`);
+          continue;
+        }
+
+        await adminDb.collection('products').add({
+          shopId,
+          shopCity: shop.city,
+          name: product.name,
+          description: product.description,
+          price: product.price,
+          category: product.category,
+          stock: product.stock,
+          images: [
+            `https://via.placeholder.com/400x300?text=${encodeURIComponent(product.name)}`,
+          ],
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+
+        productCount++;
+      }
+
+      console.log(`✅ Database seeding completed!`);
+      console.log(`   - Shops: ${SAMPLE_SHOPS.length}`);
+      console.log(`   - Products: ${productCount}`);
+      console.log(`   - Harar shops: ${SAMPLE_SHOPS.filter((s) => s.city === 'Harar').length}`);
+      console.log(`   - Dire Dawa shops: ${SAMPLE_SHOPS.filter((s) => s.city === 'Dire Dawa').length}`);
+
       hasSeeded = true;
-      return;
+    } catch (error) {
+      console.error('❌ Error seeding database:', error);
+      // Don't throw, just log the error
     }
+  })();
 
-    console.log('🌱 Seeding database with sample shops and products...');
-
-    // Create shops
-    const shopMap = new Map<string, string>(); // shopName -> shopId
-
-    for (const shop of SAMPLE_SHOPS) {
-      const shopRef = await adminDb.collection('shops').add({
-        name: shop.name,
-        city: shop.city,
-        description: shop.description,
-        contactPhone: shop.contactPhone,
-        ownerId: `owner_${shop.name.replace(/\s+/g, '_').toLowerCase()}`,
-        balance: 0,
-        suspended: false,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
-
-      shopMap.set(shop.name, shopRef.id);
-      console.log(`  ✓ Created shop: ${shop.name}`);
-    }
-
-    // Create products
-    let productCount = 0;
-
-    for (const product of SAMPLE_PRODUCTS) {
-      const shopId = shopMap.get(product.shopName);
-      if (!shopId) {
-        console.warn(`  ⚠️  Shop not found for product: ${product.name}`);
-        continue;
-      }
-
-      // Get shop city from SAMPLE_SHOPS
-      const shop = SAMPLE_SHOPS.find((s) => s.name === product.shopName);
-      if (!shop) {
-        console.warn(`  ⚠️  Shop details not found for: ${product.shopName}`);
-        continue;
-      }
-
-      await adminDb.collection('products').add({
-        shopId,
-        shopCity: shop.city,
-        name: product.name,
-        description: product.description,
-        price: product.price,
-        category: product.category,
-        stock: product.stock,
-        images: [
-          `https://via.placeholder.com/400x300?text=${encodeURIComponent(product.name)}`,
-        ],
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
-
-      productCount++;
-    }
-
-    console.log(`✅ Database seeding completed!`);
-    console.log(`   - Shops: ${SAMPLE_SHOPS.length}`);
-    console.log(`   - Products: ${productCount}`);
-    console.log(`   - Harar shops: ${SAMPLE_SHOPS.filter((s) => s.city === 'Harar').length}`);
-    console.log(`   - Dire Dawa shops: ${SAMPLE_SHOPS.filter((s) => s.city === 'Dire Dawa').length}`);
-
-    hasSeeded = true;
-  } catch (error) {
-    console.error('❌ Error seeding database:', error);
-    // Don't throw, just log the error
-  }
+  return seedingPromise;
 }

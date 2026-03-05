@@ -22,7 +22,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Seed database on app startup
+  // Seed database on app startup (fire and forget, but will wait if needed)
   seedDatabase().catch(console.error);
 
   return (
