@@ -1,10 +1,8 @@
 /**
- * API Endpoint: POST /api/admin/seed
+ * API Endpoint: POST /api/admin/reseed
  * 
- * Seeds the Firebase database with sample shops and products.
+ * Cleans up the database and re-seeds with fresh data.
  * This endpoint is for development/testing purposes only.
- * 
- * Requirements: 1, 3, 4, 5
  */
 
 import { adminDb } from '@/lib/firebase/admin';
@@ -233,7 +231,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('🌱 Starting Firebase database seeding...');
+    console.log('🔄 Starting database reseed...');
+
+    // Step 1: Clean up existing data
+    console.log('🧹 Cleaning up existing data...');
+    
+    const productsSnapshot = await adminDb.collection('products').get();
+    const productDeletePromises = productsSnapshot.docs.map((doc) => doc.ref.delete());
+    await Promise.all(productDeletePromises);
+    console.log(`  ✓ Deleted ${productsSnapshot.size} products`);
+
+    const shopsSnapshot = await adminDb.collection('shops').get();
+    const shopDeletePromises = shopsSnapshot.docs.map((doc) => doc.ref.delete());
+    await Promise.all(shopDeletePromises);
+    console.log(`  ✓ Deleted ${shopsSnapshot.size} shops`);
+
+    // Step 2: Seed fresh data
+    console.log('🌱 Seeding fresh data...');
 
     // Create shops
     const shopMap = new Map<string, string>(); // shopName -> shopId
@@ -252,7 +266,7 @@ export async function POST(request: NextRequest) {
       });
 
       shopMap.set(shop.name, shopRef.id);
-      console.log(`✓ Created shop: ${shop.name} (${shop.city})`);
+      console.log(`  ✓ Created shop: ${shop.name} (${shop.city})`);
     }
 
     // Create products
@@ -261,20 +275,20 @@ export async function POST(request: NextRequest) {
     for (const product of SAMPLE_PRODUCTS) {
       const shopId = shopMap.get(product.shopName);
       if (!shopId) {
-        console.warn(`⚠️  Shop not found for product: ${product.name}`);
+        console.warn(`  ⚠️  Shop not found for product: ${product.name}`);
         continue;
       }
 
       // Get shop city from SAMPLE_SHOPS
       const shop = SAMPLE_SHOPS.find((s) => s.name === product.shopName);
       if (!shop) {
-        console.warn(`⚠️  Shop details not found for: ${product.shopName}`);
+        console.warn(`  ⚠️  Shop details not found for: ${product.shopName}`);
         continue;
       }
 
       await adminDb.collection('products').add({
         shopId,
-        shopCity: shop.city,
+        shopCity: shop.city, // CRITICAL: Denormalized city field
         name: product.name,
         description: product.description,
         price: product.price,
@@ -288,25 +302,27 @@ export async function POST(request: NextRequest) {
       });
 
       productCount++;
-      console.log(`✓ Created product: ${product.name}`);
+      console.log(`  ✓ Created product: ${product.name} (${shop.city})`);
     }
 
-    console.log('🎉 Database seeding completed successfully!');
+    console.log('🎉 Database reseed completed successfully!');
 
     return NextResponse.json({
       success: true,
-      message: 'Database seeded successfully',
+      message: 'Database reseeded successfully',
       summary: {
-        shops: SAMPLE_SHOPS.length,
-        products: productCount,
+        oldShops: shopsSnapshot.size,
+        oldProducts: productsSnapshot.size,
+        newShops: SAMPLE_SHOPS.length,
+        newProducts: productCount,
         harar_shops: SAMPLE_SHOPS.filter((s) => s.city === 'Harar').length,
         dire_dawa_shops: SAMPLE_SHOPS.filter((s) => s.city === 'Dire Dawa').length,
       },
     });
   } catch (error) {
-    console.error('❌ Error seeding database:', error);
+    console.error('❌ Error reseeding database:', error);
     return NextResponse.json(
-      { error: 'Failed to seed database', details: String(error) },
+      { error: 'Failed to reseed database', details: String(error) },
       { status: 500 }
     );
   }

@@ -584,7 +584,7 @@ export async function seedDatabase() {
           category: product.category,
           stock: product.stock,
           images: [
-            `https://via.placeholder.com/400x300?text=${encodeURIComponent(product.name)}`,
+            `https://ui-avatars.com/api/?name=${encodeURIComponent(product.name)}&size=400&background=random&color=fff&bold=true`,
           ],
           createdAt: new Date(),
           updatedAt: new Date(),

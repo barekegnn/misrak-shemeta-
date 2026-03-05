@@ -78,9 +78,14 @@ export async function getProducts(
 
     // Filter by deliverability (based on user location) - now uses denormalized shopCity
     if (filters.userLocation) {
-      products = products.filter((product) => 
-        isDeliverable(product.shopCity, filters.userLocation!)
-      );
+      products = products.filter((product) => {
+        // Skip products without shopCity (data integrity issue)
+        if (!product.shopCity) {
+          console.warn(`Product ${product.id} (${product.name}) missing shopCity field`);
+          return false;
+        }
+        return isDeliverable(product.shopCity, filters.userLocation!);
+      });
     }
 
     // Sort by creation date (newest first)
