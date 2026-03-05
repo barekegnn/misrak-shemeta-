@@ -15,11 +15,13 @@ export default function Home() {
   const [showLocationSelector, setShowLocationSelector] = useState(false);
 
   useEffect(() => {
+    // Show location selector if user exists but hasn't selected a proper location
     if (user && user.homeLocation === 'Haramaya_Main') {
       setShowLocationSelector(true);
     }
   }, [user]);
 
+  // Show loading state while checking authentication
   if (isLoading) {
     return (
       <main className="flex min-h-screen flex-col items-center justify-center p-6 bg-gradient-to-br from-gray-50 via-white to-gray-50">
@@ -41,7 +43,8 @@ export default function Home() {
     );
   }
 
-  if (showLocationSelector) {
+  // Show location selector FIRST if user hasn't selected their location
+  if (showLocationSelector || (user && user.homeLocation === 'Haramaya_Main')) {
     return <HomeLocationSelector onComplete={() => setShowLocationSelector(false)} />;
   }
 
