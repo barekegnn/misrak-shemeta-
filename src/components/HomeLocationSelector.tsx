@@ -48,8 +48,8 @@ export function HomeLocationSelector({ onComplete }: HomeLocationSelectorProps) 
 
       if (result.success) {
         triggerHaptic('heavy');
-        // Reload the page to refresh user data
-        window.location.reload();
+        // Navigate to home page with a full page reload to refresh user data
+        window.location.href = '/';
       } else {
         setError(result.error || t('errors.generic'));
         setIsSubmitting(false);

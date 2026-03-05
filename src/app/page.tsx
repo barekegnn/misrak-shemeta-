@@ -18,6 +18,8 @@ export default function Home() {
     // Show location selector if user exists but hasn't selected a proper location
     if (user && user.homeLocation === 'Haramaya_Main') {
       setShowLocationSelector(true);
+    } else {
+      setShowLocationSelector(false);
     }
   }, [user]);
 
