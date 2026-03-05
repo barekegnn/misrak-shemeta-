@@ -33,34 +33,7 @@ export function ProductCatalog({
   
   const PRODUCTS_PER_PAGE = 12;
 
-  // Load products
-  useEffect(() => {
-    loadProducts();
-  }, [filters, user]);
-
-  // Lazy loading observer
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore && !isLoading) {
-          loadMoreProducts();
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    const currentTarget = observerTarget.current;
-    if (currentTarget) {
-      observer.observe(currentTarget);
-    }
-
-    return () => {
-      if (currentTarget) {
-        observer.unobserve(currentTarget);
-      }
-    };
-  }, [hasMore, isLoading, loadMoreProducts]); // Fixed: removed 'page', added 'loadMoreProducts'
-
+  // Load products function
   const loadProducts = async () => {
     setIsLoading(true);
     setError(null);
@@ -96,6 +69,7 @@ export function ProductCatalog({
     }
   };
 
+  // Load more products function (for lazy loading)
   const loadMoreProducts = useCallback(() => {
     console.log('[ProductCatalog] loadMoreProducts called. Current page:', page, 'Total products:', products.length);
     
@@ -121,6 +95,34 @@ export function ProductCatalog({
       setHasMore(false);
     }
   }, [page, products]);
+
+  // Load products on mount and when filters/user change
+  useEffect(() => {
+    loadProducts();
+  }, [filters, user]);
+
+  // Lazy loading observer
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !isLoading) {
+          loadMoreProducts();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const currentTarget = observerTarget.current;
+    if (currentTarget) {
+      observer.observe(currentTarget);
+    }
+
+    return () => {
+      if (currentTarget) {
+        observer.unobserve(currentTarget);
+      }
+    };
+  }, [hasMore, isLoading, loadMoreProducts]); // Fixed: removed 'page', added 'loadMoreProducts'
 
   if (isLoading && displayedProducts.length === 0) {
     return (
