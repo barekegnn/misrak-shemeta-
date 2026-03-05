@@ -59,7 +59,7 @@ export function ProductCatalog({
         observer.unobserve(currentTarget);
       }
     };
-  }, [hasMore, isLoading, page]);
+  }, [hasMore, isLoading, loadMoreProducts]); // Fixed: removed 'page', added 'loadMoreProducts'
 
   const loadProducts = async () => {
     setIsLoading(true);
@@ -97,17 +97,27 @@ export function ProductCatalog({
   };
 
   const loadMoreProducts = useCallback(() => {
+    console.log('[ProductCatalog] loadMoreProducts called. Current page:', page, 'Total products:', products.length);
+    
     const nextPage = page + 1;
     const startIndex = page * PRODUCTS_PER_PAGE;
     const endIndex = startIndex + PRODUCTS_PER_PAGE;
     
+    console.log('[ProductCatalog] Loading products from index', startIndex, 'to', endIndex);
+    
     const newProducts = products.slice(startIndex, endIndex);
     
+    console.log('[ProductCatalog] New products to add:', newProducts.length);
+    
     if (newProducts.length > 0) {
-      setDisplayedProducts((prev) => [...prev, ...newProducts]);
+      setDisplayedProducts((prev) => {
+        console.log('[ProductCatalog] Adding', newProducts.length, 'products. Total will be:', prev.length + newProducts.length);
+        return [...prev, ...newProducts];
+      });
       setPage(nextPage);
       setHasMore(endIndex < products.length);
     } else {
+      console.log('[ProductCatalog] No more products to load');
       setHasMore(false);
     }
   }, [page, products]);
