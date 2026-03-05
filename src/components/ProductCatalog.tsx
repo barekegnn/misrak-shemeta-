@@ -73,9 +73,15 @@ export function ProductCatalog({
         userLocation: user?.homeLocation,
       };
 
+      console.log('[ProductCatalog] Loading products with filters:', filtersWithLocation);
+      console.log('[ProductCatalog] User:', user);
+
       const result = await getProducts(filtersWithLocation);
 
+      console.log('[ProductCatalog] getProducts result:', result);
+
       if (result.success && result.data) {
+        console.log('[ProductCatalog] Products received:', result.data.length);
         setProducts(result.data);
         setDisplayedProducts(result.data.slice(0, PRODUCTS_PER_PAGE));
         setHasMore(result.data.length > PRODUCTS_PER_PAGE);
@@ -83,6 +89,7 @@ export function ProductCatalog({
         setError(result.error || t('errors.generic'));
       }
     } catch (err) {
+      console.error('[ProductCatalog] Error loading products:', err);
       setError(t('errors.generic'));
     } finally {
       setIsLoading(false);
