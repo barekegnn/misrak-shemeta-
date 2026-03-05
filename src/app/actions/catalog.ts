@@ -26,6 +26,8 @@ export async function getProducts(
   filters: ProductFilters = {}
 ): Promise<ActionResponse<Product[]>> {
   try {
+    console.log('[getProducts] Starting with filters:', JSON.stringify(filters));
+    
     let query = adminDb.collection('products');
 
     // Filter by category if specified
@@ -35,6 +37,7 @@ export async function getProducts(
 
     // Get all products (we'll filter in memory for complex conditions)
     const snapshot = await query.get();
+    console.log('[getProducts] Retrieved products from DB:', snapshot.size);
 
     let products: Product[] = snapshot.docs.map((doc) => {
       const data = doc.data();
@@ -52,6 +55,7 @@ export async function getProducts(
         updatedAt: data.updatedAt.toDate(),
       };
     });
+    console.log('[getProducts] Mapped products:', products.length);
 
     // Filter by search query (case-insensitive)
     if (filters.searchQuery && filters.searchQuery.trim()) {
@@ -78,19 +82,28 @@ export async function getProducts(
 
     // Filter by deliverability (based on user location) - now uses denormalized shopCity
     if (filters.userLocation) {
+      console.log('[getProducts] Filtering by deliverability. User location:', filters.userLocation);
+      const beforeCount = products.length;
+      
       products = products.filter((product) => {
         // Skip products without shopCity (data integrity issue)
         if (!product.shopCity) {
-          console.warn(`Product ${product.id} (${product.name}) missing shopCity field`);
+          console.warn(`[getProducts] Product ${product.id} (${product.name}) missing shopCity field`);
           return false;
         }
-        return isDeliverable(product.shopCity, filters.userLocation!);
+        
+        const deliverable = isDeliverable(product.shopCity, filters.userLocation!);
+        console.log(`[getProducts] Product "${product.name}" from ${product.shopCity} to ${filters.userLocation}: ${deliverable}`);
+        return deliverable;
       });
+      
+      console.log(`[getProducts] After deliverability filter: ${beforeCount} -> ${products.length}`);
     }
 
     // Sort by creation date (newest first)
     products.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
+    console.log('[getProducts] Final product count:', products.length);
     return {
       success: true,
       data: products,
@@ -206,19 +219,26 @@ export async function getCategories(): Promise<ActionResponse<string[]>> {
  * All routes are deliverable in the Eastern Triangle.
  */
 function isDeliverable(shopCity: City, userLocation: Location): boolean {
+  console.log(`[isDeliverable] Checking: shopCity="${shopCity}", userLocation="${userLocation}"`);
+  
   // In the Eastern Triangle, all routes are deliverable
   // This function exists for future expansion if certain routes become unavailable
   
   // Harar shops can deliver to all locations
   if (shopCity === 'Harar') {
-    return ['Harar_Campus', 'Haramaya_Main', 'DDU'].includes(userLocation);
+    const result = ['Harar_Campus', 'Haramaya_Main', 'DDU'].includes(userLocation);
+    console.log(`[isDeliverable] Harar check: ${result}`);
+    return result;
   }
   
   // Dire Dawa shops can deliver to all locations
   if (shopCity === 'Dire Dawa') {
-    return ['DDU', 'Haramaya_Main', 'Harar_Campus'].includes(userLocation);
+    const result = ['DDU', 'Haramaya_Main', 'Harar_Campus'].includes(userLocation);
+    console.log(`[isDeliverable] Dire Dawa check: ${result}`);
+    return result;
   }
   
+  console.log(`[isDeliverable] No match, returning false`);
   return false;
 }
 
