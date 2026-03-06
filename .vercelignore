@@ -14,6 +14,11 @@ firebase-debug.log
 firestore-debug.log
 ui-debug.log
 
+# Java JDK (LARGE FILES - not needed in production)
+java21.zip
+jdk-21.0.6+7/
+jdk-21.0.6+7/**
+
 # Environment files (will be set via Vercel dashboard)
 .env
 .env.local
