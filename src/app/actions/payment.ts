@@ -43,6 +43,13 @@ export async function initiateChapaPayment(
     const totalAmount = orderData!.totalAmount + orderData!.deliveryFee;
 
     // 6. Prepare Chapa payment request
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+    
+    if (!appUrl || appUrl.includes('your-production-domain')) {
+      console.error('[Payment] NEXT_PUBLIC_APP_URL is not configured correctly:', appUrl);
+      return { success: false, error: 'APP_URL_NOT_CONFIGURED' };
+    }
+
     const paymentRequest: ChapaPaymentRequest = {
       amount: totalAmount,
       currency: 'ETB',
@@ -50,8 +57,8 @@ export async function initiateChapaPayment(
       first_name: user.telegramId.toString(),
       last_name: 'User',
       tx_ref: orderId, // Use orderId as transaction reference
-      callback_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/webhooks/chapa`,
-      return_url: `${process.env.NEXT_PUBLIC_APP_URL}/orders/${orderId}`,
+      callback_url: `${appUrl}/api/webhooks/chapa`,
+      return_url: `${appUrl}/orders/${orderId}`,
       customization: {
         title: 'Misrak Shemeta Marketplace',
         description: `Order #${orderId.substring(0, 8)}`,
@@ -59,6 +66,12 @@ export async function initiateChapaPayment(
     };
 
     console.log('[Payment] Initiating Chapa payment for order:', orderId);
+    console.log('[Payment] Payment request:', {
+      amount: totalAmount,
+      tx_ref: orderId,
+      callback_url: paymentRequest.callback_url,
+      return_url: paymentRequest.return_url,
+    });
 
     // 7. Initiate payment with Chapa
     const chapaResponse = await chapaInitiatePayment(paymentRequest);
