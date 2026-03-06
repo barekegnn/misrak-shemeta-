@@ -65,8 +65,10 @@ export async function initiateChapaPayment(
     }
 
     // Use a valid email format that Chapa will accept
-    const userEmail = `customer${user.telegramId}@misrakshemeta.com`;
-    console.log('[Payment] Step 5: Generated email:', userEmail);
+    // In test mode, Chapa requires a valid email format (max 50 chars)
+    // Using the admin's email for test transactions
+    const userEmail = 'barekegna@gmail.com';
+    console.log('[Payment] Step 5: Using email:', userEmail);
 
     const paymentRequest: ChapaPaymentRequest = {
       amount: totalAmount.toString(),

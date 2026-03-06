@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     const testPaymentRequest = {
       amount: '100',
       currency: 'ETB',
-      email: 'test@example.com',
+      email: 'barekegna@gmail.com', // Use real email format
       first_name: 'Test',
       last_name: 'User',
       tx_ref: `test_${Date.now()}`,
