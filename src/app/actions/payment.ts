@@ -80,8 +80,8 @@ export async function initiateChapaPayment(
       callback_url: `${appUrl}/api/webhooks/chapa`,
       return_url: `${appUrl}/orders/${orderId}`,
       customization: {
-        title: 'Misrak Shemeta Marketplace',
-        description: `Order #${orderId.substring(0, 8)}`,
+        title: 'Misrak Shemeta', // Max 16 characters
+        description: `Order ${orderId.substring(0, 8)}`, // No special chars except letters, numbers, hyphens, underscores, spaces, dots
       },
     };
 

@@ -19,7 +19,23 @@ if (!admin.apps.length) {
       throw new Error('FIREBASE_SERVICE_ACCOUNT_KEY environment variable is not set');
     }
 
-    const serviceAccount = JSON.parse(serviceAccountKey);
+    // Parse the service account key
+    // The key might have escaped newlines (\n) that need to be converted to actual newlines
+    let serviceAccount;
+    try {
+      serviceAccount = JSON.parse(serviceAccountKey);
+    } catch (parseError) {
+      // If parsing fails, try replacing escaped newlines with actual newlines
+      try {
+        const fixedKey = serviceAccountKey.replace(/\\n/g, '\n');
+        serviceAccount = JSON.parse(fixedKey);
+      } catch (secondError) {
+        console.error('Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY');
+        console.error('Original error:', parseError);
+        console.error('Second attempt error:', secondError);
+        throw new Error('Invalid FIREBASE_SERVICE_ACCOUNT_KEY format');
+      }
+    }
 
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
