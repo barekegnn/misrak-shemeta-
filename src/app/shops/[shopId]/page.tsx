@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useTelegramAuth } from '@/components/TelegramAuthProvider';
 import { useI18n } from '@/i18n/provider';
+import { useCart } from '@/contexts/CartContext';
 import { getShopById } from '@/app/actions/shop';
 import { getProductsByShopId } from '@/app/actions/products';
 import { addToCart } from '@/app/actions/cart';
@@ -41,6 +42,7 @@ export default function ShopProductsPage() {
   const shopId = params.shopId as string;
   const { user, isLoading: authLoading, triggerHaptic } = useTelegramAuth();
   const { t } = useI18n();
+  const { refreshCartCount } = useCart();
   
   const [shop, setShop] = useState<Shop | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
@@ -58,6 +60,9 @@ export default function ShopProductsPage() {
         triggerHaptic('medium');
         setSuccessMessage('Item added to cart!');
         setTimeout(() => setSuccessMessage(null), 3000); // Hide after 3 seconds
+        
+        // CRITICAL: Refresh cart count to update badge
+        await refreshCartCount();
       } else {
         // Show error feedback
         triggerHaptic('heavy');

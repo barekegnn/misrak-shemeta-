@@ -4,6 +4,7 @@ import { TelegramAuthProvider } from '@/components/TelegramAuthProvider';
 import { I18nProvider } from '@/i18n/provider';
 import { ViewportAdapter } from '@/components/ViewportAdapter';
 import { AppShell } from '@/components/AppShell';
+import { CartProvider } from '@/contexts/CartContext';
 import { seedDatabase } from '@/lib/firebase/seed';
 
 export const metadata: Metadata = {
@@ -38,11 +39,13 @@ export default function RootLayout({
       <body className="overflow-x-hidden bg-gray-50">
         <I18nProvider>
           <TelegramAuthProvider>
-            <ViewportAdapter>
-              <AppShell>
-                {children}
-              </AppShell>
-            </ViewportAdapter>
+            <CartProvider>
+              <ViewportAdapter>
+                <AppShell>
+                  {children}
+                </AppShell>
+              </ViewportAdapter>
+            </CartProvider>
           </TelegramAuthProvider>
         </I18nProvider>
       </body>

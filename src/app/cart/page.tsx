@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useTelegramAuth } from '@/components/TelegramAuthProvider';
 import { useI18n } from '@/i18n/provider';
+import { useCart } from '@/contexts/CartContext';
 import { getCart, updateCartItem, removeFromCart, calculateCartTotal } from '@/app/actions/cart';
 import { ShoppingCart, Trash2, Plus, Minus, ArrowRight, Package } from 'lucide-react';
 import type { CartItem, Product } from '@/types';
@@ -17,6 +18,7 @@ export default function CartPage() {
   const router = useRouter();
   const { user, isLoading: authLoading, triggerHaptic } = useTelegramAuth();
   const { t } = useI18n();
+  const { refreshCartCount } = useCart();
   
   const [cartItems, setCartItems] = useState<EnrichedCartItem[]>([]);
   const [cartTotal, setCartTotal] = useState(0);
@@ -85,6 +87,9 @@ export default function CartPage() {
           setCartTotal(totalResult.data);
         }
         
+        // CRITICAL: Refresh cart count to update badge
+        await refreshCartCount();
+        
         triggerHaptic('medium');
       } else {
         triggerHaptic('heavy');
@@ -119,6 +124,9 @@ export default function CartPage() {
         if (totalResult.success && totalResult.data !== undefined) {
           setCartTotal(totalResult.data);
         }
+        
+        // CRITICAL: Refresh cart count to update badge
+        await refreshCartCount();
         
         triggerHaptic('medium');
       } else {
