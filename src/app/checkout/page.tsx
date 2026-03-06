@@ -184,15 +184,23 @@ export default function CheckoutPage() {
       // Step 2: Initiate payment (Requirement 8.1, 8.2)
       console.log('[CheckoutPage] Initiating payment...');
       const paymentResult = await initiateChapaPayment(user.telegramId, order.id);
+      
+      console.log('[CheckoutPage] Payment result received:', JSON.stringify(paymentResult, null, 2));
 
       if (!paymentResult.success || !paymentResult.data) {
+        console.error('[CheckoutPage] Payment initiation failed!');
+        console.error('[CheckoutPage] Success:', paymentResult.success);
+        console.error('[CheckoutPage] Error:', paymentResult.error);
+        console.error('[CheckoutPage] Data:', paymentResult.data);
         triggerHaptic('heavy');
         setError(paymentResult.error || 'Failed to initiate payment');
         return;
       }
 
       const checkoutUrl = paymentResult.data.checkoutUrl;
-      console.log('[CheckoutPage] Payment initiated, redirecting to:', checkoutUrl);
+      console.log('[CheckoutPage] Payment initiated successfully!');
+      console.log('[CheckoutPage] Checkout URL:', checkoutUrl);
+      console.log('[CheckoutPage] Redirecting to Chapa...');
 
       // Step 3: Redirect to Chapa payment interface (Requirement 8.2)
       triggerHaptic('medium');
