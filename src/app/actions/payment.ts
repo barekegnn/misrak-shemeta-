@@ -51,9 +51,9 @@ export async function initiateChapaPayment(
     }
 
     const paymentRequest: ChapaPaymentRequest = {
-      amount: totalAmount,
+      amount: totalAmount.toString(), // Chapa expects string for amount
       currency: 'ETB',
-      email: `user_${user.telegramId}@misrakshemeta.com`, // Generate email from telegramId
+      email: `user${user.telegramId}@misrakshemeta.com`, // Generate email from telegramId (no underscore)
       first_name: user.telegramId.toString(),
       last_name: 'User',
       tx_ref: orderId, // Use orderId as transaction reference
@@ -92,6 +92,11 @@ export async function initiateChapaPayment(
     };
   } catch (error) {
     console.error('[Payment] Error initiating payment:', error);
+    // Log the full error details for debugging
+    if (error instanceof Error) {
+      console.error('[Payment] Error message:', error.message);
+      console.error('[Payment] Error stack:', error.stack);
+    }
     return { success: false, error: 'INTERNAL_ERROR' };
   }
 }

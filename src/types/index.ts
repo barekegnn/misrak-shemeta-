@@ -139,7 +139,7 @@ export interface DeliveryRoute {
 
 // Chapa Payment Types
 export interface ChapaPaymentRequest {
-  amount: number;
+  amount: string | number; // Chapa API accepts both string and number
   currency: 'ETB';
   email: string;
   first_name: string;

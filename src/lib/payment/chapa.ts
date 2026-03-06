@@ -76,8 +76,17 @@ export async function initiateChapaPayment(
         amount: paymentRequest.amount,
         tx_ref: paymentRequest.tx_ref,
         email: paymentRequest.email,
+        callback_url: paymentRequest.callback_url,
+        return_url: paymentRequest.return_url,
       });
     }
+
+    console.log('[Chapa] Initiating payment with config:', {
+      baseUrl: config.baseUrl,
+      mode: config.mode,
+      hasSecretKey: !!config.secretKey,
+      secretKeyPrefix: config.secretKey?.substring(0, 15) + '...',
+    });
 
     const response = await fetch(`${config.baseUrl}/transaction/initialize`, {
       method: 'POST',
@@ -88,14 +97,28 @@ export async function initiateChapaPayment(
       body: JSON.stringify(paymentRequest),
     });
 
+    console.log('[Chapa] Response status:', response.status, response.statusText);
+
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
+      const errorText = await response.text();
+      console.error('[Chapa] Error response body:', errorText);
+      
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch {
+        errorData = { raw: errorText };
+      }
+      
       throw new Error(
         `Chapa API error: ${response.status} ${response.statusText}. ${JSON.stringify(errorData)}`
       );
     }
 
-    const data: ChapaPaymentResponse = await response.json();
+    const responseText = await response.text();
+    console.log('[Chapa] Success response body:', responseText);
+    
+    const data: ChapaPaymentResponse = JSON.parse(responseText);
 
     // Log response in sandbox mode
     if (config.mode === 'sandbox') {
@@ -108,7 +131,11 @@ export async function initiateChapaPayment(
 
     return data;
   } catch (error) {
-    console.error('Error initiating Chapa payment:', error);
+    console.error('[Chapa] Error initiating payment:', error);
+    if (error instanceof Error) {
+      console.error('[Chapa] Error message:', error.message);
+      console.error('[Chapa] Error stack:', error.stack);
+    }
     throw error;
   }
 }
