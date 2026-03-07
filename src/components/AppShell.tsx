@@ -16,18 +16,20 @@ export function AppShell({ children }: AppShellProps) {
   const { cartCount } = useCart();
   const [userRole, setUserRole] = useState<'buyer' | 'merchant' | 'admin' | 'runner'>('buyer');
 
-  // Detect role from pathname
+  // Detect role from user object (from Firebase)
   useEffect(() => {
-    if (pathname.startsWith('/admin')) {
-      setUserRole('admin');
-    } else if (pathname.startsWith('/merchant')) {
-      setUserRole('merchant');
-    } else if (pathname.startsWith('/runner')) {
-      setUserRole('runner');
-    } else {
-      setUserRole('buyer');
+    if (user?.role) {
+      // Map Firebase roles to navigation roles
+      const roleMap: Record<string, 'buyer' | 'merchant' | 'admin' | 'runner'> = {
+        'ADMIN': 'admin',
+        'MERCHANT': 'merchant',
+        'RUNNER': 'runner',
+        'STUDENT': 'buyer',
+      };
+      
+      setUserRole(roleMap[user.role] || 'buyer');
     }
-  }, [pathname]);
+  }, [user]);
 
   return (
     <NavigationWrapper 
