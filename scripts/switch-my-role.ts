@@ -8,6 +8,13 @@
  * Example: npx tsx scripts/switch-my-role.ts MERCHANT
  */
 
+// Load environment variables
+import * as dotenv from 'dotenv';
+import * as path from 'path';
+
+// Load .env.local
+dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
+
 import { adminDb } from '../src/lib/firebase/admin';
 
 const MY_TELEGRAM_ID = '779028866';
