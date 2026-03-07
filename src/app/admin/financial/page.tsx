@@ -79,7 +79,9 @@ export default function FinancialReportingPage() {
     
     const { startDate, endDate } = getDateRange();
     
+    console.log('[Financial] Loading report for Telegram ID:', telegramUser.id);
     const result = await generateFinancialReport(telegramUser.id.toString(), startDate, endDate);
+    console.log('[Financial] Result:', result);
     
     if (result.success && result.data) {
       setReport(result.data);

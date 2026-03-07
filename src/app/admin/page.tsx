@@ -12,7 +12,6 @@
 import { useEffect, useState } from 'react';
 import { getPlatformStatistics } from '@/app/actions/admin';
 import { StatCard } from '@/components/admin/StatCard';
-import { BackButton } from '@/components/navigation';
 import { useTelegramAuth } from '@/components/TelegramAuthProvider';
 import type { PlatformStats } from '@/types';
 import { 
@@ -44,7 +43,9 @@ export default function AdminDashboardPage() {
 
       try {
         setIsLoading(true);
+        console.log('[Dashboard] Loading statistics for Telegram ID:', telegramUser.id);
         const result = await getPlatformStatistics(telegramUser.id.toString());
+        console.log('[Dashboard] Result:', result);
         
         if (!result.success || !result.data) {
           setError(result.error || 'Unable to retrieve platform statistics');
@@ -52,6 +53,7 @@ export default function AdminDashboardPage() {
           setStats(result.data);
         }
       } catch (err: any) {
+        console.error('[Dashboard] Error loading statistics:', err);
         setError(err.message || 'Failed to load statistics');
       } finally {
         setIsLoading(false);
@@ -75,14 +77,25 @@ export default function AdminDashboardPage() {
   if (error || !stats) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="text-center max-w-sm">
+        <div className="text-center max-w-md">
           <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
             Failed to Load Statistics
           </h3>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 mb-4">
             {error || 'Unable to retrieve platform statistics'}
           </p>
+          {telegramUser?.id && (
+            <p className="text-xs text-gray-500 mb-2">
+              Telegram ID: {telegramUser.id}
+            </p>
+          )}
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Retry
+          </button>
         </div>
       </div>
     );

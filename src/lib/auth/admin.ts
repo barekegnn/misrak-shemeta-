@@ -130,7 +130,12 @@ export async function getAdminUser(telegramId: string): Promise<User | null> {
  * // If we reach here, user is admin
  */
 export async function requireAdminAccess(telegramId: string): Promise<void> {
+  console.log('[requireAdminAccess] Checking access for Telegram ID:', telegramId);
+  console.log('[requireAdminAccess] ADMIN_TELEGRAM_IDS env var:', process.env.ADMIN_TELEGRAM_IDS);
+  
   const hasAccess = await verifyAdminAccess(telegramId);
+  
+  console.log('[requireAdminAccess] Has access:', hasAccess);
   
   if (!hasAccess) {
     throw new Error('UNAUTHORIZED: Admin access required');

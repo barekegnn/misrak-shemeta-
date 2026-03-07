@@ -28,10 +28,15 @@ export async function getPlatformStatistics(
   adminTelegramId: string
 ): Promise<ActionResponse<PlatformStats>> {
   try {
+    console.log('[getPlatformStatistics] Called with Telegram ID:', adminTelegramId);
+    
     // 1. Verify admin access
+    console.log('[getPlatformStatistics] Verifying admin access...');
     await requireAdminAccess(adminTelegramId);
+    console.log('[getPlatformStatistics] Admin access verified');
     
     // 2. Fetch all collections in parallel
+    console.log('[getPlatformStatistics] Fetching collections...');
     const [usersSnapshot, shopsSnapshot, productsSnapshot, ordersSnapshot] = 
       await Promise.all([
         adminDb.collection('users').get(),
@@ -39,6 +44,7 @@ export async function getPlatformStatistics(
         adminDb.collection('products').get(),
         adminDb.collection('orders').get(),
       ]);
+    console.log('[getPlatformStatistics] Collections fetched successfully');
     
     // 3. Calculate statistics
     const totalUsers = usersSnapshot.size;
