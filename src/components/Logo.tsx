@@ -1,8 +1,12 @@
 /**
  * Misrak Shemeta Logo Component
  * 
- * Custom SVG logo representing Eastern Ethiopia marketplace
- * Incorporates sun rays (Shemeta = Sun) and Ethiopian design elements
+ * Structural design featuring:
+ * - Ethiopian map silhouette as foundation
+ * - Eastern sunrise positioned in the Eastern region
+ * - Interlocking 'M' links with thin-line premium style
+ * - Dynamic colors using CSS variables for light/dark mode
+ * - Apple-standard symmetry and precision
  */
 
 interface LogoProps {
@@ -12,6 +16,9 @@ interface LogoProps {
 }
 
 export function Logo({ size = 40, className = '', variant = 'icon' }: LogoProps) {
+  // Border radius matching UI cards (12px = 0.75rem from --radius: 0.5rem * 1.5)
+  const cornerRadius = 12;
+  
   if (variant === 'icon') {
     return (
       <svg
@@ -21,39 +28,42 @@ export function Logo({ size = 40, className = '', variant = 'icon' }: LogoProps)
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         className={className}
+        style={{ filter: 'drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1))' }}
       >
-        {/* Gradient Definitions */}
         <defs>
-          <linearGradient id="sunGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#3B82F6" />
-            <stop offset="50%" stopColor="#6366F1" />
-            <stop offset="100%" stopColor="#8B5CF6" />
-          </linearGradient>
-          <linearGradient id="raysGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#FBBF24" />
-            <stop offset="100%" stopColor="#F59E0B" />
-          </linearGradient>
+          {/* Glow effect for Eastern Sun */}
+          <filter id="sunGlow">
+            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+            <feMerge>
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
         </defs>
 
-        {/* Outer Circle - Marketplace Ring */}
-        <circle
-          cx="50"
-          cy="50"
-          r="45"
-          stroke="url(#sunGradient)"
-          strokeWidth="3"
-          fill="none"
-          opacity="0.3"
-        />
+        {/* Ethiopian Map Silhouette - Minimalist Foundation */}
+        <g opacity="0.15" stroke="currentColor" strokeWidth="1" fill="none">
+          {/* Simplified Ethiopian map outline */}
+          <path d="M 30 25 Q 35 20, 45 22 Q 55 24, 65 20 Q 72 18, 75 25 L 78 35 Q 80 45, 78 55 Q 76 65, 70 70 L 60 75 Q 50 78, 40 75 L 30 70 Q 24 65, 22 55 Q 20 45, 22 35 Z" />
+        </g>
 
-        {/* Sun Rays - Eastern Sun (Misrak Shemeta) */}
-        <g opacity="0.8">
+        {/* Eastern Sunrise - Positioned in Eastern region (right side) */}
+        <g filter="url(#sunGlow)" className="text-amber-500 dark:text-amber-400">
+          {/* Sun circle in Eastern Ethiopia */}
+          <circle 
+            cx="70" 
+            cy="35" 
+            r="8" 
+            fill="currentColor"
+            opacity="0.9"
+          />
+          {/* Sun rays */}
           {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => {
             const rad = (angle * Math.PI) / 180;
-            const x1 = 50 + Math.cos(rad) * 25;
-            const y1 = 50 + Math.sin(rad) * 25;
-            const x2 = 50 + Math.cos(rad) * 40;
-            const y2 = 50 + Math.sin(rad) * 40;
+            const x1 = 70 + Math.cos(rad) * 10;
+            const y1 = 35 + Math.sin(rad) * 10;
+            const x2 = 70 + Math.cos(rad) * 14;
+            const y2 = 35 + Math.sin(rad) * 14;
             return (
               <line
                 key={i}
@@ -61,42 +71,40 @@ export function Logo({ size = 40, className = '', variant = 'icon' }: LogoProps)
                 y1={y1}
                 x2={x2}
                 y2={y2}
-                stroke="url(#raysGradient)"
-                strokeWidth="2.5"
+                stroke="currentColor"
+                strokeWidth="1.5"
                 strokeLinecap="round"
+                opacity="0.8"
               />
             );
           })}
         </g>
 
-        {/* Central Sun Circle */}
-        <circle
-          cx="50"
-          cy="50"
-          r="20"
-          fill="url(#sunGradient)"
-        />
-
-        {/* Inner Glow */}
-        <circle
-          cx="50"
-          cy="50"
-          r="15"
-          fill="white"
-          opacity="0.3"
-        />
-
-        {/* Ethiopian Cross Pattern (Simplified) */}
-        <g stroke="white" strokeWidth="2" strokeLinecap="round">
-          <line x1="50" y1="42" x2="50" y2="58" />
-          <line x1="42" y1="50" x2="58" y2="50" />
+        {/* Interlocking 'M' Links - Centered, Symmetrical, Thin-Line */}
+        <g stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+          {/* Left link of 'M' */}
+          <path 
+            d={`M 35 45 L 35 65 Q 35 70, 40 70 L 45 70 Q 50 70, 50 65 L 50 50`}
+            style={{ strokeLinecap: 'round' }}
+          />
+          
+          {/* Right link of 'M' - Mirror symmetry */}
+          <path 
+            d={`M 65 45 L 65 65 Q 65 70, 60 70 L 55 70 Q 50 70, 50 65 L 50 50`}
+            style={{ strokeLinecap: 'round' }}
+          />
+          
+          {/* Center connecting link */}
+          <path 
+            d={`M 50 50 L 50 45`}
+            style={{ strokeLinecap: 'round' }}
+          />
+          
+          {/* Interlocking secure link detail - top curves */}
+          <circle cx="35" cy="45" r="3" fill="currentColor" opacity="0.3" />
+          <circle cx="65" cy="45" r="3" fill="currentColor" opacity="0.3" />
+          <circle cx="50" cy="45" r="3" fill="currentColor" opacity="0.3" />
         </g>
-
-        {/* Corner Decorative Elements - Ethiopian Style */}
-        <circle cx="50" cy="42" r="2" fill="white" />
-        <circle cx="50" cy="58" r="2" fill="white" />
-        <circle cx="42" cy="50" r="2" fill="white" />
-        <circle cx="58" cy="50" r="2" fill="white" />
       </svg>
     );
   }
@@ -110,45 +118,34 @@ export function Logo({ size = 40, className = '', variant = 'icon' }: LogoProps)
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
+      style={{ filter: 'drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1))' }}
     >
-      {/* Gradient Definitions */}
       <defs>
-        <linearGradient id="sunGradientFull" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#3B82F6" />
-          <stop offset="50%" stopColor="#6366F1" />
-          <stop offset="100%" stopColor="#8B5CF6" />
-        </linearGradient>
-        <linearGradient id="raysGradientFull" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#FBBF24" />
-          <stop offset="100%" stopColor="#F59E0B" />
-        </linearGradient>
-        <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#2563EB" />
-          <stop offset="100%" stopColor="#6366F1" />
-        </linearGradient>
+        <filter id="sunGlowFull">
+          <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+          <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
       </defs>
 
       {/* Logo Icon */}
       <g transform="translate(10, 10)">
-        {/* Outer Circle */}
-        <circle
-          cx="40"
-          cy="40"
-          r="35"
-          stroke="url(#sunGradientFull)"
-          strokeWidth="2.5"
-          fill="none"
-          opacity="0.3"
-        />
+        {/* Ethiopian Map Silhouette */}
+        <g opacity="0.15" stroke="currentColor" strokeWidth="0.8" fill="none">
+          <path d="M 24 20 Q 28 16, 36 18 Q 44 19, 52 16 Q 58 14, 60 20 L 62 28 Q 64 36, 62 44 Q 60 52, 56 56 L 48 60 Q 40 62, 32 60 L 24 56 Q 19 52, 18 44 Q 16 36, 18 28 Z" />
+        </g>
 
-        {/* Sun Rays */}
-        <g opacity="0.8">
+        {/* Eastern Sunrise */}
+        <g filter="url(#sunGlowFull)" className="text-amber-500 dark:text-amber-400">
+          <circle cx="56" cy="28" r="6" fill="currentColor" opacity="0.9" />
           {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => {
             const rad = (angle * Math.PI) / 180;
-            const x1 = 40 + Math.cos(rad) * 20;
-            const y1 = 40 + Math.sin(rad) * 20;
-            const x2 = 40 + Math.cos(rad) * 32;
-            const y2 = 40 + Math.sin(rad) * 32;
+            const x1 = 56 + Math.cos(rad) * 8;
+            const y1 = 28 + Math.sin(rad) * 8;
+            const x2 = 56 + Math.cos(rad) * 11;
+            const y2 = 28 + Math.sin(rad) * 11;
             return (
               <line
                 key={i}
@@ -156,39 +153,34 @@ export function Logo({ size = 40, className = '', variant = 'icon' }: LogoProps)
                 y1={y1}
                 x2={x2}
                 y2={y2}
-                stroke="url(#raysGradientFull)"
-                strokeWidth="2"
+                stroke="currentColor"
+                strokeWidth="1"
                 strokeLinecap="round"
+                opacity="0.8"
               />
             );
           })}
         </g>
 
-        {/* Central Sun */}
-        <circle cx="40" cy="40" r="16" fill="url(#sunGradientFull)" />
-        <circle cx="40" cy="40" r="12" fill="white" opacity="0.3" />
-
-        {/* Cross Pattern */}
-        <g stroke="white" strokeWidth="1.5" strokeLinecap="round">
-          <line x1="40" y1="33" x2="40" y2="47" />
-          <line x1="33" y1="40" x2="47" y2="40" />
+        {/* Interlocking 'M' Links */}
+        <g stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
+          <path d={`M 28 36 L 28 52 Q 28 56, 32 56 L 36 56 Q 40 56, 40 52 L 40 40`} />
+          <path d={`M 52 36 L 52 52 Q 52 56, 48 56 L 44 56 Q 40 56, 40 52 L 40 40`} />
+          <path d={`M 40 40 L 40 36`} />
+          <circle cx="28" cy="36" r="2" fill="currentColor" opacity="0.3" />
+          <circle cx="52" cy="36" r="2" fill="currentColor" opacity="0.3" />
+          <circle cx="40" cy="36" r="2" fill="currentColor" opacity="0.3" />
         </g>
-
-        {/* Decorative Dots */}
-        <circle cx="40" cy="33" r="1.5" fill="white" />
-        <circle cx="40" cy="47" r="1.5" fill="white" />
-        <circle cx="33" cy="40" r="1.5" fill="white" />
-        <circle cx="47" cy="40" r="1.5" fill="white" />
       </g>
 
-      {/* Text */}
+      {/* Text - Using currentColor for theme adaptation */}
       <text
         x="100"
         y="45"
         fontFamily="system-ui, -apple-system, sans-serif"
         fontSize="24"
         fontWeight="700"
-        fill="url(#textGradient)"
+        fill="currentColor"
       >
         Misrak Shemeta
       </text>
@@ -198,7 +190,8 @@ export function Logo({ size = 40, className = '', variant = 'icon' }: LogoProps)
         fontFamily="system-ui, -apple-system, sans-serif"
         fontSize="12"
         fontWeight="500"
-        fill="#6B7280"
+        fill="currentColor"
+        opacity="0.6"
       >
         Eastern Ethiopia Marketplace
       </text>

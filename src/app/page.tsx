@@ -34,6 +34,11 @@ export default function Home() {
           transition={{ duration: 0.5 }}
           className="text-center space-y-4"
         >
+          {/* Logo in loading state - responsive */}
+          <div className="mx-auto">
+            <Logo size={64} className="sm:hidden" />
+            <Logo size={80} className="hidden sm:block" />
+          </div>
           <div className="w-16 h-16 mx-auto">
             <svg className="animate-spin text-indigo-600" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
@@ -73,27 +78,39 @@ export default function Home() {
         </div>
 
         <div className="relative px-6 pt-20 pb-16 text-center space-y-6">
-          {/* Logo */}
+          {/* Logo - Responsive sizing for mobile and desktop */}
           <motion.div
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
             className="inline-flex items-center justify-center"
           >
-            <Logo size={128} className="drop-shadow-2xl" />
+            {/* Mobile: 96px, Tablet: 112px, Desktop: 128px */}
+            <Logo 
+              size={96} 
+              className="drop-shadow-2xl sm:hidden" 
+            />
+            <Logo 
+              size={112} 
+              className="drop-shadow-2xl hidden sm:block md:hidden" 
+            />
+            <Logo 
+              size={128} 
+              className="drop-shadow-2xl hidden md:block" 
+            />
           </motion.div>
 
-          {/* Title */}
+          {/* Title - Responsive text sizing */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="space-y-3"
           >
-            <h1 className="text-5xl font-bold text-gray-900 tracking-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 tracking-tight">
               {t('common.appName')}
             </h1>
-            <p className="text-xl text-gray-600 font-light max-w-md mx-auto">
+            <p className="text-base sm:text-lg md:text-xl text-gray-600 font-light max-w-md mx-auto px-4 sm:px-0">
               {t('common.appDescription')}
             </p>
           </motion.div>
