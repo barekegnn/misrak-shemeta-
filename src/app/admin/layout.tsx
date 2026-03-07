@@ -7,13 +7,10 @@
  * Requirements: 27.3
  */
 
+'use client';
+
 import { AdminNav } from '@/components/admin/AdminNav';
 import { AdminAccessGuard } from '@/components/admin/AdminAccessGuard';
-
-export const metadata = {
-  title: 'Admin Panel - Misrak Shemeta',
-  description: 'Admin dashboard for Misrak Shemeta marketplace platform',
-};
 
 export default function AdminLayout({
   children,
