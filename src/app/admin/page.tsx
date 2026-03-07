@@ -250,10 +250,7 @@ export default function AdminDashboardPage() {
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-medium text-gray-500">Date</span>
                       <span className="text-xs text-gray-600">
-                        {order.createdAt instanceof Date 
-                          ? order.createdAt.toISOString().split('T')[0]
-                          : new Date(order.createdAt).toISOString().split('T')[0]
-                        }
+                        {new Date(order.createdAt).toISOString().split('T')[0]}
                       </span>
                     </div>
                   </div>
@@ -316,10 +313,7 @@ export default function AdminDashboardPage() {
                         {order.totalAmount.toLocaleString()} ETB
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {order.createdAt instanceof Date 
-                          ? order.createdAt.toISOString().split('T')[0]
-                          : new Date(order.createdAt).toISOString().split('T')[0]
-                        }
+                        {new Date(order.createdAt).toISOString().split('T')[0]}
                       </td>
                     </tr>
                   ))

@@ -11,7 +11,7 @@
 
 import { adminDb } from '@/lib/firebase/admin';
 import { requireAdminAccess } from '@/lib/auth/admin';
-import type { PlatformStats, Order, ActionResponse } from '@/types';
+import type { PlatformStats, SerializableOrder, ActionResponse } from '@/types';
 
 /**
  * Gets platform-wide statistics for admin dashboard
@@ -64,7 +64,7 @@ export async function getPlatformStatistics(
     // Calculate revenue and escrow
     let totalRevenue = 0;
     let pendingEscrow = 0;
-    const recentOrdersData: Order[] = [];
+    const recentOrdersData: SerializableOrder[] = [];
     
     ordersSnapshot.docs.forEach(doc => {
       const data = doc.data();
@@ -81,7 +81,7 @@ export async function getPlatformStatistics(
         pendingEscrow += totalAmount;
       }
       
-      // Collect for recent orders
+      // Collect for recent orders - convert dates to ISO strings for serialization
       recentOrdersData.push({
         id: doc.id,
         userId: data.userId,
@@ -95,15 +95,21 @@ export async function getPlatformStatistics(
         otpAttempts: data.otpAttempts || 0,
         chapaTransactionRef: data.chapaTransactionRef,
         cancellationReason: data.cancellationReason,
-        createdAt: data.createdAt?.toDate() || new Date(),
-        updatedAt: data.updatedAt?.toDate() || new Date(),
+        refundInitiated: data.refundInitiated,
+        refundAmount: data.refundAmount,
+        refundInitiatedAt: data.refundInitiatedAt?.toDate()?.toISOString(),
+        refundFailed: data.refundFailed,
+        refundError: data.refundError,
+        refundFailedAt: data.refundFailedAt?.toDate()?.toISOString(),
+        createdAt: (data.createdAt?.toDate() || new Date()).toISOString(),
+        updatedAt: (data.updatedAt?.toDate() || new Date()).toISOString(),
         statusHistory: data.statusHistory || [],
       });
     });
     
     // Sort by creation date and get last 20
     const recentOrders = recentOrdersData
-      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .slice(0, 20);
     
     // Calculate active users (users with orders in last 30 days)
@@ -112,7 +118,7 @@ export async function getPlatformStatistics(
     
     const activeUserIds = new Set(
       recentOrdersData
-        .filter(order => order.createdAt >= thirtyDaysAgo)
+        .filter(order => new Date(order.createdAt) >= thirtyDaysAgo)
         .map(order => order.userId)
     );
     const activeUsers = activeUserIds.size;

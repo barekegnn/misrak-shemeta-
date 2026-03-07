@@ -271,8 +271,16 @@ export interface PlatformStats {
   activeUsers: number; // Users with orders in last 30 days
   suspendedUsers: number;
   suspendedShops: number;
-  recentOrders: Order[]; // Last 20 orders
+  recentOrders: SerializableOrder[]; // Last 20 orders (dates as strings for serialization)
 }
+
+// Serializable version of Order for API responses (dates as ISO strings)
+export type SerializableOrder = Omit<Order, 'createdAt' | 'updatedAt' | 'refundInitiatedAt' | 'refundFailedAt'> & {
+  createdAt: string;
+  updatedAt: string;
+  refundInitiatedAt?: string;
+  refundFailedAt?: string;
+};
 
 export interface UserFilters {
   search?: string; // Search by telegramId
