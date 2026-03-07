@@ -72,14 +72,27 @@ export default function Home() {
         </div>
 
         <div className="relative px-6 pt-20 pb-16 text-center space-y-6">
-          {/* Logo/Icon */}
+          {/* Logo */}
           <motion.div
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-            className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 shadow-2xl shadow-indigo-500/30"
+            className="inline-flex items-center justify-center"
           >
-            <Sparkles className="w-10 h-10 text-white" />
+            <img 
+              src="/logo.png" 
+              alt="Misrak Shemeta Logo" 
+              className="w-32 h-32 object-contain drop-shadow-2xl"
+              onError={(e) => {
+                // Fallback to icon if logo not found
+                e.currentTarget.style.display = 'none';
+                const fallback = e.currentTarget.nextElementSibling;
+                if (fallback) fallback.classList.remove('hidden');
+              }}
+            />
+            <div className="hidden w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 shadow-2xl shadow-indigo-500/30 flex items-center justify-center">
+              <Sparkles className="w-10 h-10 text-white" />
+            </div>
           </motion.div>
 
           {/* Title */}

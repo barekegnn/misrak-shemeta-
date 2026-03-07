@@ -79,9 +79,22 @@ export function TopNav({ role, cartCount = 0, userName = 'User' }: TopNavProps) 
           >
             <motion.div 
               whileHover={{ scale: 1.05 }}
-              className="w-10 h-10 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 rounded-xl flex items-center justify-center group-hover:shadow-xl transition-shadow"
+              className="w-10 h-10 flex items-center justify-center group-hover:shadow-xl transition-shadow"
             >
-              <span className="text-white font-bold text-lg">M</span>
+              <img 
+                src="/logo.png" 
+                alt="Misrak Shemeta" 
+                className="w-10 h-10 object-contain"
+                onError={(e) => {
+                  // Fallback to letter icon if logo not found
+                  e.currentTarget.style.display = 'none';
+                  const fallback = e.currentTarget.nextElementSibling;
+                  if (fallback) fallback.classList.remove('hidden');
+                }}
+              />
+              <div className="hidden w-10 h-10 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 rounded-xl flex items-center justify-center">
+                <span className="text-white font-bold text-lg">M</span>
+              </div>
             </motion.div>
             <div className="flex flex-col">
               <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
