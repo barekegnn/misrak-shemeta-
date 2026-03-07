@@ -13,6 +13,7 @@
 
 import { useState, useEffect } from 'react';
 import { generateFinancialReport, exportFinancialReportCSV } from '@/app/actions/admin/financial';
+import { useTelegramAuth } from '@/components/TelegramAuthProvider';
 import { StatCard } from '@/components/admin/StatCard';
 import { 
   DollarSign, 
@@ -26,7 +27,7 @@ import {
 import type { FinancialReport } from '@/types';
 
 export default function FinancialReportingPage() {
-  const adminTelegramId = '123456789';
+  const { telegramUser, isLoading: authLoading } = useTelegramAuth();
   
   // State
   const [report, setReport] = useState<FinancialReport | null>(null);
@@ -67,12 +68,18 @@ export default function FinancialReportingPage() {
   
   // Load report
   const loadReport = async () => {
+    if (!telegramUser?.id) {
+      setError('Unable to authenticate user');
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError(null);
     
     const { startDate, endDate } = getDateRange();
     
-    const result = await generateFinancialReport(adminTelegramId, startDate, endDate);
+    const result = await generateFinancialReport(telegramUser.id.toString(), startDate, endDate);
     
     if (result.success && result.data) {
       setReport(result.data);
@@ -85,11 +92,13 @@ export default function FinancialReportingPage() {
   
   // Export to CSV
   const handleExport = async () => {
+    if (!telegramUser?.id) return;
+
     setExporting(true);
     
     const { startDate, endDate } = getDateRange();
     
-    const result = await exportFinancialReportCSV(adminTelegramId, startDate, endDate);
+    const result = await exportFinancialReportCSV(telegramUser.id.toString(), startDate, endDate);
     
     if (result.success && result.data) {
       // Create blob and download
@@ -111,8 +120,10 @@ export default function FinancialReportingPage() {
   
   // Load report on mount and when date range changes
   useEffect(() => {
-    loadReport();
-  }, [dateRange, customStartDate, customEndDate]);
+    if (!authLoading && telegramUser?.id) {
+      loadReport();
+    }
+  }, [dateRange, customStartDate, customEndDate, telegramUser, authLoading]);
   
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-4 sm:px-6 lg:px-8">

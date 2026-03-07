@@ -7,11 +7,14 @@
  * Requirements: 27.3, 33.1, 34, 35
  */
 
-export const dynamic = 'force-dynamic';
+'use client';
 
+import { useEffect, useState } from 'react';
 import { getPlatformStatistics } from '@/app/actions/admin';
 import { StatCard } from '@/components/admin/StatCard';
 import { BackButton } from '@/components/navigation';
+import { useTelegramAuth } from '@/components/TelegramAuthProvider';
+import type { PlatformStats } from '@/types';
 import { 
   Users, 
   Store, 
@@ -23,15 +26,53 @@ import {
   AlertCircle
 } from 'lucide-react';
 
-export default async function AdminDashboardPage() {
-  // For local development, use a test admin ID
-  // In production, this would come from Telegram context
-  const adminTelegramId = '123456789';
+export default function AdminDashboardPage() {
+  const { telegramUser, isLoading: authLoading } = useTelegramAuth();
+  const [stats, setStats] = useState<PlatformStats | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadStatistics() {
+      if (authLoading) return;
+      
+      if (!telegramUser?.id) {
+        setError('Unable to authenticate user');
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        const result = await getPlatformStatistics(telegramUser.id.toString());
+        
+        if (!result.success || !result.data) {
+          setError(result.error || 'Unable to retrieve platform statistics');
+        } else {
+          setStats(result.data);
+        }
+      } catch (err: any) {
+        setError(err.message || 'Failed to load statistics');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadStatistics();
+  }, [telegramUser, authLoading]);
+
+  if (authLoading || isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-sm text-gray-600">Loading statistics...</p>
+        </div>
+      </div>
+    );
+  }
   
-  // Get platform statistics
-  const result = await getPlatformStatistics(adminTelegramId);
-  
-  if (!result.success || !result.data) {
+  if (error || !stats) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <div className="text-center max-w-sm">
@@ -40,14 +81,12 @@ export default async function AdminDashboardPage() {
             Failed to Load Statistics
           </h3>
           <p className="text-sm text-gray-600">
-            {result.error || 'Unable to retrieve platform statistics'}
+            {error || 'Unable to retrieve platform statistics'}
           </p>
         </div>
       </div>
     );
   }
-  
-  const stats = result.data;
   
   return (
     <div className="min-h-screen bg-gray-50">

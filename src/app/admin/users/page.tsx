@@ -7,20 +7,67 @@
  * Requirements: 28.1, 28.3, 34, 35
  */
 
-export const dynamic = 'force-dynamic';
+'use client';
 
+import { useEffect, useState } from 'react';
 import { getUserList } from '@/app/actions/admin/users';
 import { UserTable } from '@/components/admin/UserTable';
+import { useTelegramAuth } from '@/components/TelegramAuthProvider';
 import { Users, AlertCircle } from 'lucide-react';
+import type { User } from '@/types';
 
-export default async function UserManagementPage() {
-  // For local development, use test admin ID
-  const adminTelegramId = '123456789';
+export default function UserManagementPage() {
+  const { telegramUser, isLoading: authLoading } = useTelegramAuth();
+  const [users, setUsers] = useState<User[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(50);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadUsers() {
+      if (authLoading) return;
+      
+      if (!telegramUser?.id) {
+        setError('Unable to authenticate user');
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        const result = await getUserList(telegramUser.id.toString(), undefined, 1, 50);
+        
+        if (!result.success || !result.data) {
+          setError(result.error || 'Unable to retrieve user list');
+        } else {
+          setUsers(result.data.users);
+          setTotal(result.data.total);
+          setPage(result.data.page);
+        }
+      } catch (err: any) {
+        setError(err.message || 'Failed to load users');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadUsers();
+  }, [telegramUser, authLoading]);
+
+  if (authLoading || isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-sm text-gray-600">Loading users...</p>
+        </div>
+      </div>
+    );
+  }
   
-  // Get initial user list (first page, no filters)
-  const result = await getUserList(adminTelegramId, undefined, 1, 50);
-  
-  if (!result.success || !result.data) {
+  if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <div className="text-center max-w-sm">
@@ -29,14 +76,12 @@ export default async function UserManagementPage() {
             Failed to Load Users
           </h3>
           <p className="text-sm text-gray-600">
-            {result.error || 'Unable to retrieve user list'}
+            {error}
           </p>
         </div>
       </div>
     );
   }
-  
-  const { users, total, page, pageSize } = result.data;
   
   return (
     <div className="min-h-screen bg-gray-50">
@@ -60,7 +105,7 @@ export default async function UserManagementPage() {
           initialTotal={total}
           initialPage={page}
           pageSize={pageSize}
-          adminTelegramId={adminTelegramId}
+          adminTelegramId={telegramUser?.id.toString() || ''}
         />
       </div>
     </div>

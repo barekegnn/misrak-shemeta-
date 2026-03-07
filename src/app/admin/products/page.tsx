@@ -9,18 +9,67 @@
  * Requirements: 30.1, 34, 35
  */
 
-export const dynamic = 'force-dynamic';
+'use client';
 
+import { useEffect, useState } from 'react';
 import { getProductList } from '@/app/actions/admin/products';
 import { ProductTable } from '@/components/admin/ProductTable';
+import { useTelegramAuth } from '@/components/TelegramAuthProvider';
 import { Package, AlertCircle } from 'lucide-react';
+import type { Product } from '@/types';
 
-export default async function ProductModerationPage() {
-  const adminTelegramId = '123456789';
+export default function ProductModerationPage() {
+  const { telegramUser, isLoading: authLoading } = useTelegramAuth();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(50);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadProducts() {
+      if (authLoading) return;
+      
+      if (!telegramUser?.id) {
+        setError('Unable to authenticate user');
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        const result = await getProductList(telegramUser.id.toString(), undefined, 1, 50);
+        
+        if (!result.success || !result.data) {
+          setError(result.error || 'Unable to retrieve product list');
+        } else {
+          setProducts(result.data.products);
+          setTotal(result.data.total);
+          setPage(result.data.page);
+        }
+      } catch (err: any) {
+        setError(err.message || 'Failed to load products');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadProducts();
+  }, [telegramUser, authLoading]);
+
+  if (authLoading || isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-sm text-gray-600">Loading products...</p>
+        </div>
+      </div>
+    );
+  }
   
-  const result = await getProductList(adminTelegramId, undefined, 1, 50);
-  
-  if (!result.success || !result.data) {
+  if (error) {
     return (
       <div className="min-h-screen bg-gray-50 px-4 py-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
@@ -31,7 +80,7 @@ export default async function ProductModerationPage() {
                 Failed to Load Products
               </h3>
               <p className="text-sm text-gray-600">
-                {result.error || 'Unable to retrieve product list'}
+                {error}
               </p>
             </div>
           </div>
@@ -39,8 +88,6 @@ export default async function ProductModerationPage() {
       </div>
     );
   }
-  
-  const { products, total, page, pageSize } = result.data;
   
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-4 sm:px-6 lg:px-8">
@@ -60,7 +107,7 @@ export default async function ProductModerationPage() {
           initialTotal={total}
           initialPage={page}
           pageSize={pageSize}
-          adminTelegramId={adminTelegramId}
+          adminTelegramId={telegramUser?.id.toString() || ''}
         />
       </div>
     </div>

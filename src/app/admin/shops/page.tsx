@@ -9,20 +9,67 @@
  * Requirements: 29.1, 29.3, 34, 35
  */
 
-export const dynamic = 'force-dynamic';
+'use client';
 
+import { useEffect, useState } from 'react';
 import { getShopList } from '@/app/actions/admin/shops';
 import { ShopTable } from '@/components/admin/ShopTable';
+import { useTelegramAuth } from '@/components/TelegramAuthProvider';
 import { Store, AlertCircle } from 'lucide-react';
+import type { Shop } from '@/types';
 
-export default async function ShopManagementPage() {
-  // For local development, use test admin ID
-  const adminTelegramId = '123456789';
+export default function ShopManagementPage() {
+  const { telegramUser, isLoading: authLoading } = useTelegramAuth();
+  const [shops, setShops] = useState<Shop[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(50);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadShops() {
+      if (authLoading) return;
+      
+      if (!telegramUser?.id) {
+        setError('Unable to authenticate user');
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        const result = await getShopList(telegramUser.id.toString(), undefined, 1, 50);
+        
+        if (!result.success || !result.data) {
+          setError(result.error || 'Unable to retrieve shop list');
+        } else {
+          setShops(result.data.shops);
+          setTotal(result.data.total);
+          setPage(result.data.page);
+        }
+      } catch (err: any) {
+        setError(err.message || 'Failed to load shops');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadShops();
+  }, [telegramUser, authLoading]);
+
+  if (authLoading || isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-sm text-gray-600">Loading shops...</p>
+        </div>
+      </div>
+    );
+  }
   
-  // Get initial shop list (first page, no filters)
-  const result = await getShopList(adminTelegramId, undefined, 1, 50);
-  
-  if (!result.success || !result.data) {
+  if (error) {
     return (
       <div className="min-h-screen bg-gray-50 px-4 py-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
@@ -33,7 +80,7 @@ export default async function ShopManagementPage() {
                 Failed to Load Shops
               </h3>
               <p className="text-sm text-gray-600">
-                {result.error || 'Unable to retrieve shop list'}
+                {error}
               </p>
             </div>
           </div>
@@ -41,8 +88,6 @@ export default async function ShopManagementPage() {
       </div>
     );
   }
-  
-  const { shops, total, page, pageSize } = result.data;
   
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-4 sm:px-6 lg:px-8">
@@ -62,7 +107,7 @@ export default async function ShopManagementPage() {
           initialTotal={total}
           initialPage={page}
           pageSize={pageSize}
-          adminTelegramId={adminTelegramId}
+          adminTelegramId={telegramUser?.id.toString() || ''}
         />
       </div>
     </div>

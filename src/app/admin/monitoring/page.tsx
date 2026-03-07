@@ -13,6 +13,7 @@
 
 import { useState, useEffect } from 'react';
 import { getSystemMonitoring } from '@/app/actions/admin/monitoring';
+import { useTelegramAuth } from '@/components/TelegramAuthProvider';
 import type { SystemMonitoringData } from '@/types';
 import { StatCard } from '@/components/admin/StatCard';
 import { ErrorLogTable } from '@/components/admin/ErrorLogTable';
@@ -28,8 +29,7 @@ import {
 } from 'lucide-react';
 
 export default function SystemMonitoringPage() {
-  // For local development, use a test admin ID
-  const adminTelegramId = '123456789';
+  const { telegramUser, isLoading: authLoading } = useTelegramAuth();
   
   const [monitoringData, setMonitoringData] = useState<SystemMonitoringData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -39,10 +39,16 @@ export default function SystemMonitoringPage() {
   
   // Fetch monitoring data
   const fetchData = async () => {
+    if (!telegramUser?.id) {
+      setError('Unable to authenticate user');
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError(null);
     
-    const result = await getSystemMonitoring(adminTelegramId);
+    const result = await getSystemMonitoring(telegramUser.id.toString());
     
     if (result.success && result.data) {
       setMonitoringData(result.data);
@@ -56,26 +62,28 @@ export default function SystemMonitoringPage() {
   
   // Initial load
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (!authLoading && telegramUser?.id) {
+      fetchData();
+    }
+  }, [telegramUser, authLoading]);
   
   // Auto-refresh every 30 seconds
   useEffect(() => {
-    if (!autoRefresh) return;
+    if (!autoRefresh || !telegramUser?.id) return;
     
     const interval = setInterval(() => {
       fetchData();
     }, 30000); // 30 seconds
     
     return () => clearInterval(interval);
-  }, [autoRefresh]);
+  }, [autoRefresh, telegramUser]);
   
   // Manual refresh
   const handleManualRefresh = () => {
     fetchData();
   };
   
-  if (loading && !monitoringData) {
+  if (authLoading || (loading && !monitoringData)) {
     return (
       <div className="min-h-screen bg-gray-50 px-4 py-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
