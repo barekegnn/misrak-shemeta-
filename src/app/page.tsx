@@ -7,7 +7,8 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { BottomNav } from '@/components/BottomNav';
 import { useI18n } from '@/i18n/provider';
 import { useState, useEffect } from 'react';
-import { Sparkles, MapPin, User } from 'lucide-react';
+import { MapPin, User } from 'lucide-react';
+import { Logo } from '@/components/Logo';
 
 export default function Home() {
   const { user, isLoading } = useTelegramAuth();
@@ -79,20 +80,7 @@ export default function Home() {
             transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
             className="inline-flex items-center justify-center"
           >
-            <img 
-              src="/logo.png" 
-              alt="Misrak Shemeta Logo" 
-              className="w-32 h-32 object-contain drop-shadow-2xl"
-              onError={(e) => {
-                // Fallback to icon if logo not found
-                e.currentTarget.style.display = 'none';
-                const fallback = e.currentTarget.nextElementSibling;
-                if (fallback) fallback.classList.remove('hidden');
-              }}
-            />
-            <div className="hidden w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 shadow-2xl shadow-indigo-500/30 flex items-center justify-center">
-              <Sparkles className="w-10 h-10 text-white" />
-            </div>
+            <Logo size={128} className="drop-shadow-2xl" />
           </motion.div>
 
           {/* Title */}
