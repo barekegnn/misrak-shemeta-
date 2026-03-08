@@ -1,7 +1,7 @@
 // Core type definitions for Misrak Shemeta marketplace
 
 // Location Types
-export type City = 'Harar' | 'Dire Dawa';
+export type City = 'HARAR' | 'DIRE_DAWA';
 export type Campus = 'Haramaya_Main' | 'Harar_Campus' | 'DDU';
 export type Location = Campus | 'Harar_City' | 'Dire_Dawa_City';
 
@@ -32,6 +32,7 @@ export interface Shop {
   description?: string; // Optional shop description
   ownerId: string; // Reference to User.id
   city: City; // Shop location
+  tier?: 'luxury' | 'premium' | 'standard'; // Shop tier for UI styling
   contactPhone: string;
   balance: number; // Current balance in ETB
   suspended: boolean; // Admin suspension flag

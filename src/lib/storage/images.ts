@@ -104,8 +104,11 @@ export async function uploadProductImage(
       public: true, // Make file publicly accessible
     });
     
-    // Get public URL
-    const publicUrl = `https://storage.googleapis.com/${bucket.name}/${filePath}`;
+    // Make the file publicly accessible
+    await file.makePublic();
+    
+    // Get correct public URL for Firebase Storage
+    const publicUrl = `https://storage.googleapis.com/${bucket.name}/${encodeURIComponent(filePath).replace(/%2F/g, '/')}`;
     
     return {
       success: true,

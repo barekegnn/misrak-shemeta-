@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTelegramAuth } from '@/components/TelegramAuthProvider';
 import { useI18n } from '@/i18n/provider';
 import { getShops } from '@/app/actions/shop';
@@ -19,6 +20,7 @@ interface Shop {
 export default function ShopsPage() {
   const { user, isLoading: authLoading } = useTelegramAuth();
   const { t } = useI18n();
+  const router = useRouter();
   const [shops, setShops] = useState<Shop[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -119,7 +121,12 @@ export default function ShopsPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {shops.map((shop, index) => (
-              <LuxuryShopCard key={shop.id} shop={shop} index={index} />
+              <LuxuryShopCard 
+                key={shop.id} 
+                shop={shop} 
+                index={index}
+                onClick={() => router.push(`/shops/${shop.id}`)}
+              />
             ))}
           </div>
         )}

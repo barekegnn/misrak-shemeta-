@@ -1,49 +1,64 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import Link from 'next/link';
-import { MapPin, Phone, CheckCircle2, ArrowRight } from 'lucide-react';
-import { useI18n } from '@/i18n/provider';
-import { useTelegramAuth } from './TelegramAuthProvider';
-
-interface Shop {
-  id: string;
-  name: string;
-  city: string;
-  description?: string;
-  contactPhone?: string;
-}
+import { Store, MapPin, Star, Sparkles, Crown, Award } from 'lucide-react';
+import { Shop } from '@/types';
 
 interface LuxuryShopCardProps {
-  shop: Shop;
-  index: number;
+  shop: Shop & { tier?: 'luxury' | 'premium' | 'standard' };
+  onClick?: () => void;
+  index?: number;
 }
 
-// Brand DNA: Each shop gets a unique color palette
-const BRAND_COLORS = {
-  'Harar': {
-    primary: '#FF6B35',
-    gradient: 'from-orange-500/20 via-red-500/10 to-transparent',
-    glow: 'shadow-orange-500/20',
-    border: 'border-orange-500/30',
-  },
-  'Dire Dawa': {
-    primary: '#4F46E5',
-    gradient: 'from-indigo-500/20 via-purple-500/10 to-transparent',
-    glow: 'shadow-indigo-500/20',
-    border: 'border-indigo-500/30',
-  },
-};
-
-export function LuxuryShopCard({ shop, index }: LuxuryShopCardProps) {
-  const { t } = useI18n();
-  const { triggerHaptic } = useTelegramAuth();
+export function LuxuryShopCard({ shop, onClick, index = 0 }: LuxuryShopCardProps) {
+  const tier = shop.tier || 'standard';
+  const isHarar = shop.city === 'HARAR';
   
-  const brandColor = BRAND_COLORS[shop.city as keyof typeof BRAND_COLORS] || BRAND_COLORS['Harar'];
-
-  const handleTap = () => {
-    triggerHaptic('medium');
+  // City-specific styling
+  const cityTheme = isHarar ? {
+    gradient: 'from-amber-50 via-orange-50 to-amber-50',
+    border: 'border-amber-200/60',
+    accent: 'text-amber-600',
+    badge: 'bg-amber-100 text-amber-700 border-amber-300',
+    glow: 'shadow-amber-200/50',
+  } : {
+    gradient: 'from-blue-50 via-cyan-50 to-blue-50',
+    border: 'border-blue-200/60',
+    accent: 'text-blue-600',
+    badge: 'bg-blue-100 text-blue-700 border-blue-300',
+    glow: 'shadow-blue-200/50',
   };
+
+  // Tier-specific styling
+  const tierConfig = {
+    luxury: {
+      icon: Crown,
+      label: 'Luxury',
+      cardStyle: 'bg-gradient-to-br from-purple-50/80 via-white to-pink-50/80',
+      borderStyle: 'border-2 border-purple-200/50',
+      shadowStyle: 'shadow-2xl hover:shadow-purple-300/40',
+      badgeStyle: 'bg-gradient-to-r from-purple-100 to-pink-100 text-purple-800 border-purple-300',
+    },
+    premium: {
+      icon: Sparkles,
+      label: 'Premium',
+      cardStyle: 'bg-gradient-to-br from-slate-50/80 via-white to-slate-50/80',
+      borderStyle: 'border-2 border-slate-200/50',
+      shadowStyle: 'shadow-xl hover:shadow-slate-300/40',
+      badgeStyle: 'bg-gradient-to-r from-slate-100 to-gray-100 text-slate-800 border-slate-300',
+    },
+    standard: {
+      icon: Award,
+      label: 'Quality',
+      cardStyle: 'bg-gradient-to-br from-gray-50/80 via-white to-gray-50/80',
+      borderStyle: 'border border-gray-200/50',
+      shadowStyle: 'shadow-lg hover:shadow-gray-300/40',
+      badgeStyle: 'bg-gray-100 text-gray-700 border-gray-300',
+    },
+  };
+
+  const config = tierConfig[tier];
+  const TierIcon = config.icon;
 
   return (
     <motion.div
@@ -52,134 +67,114 @@ export function LuxuryShopCard({ shop, index }: LuxuryShopCardProps) {
       transition={{ 
         duration: 0.5, 
         delay: index * 0.1,
-        ease: [0.25, 0.1, 0.25, 1] // Custom easing for premium feel
+        ease: [0.25, 0.1, 0.25, 1]
       }}
-      whileHover={{ y: -4, transition: { duration: 0.2 } }}
+      whileHover={{ y: -8, transition: { duration: 0.3 } }}
       whileTap={{ scale: 0.98 }}
-      className="group"
+      onClick={onClick}
+      className="group cursor-pointer"
     >
-      <Link
-        href={`/shops/${shop.id}`}
-        onClick={handleTap}
-        className="block"
-      >
-        {/* Luxury Card Container with Glassmorphism */}
-        <div className={`
-          relative overflow-hidden rounded-2xl
-          bg-gradient-to-br ${brandColor.gradient}
-          backdrop-blur-xl
-          border ${brandColor.border}
-          shadow-2xl ${brandColor.glow}
-          transition-all duration-300
-          group-hover:shadow-3xl group-hover:${brandColor.glow}
-        `}>
-          {/* Hero Banner Area */}
-          <div className="relative h-32 overflow-hidden">
-            {/* Gradient Overlay */}
-            <div className={`absolute inset-0 bg-gradient-to-br ${brandColor.gradient} opacity-60`} />
+      <div className={`
+        relative overflow-hidden rounded-3xl backdrop-blur-xl
+        ${config.cardStyle}
+        ${config.borderStyle}
+        ${config.shadowStyle}
+        transition-all duration-500
+      `}>
+        
+        {/* Decorative Background Pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className={`absolute inset-0 bg-gradient-to-br ${cityTheme.gradient}`} />
+          <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id={`pattern-${shop.id}`} x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+                <circle cx="20" cy="20" r="1" fill="currentColor" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill={`url(#pattern-${shop.id})`} />
+          </svg>
+        </div>
+
+        {/* Content Container */}
+        <div className="relative p-8">
+          
+          {/* Header Section */}
+          <div className="flex items-start justify-between mb-6">
             
-            {/* Abstract Pattern (Premium Touch) */}
-            <div className="absolute inset-0 opacity-10">
-              <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                  <pattern id={`pattern-${shop.id}`} x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
-                    <circle cx="20" cy="20" r="2" fill="currentColor" />
-                  </pattern>
-                </defs>
-                <rect width="100%" height="100%" fill={`url(#pattern-${shop.id})`} />
-              </svg>
-            </div>
+            {/* Shop Icon with City Theme */}
+            <motion.div 
+              className={`
+                relative p-4 rounded-2xl bg-gradient-to-br ${cityTheme.gradient}
+                ${cityTheme.border} border-2
+                group-hover:scale-110 transition-transform duration-300
+              `}
+              whileHover={{ rotate: [0, -10, 10, 0] }}
+              transition={{ duration: 0.5 }}
+            >
+              <Store className={`w-8 h-8 ${cityTheme.accent}`} strokeWidth={2.5} />
+              
+              {/* Glow effect */}
+              <div className={`absolute inset-0 rounded-2xl ${cityTheme.glow} blur-xl opacity-0 group-hover:opacity-50 transition-opacity duration-300`} />
+            </motion.div>
 
-            {/* Verified Badge - Top Right */}
-            <div className="absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-md shadow-lg">
-              <CheckCircle2 className="w-4 h-4" style={{ color: brandColor.primary }} />
-              <span className="text-xs font-semibold text-gray-900">Verified</span>
-            </div>
-          </div>
-
-          {/* Shop Identity Card */}
-          <div className="relative p-6 bg-white/80 backdrop-blur-md">
-            {/* Shop Logo Placeholder (Premium Circle) */}
-            <div className="absolute -top-10 left-6">
-              <div 
-                className="w-20 h-20 rounded-2xl bg-gradient-to-br from-white to-gray-50 shadow-xl border-4 border-white flex items-center justify-center"
-                style={{ 
-                  boxShadow: `0 8px 32px ${brandColor.primary}20` 
-                }}
-              >
-                <span 
-                  className="text-2xl font-bold"
-                  style={{ color: brandColor.primary }}
-                >
-                  {shop.name.charAt(0)}
-                </span>
-              </div>
-            </div>
-
-            {/* Content Area with Premium Spacing */}
-            <div className="mt-12 space-y-4">
-              {/* Shop Name - Bold & Authoritative */}
-              <h3 className="text-2xl font-bold text-gray-900 tracking-tight leading-tight">
-                {shop.name}
-              </h3>
-
-              {/* Location & Contact - Elegant & Minimal */}
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <MapPin className="w-4 h-4" style={{ color: brandColor.primary }} />
-                  <span className="font-medium">
-                    {shop.city === 'Harar' ? t('common.locations.harar') : t('common.locations.direDawa')}
-                  </span>
-                </div>
-                
-                {shop.contactPhone && (
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Phone className="w-4 h-4" style={{ color: brandColor.primary }} />
-                    <span>{shop.contactPhone}</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Description (if available) */}
-              {shop.description && (
-                <p className="text-sm text-gray-600 leading-relaxed line-clamp-2">
-                  {shop.description}
-                </p>
-              )}
-
-              {/* CTA Button - Premium & Magnetic */}
-              <div className="pt-4">
-                <div 
-                  className="flex items-center justify-between px-6 py-3 rounded-xl transition-all duration-300 group-hover:translate-x-1"
-                  style={{ 
-                    backgroundColor: `${brandColor.primary}10`,
-                    borderLeft: `3px solid ${brandColor.primary}`
-                  }}
-                >
-                  <span 
-                    className="font-semibold text-sm"
-                    style={{ color: brandColor.primary }}
-                  >
-                    {t('shops.viewProducts')}
-                  </span>
-                  <ArrowRight 
-                    className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" 
-                    style={{ color: brandColor.primary }}
-                  />
-                </div>
-              </div>
+            {/* Tier Badge */}
+            <div className={`
+              flex items-center gap-2 px-4 py-2 rounded-full border
+              ${config.badgeStyle}
+              font-semibold text-sm tracking-wide
+              shadow-sm
+            `}>
+              <TierIcon className="w-4 h-4" />
+              <span>{config.label}</span>
             </div>
           </div>
 
-          {/* Subtle Glow Effect on Hover */}
-          <div 
-            className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-            style={{
-              background: `radial-gradient(circle at 50% 0%, ${brandColor.primary}15, transparent 70%)`
-            }}
+          {/* Shop Name */}
+          <h3 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-gray-700 transition-colors">
+            {shop.name}
+          </h3>
+
+          {/* Description */}
+          <p className="text-gray-600 text-sm mb-6 line-clamp-2 leading-relaxed">
+            {shop.description}
+          </p>
+
+          {/* Location Badge */}
+          <div className={`
+            inline-flex items-center gap-2 px-4 py-2 rounded-full border
+            ${cityTheme.badge}
+            font-medium text-sm
+          `}>
+            <MapPin className="w-4 h-4" />
+            <span>{isHarar ? 'Harar' : 'Dire Dawa'}</span>
+          </div>
+
+          {/* Hover Effect Overlay */}
+          <motion.div
+            className={`
+              absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r
+              ${isHarar ? 'from-amber-400 via-orange-500 to-amber-400' : 'from-blue-400 via-cyan-500 to-blue-400'}
+              opacity-0 group-hover:opacity-100 transition-opacity duration-300
+            `}
           />
         </div>
-      </Link>
+
+        {/* Premium Shine Effect */}
+        {tier === 'luxury' && (
+          <motion.div
+            className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-white/40 to-transparent rounded-full blur-3xl"
+            animate={{
+              scale: [1, 1.2, 1],
+              opacity: [0.3, 0.5, 0.3],
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+        )}
+      </div>
     </motion.div>
   );
 }
