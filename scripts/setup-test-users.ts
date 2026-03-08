@@ -21,7 +21,7 @@ interface TestShop {
   name: string;
   description: string;
   ownerId: string;
-  city: 'Harar' | 'Dire Dawa';
+  city: 'HARAR' | 'DIRE_DAWA';
   contactPhone: string;
   balance: number;
 }
@@ -136,7 +136,7 @@ async function setupTestUsers() {
         name: 'Test Shop - Harar',
         description: 'A test shop for development and testing purposes',
         ownerId: merchantUserId,
-        city: 'Harar',
+        city: 'HARAR',
         contactPhone: '+251923456789',
         balance: 0
       };

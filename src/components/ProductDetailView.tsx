@@ -63,7 +63,7 @@ export function ProductDetailView({
     // City-to-campus: 100 ETB (midpoint of 80-120)
     // Inter-city: 180 ETB
 
-    if (shopCity === 'Harar') {
+    if (shopCity === 'HARAR') {
       if (userLocation === 'Harar_Campus') {
         setDeliveryFee(40);
         setEstimatedTime('30-45 minutes');
@@ -74,7 +74,7 @@ export function ProductDetailView({
         setDeliveryFee(180);
         setEstimatedTime('3-4 hours');
       }
-    } else if (shopCity === 'Dire Dawa') {
+    } else if (shopCity === 'DIRE_DAWA') {
       if (userLocation === 'DDU') {
         setDeliveryFee(40);
         setEstimatedTime('30-45 minutes');
@@ -255,7 +255,7 @@ export function ProductDetailView({
               <div>
                 <p className="font-medium">{product.shopName}</p>
                 <p className="text-muted-foreground">
-                  {product.shopCity === 'Harar'
+                  {product.shopCity === 'HARAR'
                     ? t('common.locations.harar')
                     : t('common.locations.direDawa')}
                 </p>

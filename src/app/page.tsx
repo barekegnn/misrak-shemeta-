@@ -7,8 +7,10 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { BottomNav } from '@/components/BottomNav';
 import { useI18n } from '@/i18n/provider';
 import { useState, useEffect } from 'react';
-import { MapPin, User } from 'lucide-react';
 import { Logo } from '@/components/Logo';
+import { StudentHome } from '@/components/home/StudentHome';
+import { MerchantHome } from '@/components/home/MerchantHome';
+import { AdminHome } from '@/components/home/AdminHome';
 
 export default function Home() {
   const { user, isLoading } = useTelegramAuth();
@@ -56,6 +58,21 @@ export default function Home() {
     return <HomeLocationSelector onComplete={() => setShowLocationSelector(false)} />;
   }
 
+  // Show role-specific home page
+  if (user) {
+    return (
+      <>
+        <div className="absolute top-4 right-4 z-10">
+          <LanguageSwitcher />
+        </div>
+        {user.role === 'ADMIN' && <AdminHome user={user} />}
+        {user.role === 'MERCHANT' && <MerchantHome user={user} />}
+        {(user.role === 'STUDENT' || user.role === 'RUNNER') && <StudentHome user={user} />}
+        <BottomNav />
+      </>
+    );
+  }
+
   return (
     <main className="min-h-screen pb-24 bg-gradient-to-br from-gray-50 via-white to-gray-50">
       {/* Language Switcher */}
@@ -63,7 +80,7 @@ export default function Home() {
         <LanguageSwitcher />
       </div>
       
-      {/* Hero Section */}
+      {/* Hero Section - Generic landing for non-authenticated users */}
       <div className="relative overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-5">
@@ -85,19 +102,9 @@ export default function Home() {
             transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
             className="inline-flex items-center justify-center"
           >
-            {/* Mobile: 96px, Tablet: 112px, Desktop: 128px */}
-            <Logo 
-              size={96} 
-              className="drop-shadow-2xl sm:hidden" 
-            />
-            <Logo 
-              size={112} 
-              className="drop-shadow-2xl hidden sm:block md:hidden" 
-            />
-            <Logo 
-              size={128} 
-              className="drop-shadow-2xl hidden md:block" 
-            />
+            <Logo size={96} className="drop-shadow-2xl sm:hidden" />
+            <Logo size={112} className="drop-shadow-2xl hidden sm:block md:hidden" />
+            <Logo size={128} className="drop-shadow-2xl hidden md:block" />
           </motion.div>
 
           {/* Title - Responsive text sizing */}
@@ -122,7 +129,7 @@ export default function Home() {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="flex flex-wrap gap-3 justify-center max-w-lg mx-auto"
           >
-            {['harar', 'direDawa', 'haramayaMain'].map((loc, index) => (
+            {['harar', 'direDawa', 'haramayaMain'].map((loc) => (
               <span
                 key={loc}
                 className="px-4 py-2 rounded-full bg-white border border-gray-200 text-sm text-gray-700 shadow-sm"
@@ -133,45 +140,6 @@ export default function Home() {
           </motion.div>
         </div>
       </div>
-
-      {/* User Profile Card */}
-      {user && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          className="mx-6 mb-8"
-        >
-          <div className="max-w-md mx-auto p-6 rounded-2xl bg-white border border-gray-200 shadow-xl">
-            <div className="flex items-start gap-4">
-              {/* Avatar */}
-              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center shadow-lg">
-                <User className="w-7 h-7 text-white" />
-              </div>
-
-              {/* Info */}
-              <div className="flex-1 space-y-2">
-                <p className="text-sm text-gray-500 font-medium">Welcome back!</p>
-                <p className="text-lg font-semibold text-gray-900">
-                  Telegram ID: {user.telegramId}
-                </p>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <MapPin className="w-4 h-4 text-indigo-600" />
-                  <span>
-                    {user.homeLocation === 'Haramaya_Main' ? t('common.locations.haramayaMain') :
-                     user.homeLocation === 'Harar_Campus' ? t('common.locations.hararCampus') :
-                     user.homeLocation === 'DDU' ? t('common.locations.ddu') :
-                     user.homeLocation}
-                  </span>
-                </div>
-                <div className="inline-flex px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold">
-                  {user.role}
-                </div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      )}
 
       <BottomNav />
     </main>

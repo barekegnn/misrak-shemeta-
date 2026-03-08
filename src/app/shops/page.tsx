@@ -8,14 +8,7 @@ import { getShops } from '@/app/actions/shop';
 import { LuxuryShopCard } from '@/components/LuxuryShopCard';
 import { LuxuryShopSkeleton } from '@/components/LuxuryShopSkeleton';
 import { motion } from 'framer-motion';
-
-interface Shop {
-  id: string;
-  name: string;
-  city: string;
-  description?: string;
-  contactPhone?: string;
-}
+import { Shop } from '@/types';
 
 export default function ShopsPage() {
   const { user, isLoading: authLoading } = useTelegramAuth();

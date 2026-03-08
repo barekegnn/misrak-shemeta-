@@ -20,55 +20,55 @@ describe('Eastern Triangle Pricing Engine', () => {
   describe('calculateDeliveryFee', () => {
     // Requirement 16.1: Harar → Harar_Campus = 40 ETB
     it('should calculate 40 ETB for Harar to Harar Campus (intra-city)', () => {
-      const result = calculateDeliveryFee('Harar', 'Harar_Campus');
+      const result = calculateDeliveryFee('HARAR', 'Harar_Campus');
       expect(result.fee).toBe(40);
       expect(result.estimatedTime).toBe('30 minutes - 1 hour');
     });
 
     // Requirement 16.2: Dire_Dawa → DDU = 40 ETB
     it('should calculate 40 ETB for Dire Dawa to DDU (intra-city)', () => {
-      const result = calculateDeliveryFee('Dire Dawa', 'DDU');
+      const result = calculateDeliveryFee('DIRE_DAWA', 'DDU');
       expect(result.fee).toBe(40);
       expect(result.estimatedTime).toBe('30 minutes - 1 hour');
     });
 
     // Requirement 16.3: Harar → Haramaya_Main = 100 ETB (midpoint of 80-120)
     it('should calculate 100 ETB for Harar to Haramaya Main (city-to-campus)', () => {
-      const result = calculateDeliveryFee('Harar', 'Haramaya_Main');
+      const result = calculateDeliveryFee('HARAR', 'Haramaya_Main');
       expect(result.fee).toBe(100);
       expect(result.estimatedTime).toBe('3-4 hours');
     });
 
     // Requirement 16.4: Dire_Dawa → Haramaya_Main = 100 ETB (midpoint of 80-120)
     it('should calculate 100 ETB for Dire Dawa to Haramaya Main (city-to-campus)', () => {
-      const result = calculateDeliveryFee('Dire Dawa', 'Haramaya_Main');
+      const result = calculateDeliveryFee('DIRE_DAWA', 'Haramaya_Main');
       expect(result.fee).toBe(100);
       expect(result.estimatedTime).toBe('3-4 hours');
     });
 
     // Requirement 16.5: Harar → DDU = 180 ETB
     it('should calculate 180 ETB for Harar to DDU (inter-city)', () => {
-      const result = calculateDeliveryFee('Harar', 'DDU');
+      const result = calculateDeliveryFee('HARAR', 'DDU');
       expect(result.fee).toBe(180);
       expect(result.estimatedTime).toBe('5-6 hours');
     });
 
     // Requirement 16.6: Dire_Dawa → Harar_Campus = 180 ETB
     it('should calculate 180 ETB for Dire Dawa to Harar Campus (inter-city)', () => {
-      const result = calculateDeliveryFee('Dire Dawa', 'Harar_Campus');
+      const result = calculateDeliveryFee('DIRE_DAWA', 'Harar_Campus');
       expect(result.fee).toBe(180);
       expect(result.estimatedTime).toBe('5-6 hours');
     });
 
     // Requirement 16.7: Estimated delivery times
     it('should provide correct estimated times for all route types', () => {
-      const intraCityRoute = calculateDeliveryFee('Harar', 'Harar_Campus');
+      const intraCityRoute = calculateDeliveryFee('HARAR', 'Harar_Campus');
       expect(intraCityRoute.estimatedTime).toBe('30 minutes - 1 hour');
 
-      const cityToCampusRoute = calculateDeliveryFee('Harar', 'Haramaya_Main');
+      const cityToCampusRoute = calculateDeliveryFee('HARAR', 'Haramaya_Main');
       expect(cityToCampusRoute.estimatedTime).toBe('3-4 hours');
 
-      const interCityRoute = calculateDeliveryFee('Harar', 'DDU');
+      const interCityRoute = calculateDeliveryFee('HARAR', 'DDU');
       expect(interCityRoute.estimatedTime).toBe('5-6 hours');
     });
 
@@ -87,9 +87,9 @@ describe('Eastern Triangle Pricing Engine', () => {
 
   describe('isValidRoute', () => {
     it('should return true for valid routes', () => {
-      expect(isValidRoute('Harar', 'Harar_Campus')).toBe(true);
-      expect(isValidRoute('Dire Dawa', 'DDU')).toBe(true);
-      expect(isValidRoute('Harar', 'Haramaya_Main')).toBe(true);
+      expect(isValidRoute('HARAR', 'Harar_Campus')).toBe(true);
+      expect(isValidRoute('DIRE_DAWA', 'DDU')).toBe(true);
+      expect(isValidRoute('HARAR', 'Haramaya_Main')).toBe(true);
     });
 
     it('should return false for invalid routes', () => {
@@ -99,7 +99,7 @@ describe('Eastern Triangle Pricing Engine', () => {
 
   describe('getDeliverableLocations', () => {
     it('should return all deliverable locations for Harar', () => {
-      const locations = getDeliverableLocations('Harar');
+      const locations = getDeliverableLocations('HARAR');
       expect(locations).toContain('Harar_Campus');
       expect(locations).toContain('Haramaya_Main');
       expect(locations).toContain('DDU');
@@ -107,7 +107,7 @@ describe('Eastern Triangle Pricing Engine', () => {
     });
 
     it('should return all deliverable locations for Dire Dawa', () => {
-      const locations = getDeliverableLocations('Dire Dawa');
+      const locations = getDeliverableLocations('DIRE_DAWA');
       expect(locations).toContain('DDU');
       expect(locations).toContain('Haramaya_Main');
       expect(locations).toContain('Harar_Campus');
@@ -123,8 +123,8 @@ describe('Eastern Triangle Pricing Engine', () => {
   describe('calculateTotalDeliveryFee', () => {
     it('should calculate total fee for items from single shop', () => {
       const items = [
-        { shopCity: 'Harar' as City },
-        { shopCity: 'Harar' as City },
+        { shopCity: 'HARAR' as City },
+        { shopCity: 'HARAR' as City },
       ];
       const total = calculateTotalDeliveryFee(items, 'Harar_Campus');
       expect(total).toBe(40); // Only one shop, so only one delivery fee
@@ -132,8 +132,8 @@ describe('Eastern Triangle Pricing Engine', () => {
 
     it('should calculate total fee for items from multiple shops', () => {
       const items = [
-        { shopCity: 'Harar' as City },
-        { shopCity: 'Dire Dawa' as City },
+        { shopCity: 'HARAR' as City },
+        { shopCity: 'DIRE_DAWA' as City },
       ];
       const total = calculateTotalDeliveryFee(items, 'Haramaya_Main');
       expect(total).toBe(200); // 100 + 100 (both shops to Haramaya Main)

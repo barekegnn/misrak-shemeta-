@@ -225,14 +225,14 @@ function isDeliverable(shopCity: City, userLocation: Location): boolean {
   // This function exists for future expansion if certain routes become unavailable
   
   // Harar shops can deliver to all locations
-  if (shopCity === 'Harar') {
+  if (shopCity === 'HARAR') {
     const result = ['Harar_Campus', 'Haramaya_Main', 'DDU'].includes(userLocation);
     console.log(`[isDeliverable] Harar check: ${result}`);
     return result;
   }
   
   // Dire Dawa shops can deliver to all locations
-  if (shopCity === 'Dire Dawa') {
+  if (shopCity === 'DIRE_DAWA') {
     const result = ['DDU', 'Haramaya_Main', 'Harar_Campus'].includes(userLocation);
     console.log(`[isDeliverable] Dire Dawa check: ${result}`);
     return result;

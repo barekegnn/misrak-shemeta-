@@ -28,7 +28,7 @@ export default function ShopSettings() {
 
   const [formData, setFormData] = useState({
     name: '',
-    city: 'Harar' as 'Harar' | 'Dire Dawa',
+    city: 'HARAR' as 'HARAR' | 'DIRE_DAWA',
     contactPhone: '',
     description: '',
   });
@@ -50,7 +50,7 @@ export default function ShopSettings() {
         setFormData({
           name: result.data.name,
           city: result.data.city,
-          contactPhone: result.data.contactPhone,
+          contactPhone: result.data.contactPhone || '',
           description: result.data.description || '',
         });
       } else {
@@ -247,12 +247,12 @@ export default function ShopSettings() {
                 <RadioGroup
                   value={formData.city}
                   onValueChange={(value) =>
-                    setFormData({ ...formData, city: value as 'Harar' | 'Dire Dawa' })
+                    setFormData({ ...formData, city: value as 'HARAR' | 'DIRE_DAWA' })
                   }
                   disabled={saving}
                 >
                   <div className="flex items-center space-x-3 p-3 sm:p-4 border rounded-lg hover:bg-gray-50 cursor-pointer active:bg-gray-100">
-                    <RadioGroupItem value="Harar" id="harar" className="min-w-[20px] min-h-[20px]" />
+                    <RadioGroupItem value="HARAR" id="harar" className="min-w-[20px] min-h-[20px]" />
                     <Label htmlFor="harar" className="flex-1 cursor-pointer">
                       <div className="font-medium text-sm sm:text-base">Harar</div>
                       <div className="text-xs sm:text-sm text-gray-500">
@@ -261,7 +261,7 @@ export default function ShopSettings() {
                     </Label>
                   </div>
                   <div className="flex items-center space-x-3 p-3 sm:p-4 border rounded-lg hover:bg-gray-50 cursor-pointer active:bg-gray-100">
-                    <RadioGroupItem value="Dire Dawa" id="dire-dawa" className="min-w-[20px] min-h-[20px]" />
+                    <RadioGroupItem value="DIRE_DAWA" id="dire-dawa" className="min-w-[20px] min-h-[20px]" />
                     <Label htmlFor="dire-dawa" className="flex-1 cursor-pointer">
                       <div className="font-medium text-sm sm:text-base">Dire Dawa</div>
                       <div className="text-xs sm:text-sm text-gray-500">

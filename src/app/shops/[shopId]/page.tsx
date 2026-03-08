@@ -12,24 +12,21 @@ import { addToCart } from '@/app/actions/cart';
 import { LuxuryProductCard } from '@/components/LuxuryProductCard';
 import { LuxuryShopSkeleton } from '@/components/LuxuryShopSkeleton';
 import { Product } from '@/types';
-import { ArrowLeft, MapPin, Phone, CheckCircle2, Package, Sparkles } from 'lucide-react';
+import { ArrowLeft, MapPin, Phone, User, CheckCircle2, Package, Sparkles } from 'lucide-react';
+import { Shop as ShopType } from '@/types';
 
-interface Shop {
-  id: string;
-  name: string;
-  city: string;
-  description?: string;
-  contactPhone?: string;
+interface Shop extends ShopType {
+  // Using the global Shop type from @/types
 }
 
 // Brand DNA colors matching LuxuryShopCard
 const BRAND_COLORS = {
-  'Harar': {
+  'HARAR': {
     primary: '#FF6B35',
     gradient: 'from-orange-500/20 via-red-500/10 to-transparent',
     glow: 'shadow-orange-500/20',
   },
-  'Dire Dawa': {
+  'DIRE_DAWA': {
     primary: '#4F46E5',
     gradient: 'from-indigo-500/20 via-purple-500/10 to-transparent',
     glow: 'shadow-indigo-500/20',
@@ -115,7 +112,7 @@ export default function ShopProductsPage() {
     loadShopAndProducts();
   }, [user, shopId, t]);
 
-  const brandColor = shop ? (BRAND_COLORS[shop.city as keyof typeof BRAND_COLORS] || BRAND_COLORS['Harar']) : BRAND_COLORS['Harar'];
+  const brandColor = shop ? (BRAND_COLORS[shop.city as keyof typeof BRAND_COLORS] || BRAND_COLORS['HARAR']) : BRAND_COLORS['HARAR'];
 
   if (authLoading || isLoading) {
     return (
@@ -255,15 +252,26 @@ export default function ShopProductsPage() {
                   <div className="flex items-center gap-2 text-sm text-gray-600">
                     <MapPin className="w-4 h-4 flex-shrink-0" style={{ color: brandColor.primary }} />
                     <span className="font-medium">
-                      {shop.city === 'Harar' ? t('common.locations.harar') : t('common.locations.direDawa')}
+                      {shop.city === 'HARAR' ? t('common.locations.harar') : t('common.locations.direDawa')}
                     </span>
                   </div>
                   
-                  {shop.contactPhone && (
+                  {shop.ownerName && (
                     <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Phone className="w-4 h-4 flex-shrink-0" style={{ color: brandColor.primary }} />
-                      <span className="break-all">{shop.contactPhone}</span>
+                      <User className="w-4 h-4 flex-shrink-0" style={{ color: brandColor.primary }} />
+                      <span className="font-medium">{shop.ownerName}</span>
                     </div>
+                  )}
+                  
+                  {shop.contactPhone && (
+                    <a 
+                      href={`tel:${shop.contactPhone}`}
+                      className="flex items-center gap-2 text-sm font-medium hover:opacity-80 transition-opacity active:scale-95"
+                      style={{ color: brandColor.primary }}
+                    >
+                      <Phone className="w-4 h-4 flex-shrink-0" />
+                      <span>{shop.contactPhone}</span>
+                    </a>
                   )}
                 </div>
 

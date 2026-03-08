@@ -57,8 +57,8 @@ export default function DiagnosticPage() {
       <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
         <h2 className="text-xl font-semibold mb-2">Summary</h2>
         <p className="text-lg">Total Products: <strong>{products.length}</strong></p>
-        <p className="text-lg">Harar Products: <strong>{products.filter(p => p.shopCity === 'Harar').length}</strong></p>
-        <p className="text-lg">Dire Dawa Products: <strong>{products.filter(p => p.shopCity === 'Dire Dawa').length}</strong></p>
+        <p className="text-lg">Harar Products: <strong>{products.filter(p => p.shopCity === 'HARAR').length}</strong></p>
+        <p className="text-lg">Dire Dawa Products: <strong>{products.filter(p => p.shopCity === 'DIRE_DAWA').length}</strong></p>
         <p className="text-lg">Products without shopCity: <strong className="text-red-600">{products.filter(p => !p.shopCity).length}</strong></p>
       </div>
 

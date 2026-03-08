@@ -125,8 +125,8 @@ export function FilterPanel({ onFilterChange, initialFilters = {} }: FilterPanel
                   className="w-full rounded-md border border-border bg-background px-3 py-2 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary"
                 >
                   <option value="all">{t('products.filters.allLocations')}</option>
-                  <option value="Harar">{t('common.locations.harar')}</option>
-                  <option value="Dire Dawa">{t('common.locations.direDawa')}</option>
+                  <option value="HARAR">{t('common.locations.harar')}</option>
+                  <option value="DIRE_DAWA">{t('common.locations.direDawa')}</option>
                 </select>
               </div>
 

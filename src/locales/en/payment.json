@@ -1,0 +1,10 @@
+{
+  "payNow": "Pay Now",
+  "processing": "Processing...",
+  "securePayment": "Secure payment powered by Chapa",
+  "sandboxMode": "Sandbox Mode",
+  "sandboxDescription": "This is a test payment. No real money will be charged.",
+  "success": "Payment successful!",
+  "failed": "Payment failed. Please try again.",
+  "cancelled": "Payment was cancelled"
+}

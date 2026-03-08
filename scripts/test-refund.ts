@@ -45,7 +45,7 @@ async function testRefundFlow() {
           productName: 'Test Product',
           quantity: 1,
           priceAtPurchase: 1000,
-          shopCity: 'Harar',
+          shopCity: 'HARAR',
         },
       ],
       totalAmount: 1000,

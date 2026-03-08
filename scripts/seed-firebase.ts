@@ -25,7 +25,7 @@ const db = admin.firestore();
 
 interface SampleShop {
   name: string;
-  city: 'Harar' | 'Dire Dawa';
+  city: 'HARAR' | 'DIRE_DAWA';
   description: string;
   contactPhone: string;
 }
@@ -43,37 +43,37 @@ interface SampleProduct {
 const SAMPLE_SHOPS: SampleShop[] = [
   {
     name: 'Harar Electronics Hub',
-    city: 'Harar',
+    city: 'HARAR',
     description: 'Premium electronics and gadgets store in Harar',
     contactPhone: '+251911234567',
   },
   {
     name: 'Harar Fashion Store',
-    city: 'Harar',
+    city: 'HARAR',
     description: 'Latest fashion and clothing collection',
     contactPhone: '+251912345678',
   },
   {
     name: 'Harar Books & Stationery',
-    city: 'Harar',
+    city: 'HARAR',
     description: 'Books, notebooks, and school supplies',
     contactPhone: '+251913456789',
   },
   {
     name: 'Dire Dawa Tech Store',
-    city: 'Dire Dawa',
+    city: 'DIRE_DAWA',
     description: 'Computer accessories and tech gadgets',
     contactPhone: '+251914567890',
   },
   {
     name: 'Dire Dawa Supermarket',
-    city: 'Dire Dawa',
+    city: 'DIRE_DAWA',
     description: 'Groceries, snacks, and daily essentials',
     contactPhone: '+251915678901',
   },
   {
     name: 'Dire Dawa Pharmacy Plus',
-    city: 'Dire Dawa',
+    city: 'DIRE_DAWA',
     description: 'Medicines, vitamins, and health products',
     contactPhone: '+251916789012',
   },
@@ -303,8 +303,8 @@ async function seedDatabase() {
     console.log(`\n📊 Summary:`);
     console.log(`   - Shops: ${SAMPLE_SHOPS.length}`);
     console.log(`   - Products: ${productCount}`);
-    console.log(`   - Harar shops: ${SAMPLE_SHOPS.filter((s) => s.city === 'Harar').length}`);
-    console.log(`   - Dire Dawa shops: ${SAMPLE_SHOPS.filter((s) => s.city === 'Dire Dawa').length}`);
+    console.log(`   - Harar shops: ${SAMPLE_SHOPS.filter((s) => s.city === 'HARAR').length}`);
+    console.log(`   - Dire Dawa shops: ${SAMPLE_SHOPS.filter((s) => s.city === 'DIRE_DAWA').length}`);
 
     process.exit(0);
   } catch (error) {

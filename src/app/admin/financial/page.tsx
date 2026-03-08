@@ -418,7 +418,7 @@ export default function FinancialReportingPage() {
                         <div key={location.location} className="border border-gray-200 rounded-lg p-3">
                           <div className="flex items-center justify-between mb-2">
                             <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
-                              location.location === 'Harar' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
+                              location.location === 'HARAR' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
                             }`}>
                               {location.location}
                             </span>
@@ -487,7 +487,7 @@ export default function FinancialReportingPage() {
                           <tr key={location.location} className="hover:bg-gray-50">
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                location.location === 'Harar' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
+                                location.location === 'HARAR' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
                               }`}>
                                 {location.location}
                               </span>

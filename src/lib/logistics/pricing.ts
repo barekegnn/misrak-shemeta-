@@ -35,7 +35,7 @@ import { City, Campus, DeliveryRoute } from '@/types';
  *   - Dire Dawa → Harar Campus (Dire Dawa to Harar)
  */
 const ROUTE_MATRIX: Record<City, Record<Campus, DeliveryRoute>> = {
-  'Harar': {
+  'HARAR': {
     'Harar_Campus': {
       fee: 40,
       estimatedTime: '30 minutes - 1 hour',
@@ -49,7 +49,7 @@ const ROUTE_MATRIX: Record<City, Record<Campus, DeliveryRoute>> = {
       estimatedTime: '5-6 hours',
     },
   },
-  'Dire Dawa': {
+  'DIRE_DAWA': {
     'DDU': {
       fee: 40,
       estimatedTime: '30 minutes - 1 hour',
@@ -181,7 +181,7 @@ export function getRouteDescription(shopCity: City, userLocation: Campus): strin
   const route = calculateDeliveryFee(shopCity, userLocation);
   
   // Format location names for display
-  const shopName = shopCity === 'Harar' ? 'Harar' : 'Dire Dawa';
+  const shopName = shopCity === 'HARAR' ? 'Harar' : 'Dire Dawa';
   const locationName = userLocation === 'Haramaya_Main' 
     ? 'Haramaya Main Campus'
     : userLocation === 'Harar_Campus'

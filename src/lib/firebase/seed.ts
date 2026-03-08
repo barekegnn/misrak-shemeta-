@@ -12,7 +12,7 @@ import { adminDb } from './admin';
 
 interface SampleShop {
   name: string;
-  city: 'Harar' | 'Dire Dawa';
+  city: 'HARAR' | 'DIRE_DAWA';
   description: string;
   contactPhone: string;
 }
@@ -31,62 +31,62 @@ const SAMPLE_SHOPS: SampleShop[] = [
   // Harar Shops
   {
     name: 'Harar Electronics Hub',
-    city: 'Harar',
+    city: 'HARAR',
     description: 'Premium electronics and gadgets store in Harar city center',
     contactPhone: '+251911234567',
   },
   {
     name: 'Harar Fashion Store',
-    city: 'Harar',
+    city: 'HARAR',
     description: 'Latest fashion and clothing collection for all seasons',
     contactPhone: '+251912345678',
   },
   {
     name: 'Harar Books & Stationery',
-    city: 'Harar',
+    city: 'HARAR',
     description: 'Books, notebooks, and school supplies for students',
     contactPhone: '+251913456789',
   },
   {
     name: 'Harar Cafe & Snacks',
-    city: 'Harar',
+    city: 'HARAR',
     description: 'Fresh coffee, snacks, and light meals',
     contactPhone: '+251914567890',
   },
   {
     name: 'Harar Sports Gear',
-    city: 'Harar',
+    city: 'HARAR',
     description: 'Sports equipment and athletic wear',
     contactPhone: '+251915678901',
   },
   // Dire Dawa Shops
   {
     name: 'Dire Dawa Tech Store',
-    city: 'Dire Dawa',
+    city: 'DIRE_DAWA',
     description: 'Computer accessories and tech gadgets in Dire Dawa',
     contactPhone: '+251916789012',
   },
   {
     name: 'Dire Dawa Supermarket',
-    city: 'Dire Dawa',
+    city: 'DIRE_DAWA',
     description: 'Groceries, snacks, and daily essentials',
     contactPhone: '+251917890123',
   },
   {
     name: 'Dire Dawa Pharmacy Plus',
-    city: 'Dire Dawa',
+    city: 'DIRE_DAWA',
     description: 'Medicines, vitamins, and health products',
     contactPhone: '+251918901234',
   },
   {
     name: 'Dire Dawa Home Decor',
-    city: 'Dire Dawa',
+    city: 'DIRE_DAWA',
     description: 'Home decoration and furniture items',
     contactPhone: '+251919012345',
   },
   {
     name: 'Dire Dawa Beauty Shop',
-    city: 'Dire Dawa',
+    city: 'DIRE_DAWA',
     description: 'Beauty products, cosmetics, and skincare',
     contactPhone: '+251920123456',
   },
@@ -596,8 +596,8 @@ export async function seedDatabase() {
       console.log(`✅ Database seeding completed!`);
       console.log(`   - Shops: ${SAMPLE_SHOPS.length}`);
       console.log(`   - Products: ${productCount}`);
-      console.log(`   - Harar shops: ${SAMPLE_SHOPS.filter((s) => s.city === 'Harar').length}`);
-      console.log(`   - Dire Dawa shops: ${SAMPLE_SHOPS.filter((s) => s.city === 'Dire Dawa').length}`);
+      console.log(`   - Harar shops: ${SAMPLE_SHOPS.filter((s) => s.city === 'HARAR').length}`);
+      console.log(`   - Dire Dawa shops: ${SAMPLE_SHOPS.filter((s) => s.city === 'DIRE_DAWA').length}`);
 
       hasSeeded = true;
     } catch (error) {

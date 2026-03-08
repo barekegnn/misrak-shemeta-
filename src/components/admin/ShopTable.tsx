@@ -375,8 +375,8 @@ export function ShopTable({
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="">All Locations</option>
-              <option value="Harar">Harar</option>
-              <option value="Dire Dawa">Dire Dawa</option>
+              <option value="HARAR">Harar</option>
+              <option value="DIRE_DAWA">Dire Dawa</option>
             </select>
           </div>
           
@@ -471,7 +471,7 @@ export function ShopTable({
                   <span className="text-gray-500 block">Location</span>
                   {shop.city ? (
                     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium mt-1 ${
-                      shop.city === 'Harar' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
+                      shop.city === 'HARAR' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
                     }`}>
                       {shop.city.replace('_', ' ')}
                     </span>
@@ -614,7 +614,7 @@ export function ShopTable({
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                       {shop.city ? (
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          shop.city === 'Harar' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
+                          shop.city === 'HARAR' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
                         }`}>
                           {shop.city.replace('_', ' ')}
                         </span>

@@ -23,7 +23,7 @@ export default function ShopRegistration() {
 
   const [formData, setFormData] = useState({
     name: '',
-    city: 'Harar' as 'Harar' | 'Dire Dawa',
+    city: 'HARAR' as 'HARAR' | 'DIRE_DAWA',
     contactPhone: '',
   });
 
@@ -165,12 +165,12 @@ export default function ShopRegistration() {
               <RadioGroup
                 value={formData.city}
                 onValueChange={(value) =>
-                  setFormData({ ...formData, city: value as 'Harar' | 'Dire Dawa' })
+                  setFormData({ ...formData, city: value as 'HARAR' | 'DIRE_DAWA' })
                 }
                 disabled={loading}
               >
                 <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-gray-50 cursor-pointer">
-                  <RadioGroupItem value="Harar" id="harar" />
+                  <RadioGroupItem value="HARAR" id="harar" />
                   <Label htmlFor="harar" className="flex-1 cursor-pointer">
                     <div className="font-medium">Harar</div>
                     <div className="text-sm text-gray-500">
@@ -179,7 +179,7 @@ export default function ShopRegistration() {
                   </Label>
                 </div>
                 <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-gray-50 cursor-pointer">
-                  <RadioGroupItem value="Dire Dawa" id="dire-dawa" />
+                  <RadioGroupItem value="DIRE_DAWA" id="dire-dawa" />
                   <Label htmlFor="dire-dawa" className="flex-1 cursor-pointer">
                     <div className="font-medium">Dire Dawa</div>
                     <div className="text-sm text-gray-500">

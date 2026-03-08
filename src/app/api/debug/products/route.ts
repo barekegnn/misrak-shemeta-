@@ -27,8 +27,8 @@ export async function GET() {
       total: products.length,
       products,
       groupedByCity: {
-        Harar: products.filter(p => p.shopCity === 'Harar').length,
-        'Dire Dawa': products.filter(p => p.shopCity === 'Dire Dawa').length,
+        Harar: products.filter(p => p.shopCity === 'HARAR').length,
+        'Dire Dawa': products.filter(p => p.shopCity === 'DIRE_DAWA').length,
         undefined: products.filter(p => !p.shopCity).length,
       },
     });

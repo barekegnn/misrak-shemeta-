@@ -256,7 +256,7 @@ export async function registerShop(
       return { success: false, error: 'SHOP_NAME_TOO_LONG' };
     }
 
-    if (!shopData.city || (shopData.city !== 'Harar' && shopData.city !== 'Dire Dawa')) {
+    if (!shopData.city || (shopData.city !== 'HARAR' && shopData.city !== 'DIRE_DAWA')) {
       return { success: false, error: 'INVALID_CITY' };
     }
 

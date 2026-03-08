@@ -367,7 +367,7 @@ export default function CheckoutPage() {
                   <div>
                     <p className="font-semibold text-gray-900">{delivery.shopName}</p>
                     <p className="text-sm text-gray-600">
-                      {delivery.shopCity === 'Harar' ? 'Harar' : 'Dire Dawa'} → {' '}
+                      {delivery.shopCity === 'HARAR' ? 'Harar' : 'Dire Dawa'} → {' '}
                       {user.homeLocation === 'Haramaya_Main' && 'Haramaya Main'}
                       {user.homeLocation === 'Harar_Campus' && 'Harar Campus'}
                       {user.homeLocation === 'DDU' && 'DDU'}

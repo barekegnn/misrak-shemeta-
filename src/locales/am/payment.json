@@ -1,0 +1,10 @@
+{
+  "payNow": "አሁን ይክፈሉ",
+  "processing": "በሂደት ላይ...",
+  "securePayment": "በቻፓ የተጠበቀ ክፍያ",
+  "sandboxMode": "የሙከራ ሁነታ",
+  "sandboxDescription": "ይህ የሙከራ ክፍያ ነው። ምንም እውነተኛ ገንዘብ አይከፈልም።",
+  "success": "ክፍያ ተሳክቷል!",
+  "failed": "ክፍያ አልተሳካም። እባክዎ እንደገና ይሞክሩ።",
+  "cancelled": "ክፍያ ተሰርዟል"
+}

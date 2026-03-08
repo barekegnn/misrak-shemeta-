@@ -31,9 +31,10 @@ export interface Shop {
   name: string;
   description?: string; // Optional shop description
   ownerId: string; // Reference to User.id
+  ownerName?: string; // Ethiopian shop owner name
   city: City; // Shop location
   tier?: 'luxury' | 'premium' | 'standard'; // Shop tier for UI styling
-  contactPhone: string;
+  contactPhone?: string; // Ethiopian phone number
   balance: number; // Current balance in ETB
   suspended: boolean; // Admin suspension flag
   suspendedAt?: Date;

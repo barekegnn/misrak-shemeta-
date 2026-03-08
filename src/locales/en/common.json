@@ -30,7 +30,13 @@
     "next": "Next",
     "close": "Close",
     "search": "Search",
-    "continue": "Continue"
+    "continue": "Continue",
+    "loading": "Loading...",
+    "add": "Add",
+    "remove": "Remove",
+    "update": "Update",
+    "create": "Create",
+    "view": "View"
   },
   "common": {
     "loading": "Loading...",
