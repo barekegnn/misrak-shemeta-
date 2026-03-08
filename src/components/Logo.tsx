@@ -1,13 +1,12 @@
 /**
  * Misrak Shemeta Logo Component
  * 
- * Structural design featuring:
- * - Detailed Ethiopian map silhouette as foundation
- * - Bold, symmetrical 'M' centered in the map
- * - Eastern sunrise positioned in top-right quadrant
- * - Gray dot terminals on 'M' peaks
- * - Dynamic colors using CSS variables for light/dark mode
- * - Apple-standard symmetry and precision
+ * Premium, clean design featuring:
+ * - Accurate Ethiopian map silhouette (from reference image)
+ * - Artistic, elegant 'M' letterform
+ * - Eastern sunrise with perfect glow effect (kept from previous design)
+ * - Dynamic colors using currentColor for theme adaptation
+ * - Minimalist, Apple-standard aesthetic
  */
 
 interface LogoProps {
@@ -28,7 +27,7 @@ export function Logo({ size = 40, className = '', variant = 'icon' }: LogoProps)
         className={className}
       >
         <defs>
-          {/* Glow effect for Eastern Sun */}
+          {/* Perfect glow effect for Eastern Sun */}
           <filter id="sunGlow">
             <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
             <feMerge>
@@ -36,63 +35,69 @@ export function Logo({ size = 40, className = '', variant = 'icon' }: LogoProps)
               <feMergeNode in="SourceGraphic"/>
             </feMerge>
           </filter>
-          
-          {/* Dot grid pattern background */}
-          <pattern id="dotGrid" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">
-            <circle cx="4" cy="4" r="0.5" fill="currentColor" opacity="0.1"/>
-          </pattern>
         </defs>
 
-        {/* Dot grid background */}
-        <rect width="100" height="100" fill="url(#dotGrid)" />
-
-        {/* Ethiopian Map Silhouette - Detailed, recognizable outline */}
-        <g opacity="0.25" stroke="currentColor" strokeWidth="1.2" fill="none">
-          {/* Detailed Ethiopian map path - more accurate silhouette */}
+        {/* Accurate Ethiopian Map - traced from reference image */}
+        <g opacity="0.15" stroke="currentColor" strokeWidth="0.8" fill="none" strokeLinejoin="round">
           <path d="
-            M 35 20
-            L 40 18
-            L 45 17
-            L 50 16
-            L 55 16
-            L 60 17
-            L 65 19
-            L 68 22
-            L 70 26
-            L 72 30
-            L 73 35
-            L 74 40
-            L 74 45
-            L 73 50
-            L 71 55
-            L 68 60
-            L 64 64
-            L 60 67
-            L 55 69
-            L 50 70
-            L 45 69
-            L 40 67
-            L 36 64
-            L 32 60
-            L 29 55
-            L 27 50
-            L 26 45
-            L 26 40
-            L 27 35
-            L 29 30
-            L 31 25
-            L 33 22
-            Z
+            M 25 32
+            L 23 35
+            L 22 38
+            L 22 42
+            L 23 46
+            L 25 50
+            L 28 54
+            L 32 57
+            L 36 59
+            L 40 60
+            L 44 60
+            L 48 59
+            L 52 57
+            L 56 54
+            L 60 50
+            L 64 45
+            L 68 40
+            L 72 35
+            L 75 30
+            L 77 26
+            L 78 22
+            L 77 19
+            L 75 17
+            L 72 16
+            L 68 16
+            L 64 17
+            L 60 18
+            L 56 19
+            L 52 20
+            L 48 20
+            L 44 20
+            L 40 21
+            L 36 22
+            L 32 24
+            L 28 27
+            L 25 30
+            L 25 32
+            M 72 28
+            L 74 30
+            L 75 32
+            L 75 34
+            L 74 36
+            L 72 37
+            L 70 36
+            L 69 34
+            L 69 32
+            L 70 30
+            L 72 28
           " />
         </g>
 
-        {/* Eastern Sunrise - Top-right quadrant with perfect glow */}
+        {/* Eastern Sunrise - positioned in Eastern region with perfect glow */}
         <g filter="url(#sunGlow)">
           {/* Sun circle */}
           <circle 
-            cx="65" 
-            cy="30" 
-            r="7" 
+            cx="72" 
+            cy="32" 
+            r="5" 
             fill="#F97316"
             opacity="0.95"
           />
@@ -100,10 +105,10 @@ export function Logo({ size = 40, className = '', variant = 'icon' }: LogoProps)
           {/* Perfect radiant rays */}
           {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => {
             const rad = (angle * Math.PI) / 180;
-            const x1 = 65 + Math.cos(rad) * 9;
-            const y1 = 30 + Math.sin(rad) * 9;
-            const x2 = 65 + Math.cos(rad) * 13;
-            const y2 = 30 + Math.sin(rad) * 13;
+            const x1 = 72 + Math.cos(rad) * 7;
+            const y1 = 32 + Math.sin(rad) * 7;
+            const x2 = 72 + Math.cos(rad) * 11;
+            const y2 = 32 + Math.sin(rad) * 11;
             return (
               <line
                 key={i}
@@ -112,7 +117,7 @@ export function Logo({ size = 40, className = '', variant = 'icon' }: LogoProps)
                 x2={x2}
                 y2={y2}
                 stroke="#F97316"
-                strokeWidth="2"
+                strokeWidth="1.8"
                 strokeLinecap="round"
                 opacity="0.9"
               />
@@ -120,25 +125,30 @@ export function Logo({ size = 40, className = '', variant = 'icon' }: LogoProps)
           })}
         </g>
 
-        {/* Bold, Symmetrical 'M' - Centered in map */}
-        <g stroke="currentColor" strokeWidth="6" fill="none" strokeLinecap="round" strokeLinejoin="round">
-          {/* Left vertical stroke of M */}
-          <path d="M 38 60 L 38 42" />
-          
-          {/* Left diagonal down to center */}
-          <path d="M 38 42 L 50 52" />
-          
-          {/* Right diagonal up from center */}
-          <path d="M 50 52 L 62 42" />
-          
-          {/* Right vertical stroke of M */}
-          <path d="M 62 42 L 62 60" />
+        {/* Artistic 'M' - Clean, elegant serif letterform */}
+        <g fill="currentColor" opacity="0.85">
+          <path d="
+            M 38 58
+            L 38 44
+            L 42 52
+            L 46 44
+            L 50 52
+            L 54 44
+            L 58 52
+            L 62 44
+            L 62 58
+            L 59 58
+            L 59 49
+            L 56 55
+            L 54 55
+            L 50 48
+            L 46 55
+            L 44 55
+            L 41 49
+            L 41 58
+            Z
+          " />
         </g>
-
-        {/* Gray dot terminals on M peaks */}
-        <circle cx="38" cy="42" r="3.5" fill="#9CA3AF" />
-        <circle cx="62" cy="42" r="3.5" fill="#9CA3AF" />
-        <circle cx="50" cy="52" r="3.5" fill="#9CA3AF" />
       </svg>
     );
   }
@@ -161,65 +171,73 @@ export function Logo({ size = 40, className = '', variant = 'icon' }: LogoProps)
             <feMergeNode in="SourceGraphic"/>
           </feMerge>
         </filter>
-        
-        <pattern id="dotGridFull" x="0" y="0" width="6" height="6" patternUnits="userSpaceOnUse">
-          <circle cx="3" cy="3" r="0.4" fill="currentColor" opacity="0.1"/>
-        </pattern>
       </defs>
 
       {/* Logo Icon */}
       <g transform="translate(10, 10)">
-        {/* Dot grid background */}
-        <rect width="80" height="80" fill="url(#dotGridFull)" />
-
-        {/* Ethiopian Map Silhouette */}
-        <g opacity="0.25" stroke="currentColor" strokeWidth="1" fill="none">
+        {/* Accurate Ethiopian Map */}
+        <g opacity="0.15" stroke="currentColor" strokeWidth="0.6" fill="none" strokeLinejoin="round">
           <path d="
-            M 28 16
-            L 32 14
-            L 36 13.5
-            L 40 13
-            L 44 13
-            L 48 13.5
-            L 52 15
-            L 54.5 17.5
-            L 56 21
-            L 57.5 24
-            L 58.5 28
-            L 59 32
-            L 59 36
-            L 58.5 40
-            L 57 44
-            L 54.5 48
-            L 51 51
-            L 48 53
-            L 44 55
-            L 40 56
-            L 36 55
-            L 32 53
-            L 29 51
-            L 26 48
-            L 23 44
-            L 21.5 40
-            L 21 36
-            L 21 32
-            L 21.5 28
-            L 23 24
-            L 25 20
-            L 26.5 18
-            Z
+            M 20 26
+            L 18 28
+            L 17.5 31
+            L 17.5 34
+            L 18 37
+            L 20 40
+            L 22 43
+            L 26 46
+            L 29 47
+            L 32 48
+            L 35 48
+            L 38 47
+            L 42 46
+            L 45 43
+            L 48 40
+            L 51 36
+            L 54 32
+            L 57 28
+            L 60 24
+            L 62 21
+            L 63 18
+            L 62 16
+            L 60 14
+            L 57 13
+            L 54 13
+            L 51 14
+            L 48 15
+            L 45 16
+            L 42 16
+            L 39 16
+            L 36 17
+            L 33 18
+            L 30 20
+            L 27 22
+            L 24 24
+            L 22 26
+            L 20 26
+            M 57 22
+            L 59 24
+            L 60 26
+            L 60 28
+            L 59 29
+            L 57 30
+            L 56 29
+            L 55 27
+            L 55 25
+            L 56 23
+            L 57 22
           " />
         </g>
 
         {/* Eastern Sunrise */}
         <g filter="url(#sunGlowFull)">
-          <circle cx="52" cy="24" r="5.5" fill="#F97316" opacity="0.95" />
+          <circle cx="58" cy="26" r="4" fill="#F97316" opacity="0.95" />
           {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => {
             const rad = (angle * Math.PI) / 180;
-            const x1 = 52 + Math.cos(rad) * 7;
-            const y1 = 24 + Math.sin(rad) * 7;
-            const x2 = 52 + Math.cos(rad) * 10;
-            const y2 = 24 + Math.sin(rad) * 10;
+            const x1 = 58 + Math.cos(rad) * 5.5;
+            const y1 = 26 + Math.sin(rad) * 5.5;
+            const x2 = 58 + Math.cos(rad) * 8.5;
+            const y2 = 26 + Math.sin(rad) * 8.5;
             return (
               <line
                 key={i}
@@ -228,7 +246,7 @@ export function Logo({ size = 40, className = '', variant = 'icon' }: LogoProps)
                 x2={x2}
                 y2={y2}
                 stroke="#F97316"
-                strokeWidth="1.5"
+                strokeWidth="1.3"
                 strokeLinecap="round"
                 opacity="0.9"
               />
@@ -236,21 +254,33 @@ export function Logo({ size = 40, className = '', variant = 'icon' }: LogoProps)
           })}
         </g>
 
-        {/* Bold 'M' */}
-        <g stroke="currentColor" strokeWidth="4.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M 30 48 L 30 33" />
-          <path d="M 30 33 L 40 41" />
-          <path d="M 40 41 L 50 33" />
-          <path d="M 50 33 L 50 48" />
+        {/* Artistic M */}
+        <g fill="currentColor" opacity="0.85">
+          <path d="
+            M 30 46
+            L 30 35
+            L 34 42
+            L 37 35
+            L 40 42
+            L 43 35
+            L 46 42
+            L 50 35
+            L 50 46
+            L 47 46
+            L 47 39
+            L 45 44
+            L 43 44
+            L 40 38
+            L 37 44
+            L 35 44
+            L 33 39
+            L 33 46
+            Z
+          " />
         </g>
-
-        {/* Gray dot terminals */}
-        <circle cx="30" cy="33" r="2.5" fill="#9CA3AF" />
-        <circle cx="50" cy="33" r="2.5" fill="#9CA3AF" />
-        <circle cx="40" cy="41" r="2.5" fill="#9CA3AF" />
       </g>
 
-      {/* Text - Using currentColor for theme adaptation */}
+      {/* Text */}
       <text
         x="100"
         y="45"
