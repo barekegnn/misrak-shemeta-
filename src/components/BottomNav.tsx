@@ -2,18 +2,55 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Store, ShoppingCart, Package } from 'lucide-react';
+import { Home, Store, ShoppingCart, Package, TruckIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTelegramAuth } from '@/components/TelegramAuthProvider';
 
 export function BottomNav() {
   const pathname = usePathname();
+  const { user } = useTelegramAuth();
 
-  const navItems = [
-    { href: '/', label: 'Home', icon: Home },
-    { href: '/shops', label: 'Shops', icon: Store },
-    { href: '/cart', label: 'Cart', icon: ShoppingCart },
-    { href: '/orders', label: 'Orders', icon: Package },
-  ];
+  // Define navigation items based on user role
+  const getNavItems = () => {
+    if (!user) {
+      // Default navigation for non-authenticated users
+      return [
+        { href: '/', label: 'Home', icon: Home },
+        { href: '/shops', label: 'Shops', icon: Store },
+        { href: '/cart', label: 'Cart', icon: ShoppingCart },
+        { href: '/orders', label: 'Orders', icon: Package },
+      ];
+    }
+
+    switch (user.role) {
+      case 'RUNNER':
+        return [
+          { href: '/', label: 'Home', icon: Home },
+          { href: '/runner/orders', label: 'Deliveries', icon: TruckIcon },
+        ];
+      case 'MERCHANT':
+        return [
+          { href: '/', label: 'Home', icon: Home },
+          { href: '/merchant', label: 'Dashboard', icon: Store },
+          { href: '/shop/orders', label: 'Orders', icon: Package },
+        ];
+      case 'ADMIN':
+        return [
+          { href: '/', label: 'Home', icon: Home },
+          { href: '/admin', label: 'Admin', icon: Store },
+        ];
+      case 'STUDENT':
+      default:
+        return [
+          { href: '/', label: 'Home', icon: Home },
+          { href: '/shops', label: 'Shops', icon: Store },
+          { href: '/cart', label: 'Cart', icon: ShoppingCart },
+          { href: '/orders', label: 'Orders', icon: Package },
+        ];
+    }
+  };
+
+  const navItems = getNavItems();
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 pb-safe">

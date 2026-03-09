@@ -11,6 +11,7 @@ import { Logo } from '@/components/Logo';
 import { StudentHome } from '@/components/home/StudentHome';
 import { MerchantHome } from '@/components/home/MerchantHome';
 import { AdminHome } from '@/components/home/AdminHome';
+import { RunnerHome } from '@/components/home/RunnerHome';
 
 export default function Home() {
   const { user, isLoading } = useTelegramAuth();
@@ -67,7 +68,8 @@ export default function Home() {
         </div>
         {user.role === 'ADMIN' && <AdminHome user={user} />}
         {user.role === 'MERCHANT' && <MerchantHome user={user} />}
-        {(user.role === 'STUDENT' || user.role === 'RUNNER') && <StudentHome user={user} />}
+        {user.role === 'RUNNER' && <RunnerHome user={user} />}
+        {user.role === 'STUDENT' && <StudentHome user={user} />}
         <BottomNav />
       </>
     );
