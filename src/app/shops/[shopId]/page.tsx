@@ -258,14 +258,14 @@ export default function ShopProductsPage() {
                   
                   {shop.specificLocation && (
                     <div className="flex items-start gap-2 text-sm text-gray-600">
-                      <MapPin className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: brandColor.secondary }} />
+                      <MapPin className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: brandColor.primary, opacity: 0.7 }} />
                       <span className="font-medium">{shop.specificLocation}</span>
                     </div>
                   )}
                   
                   {shop.landmark && (
                     <div className="flex items-start gap-2 text-sm text-gray-500">
-                      <MapPin className="w-4 h-4 flex-shrink-0 mt-0.5 opacity-60" style={{ color: brandColor.secondary }} />
+                      <MapPin className="w-4 h-4 flex-shrink-0 mt-0.5 opacity-60" style={{ color: brandColor.primary, opacity: 0.5 }} />
                       <span className="italic">Near {shop.landmark}</span>
                     </div>
                   )}

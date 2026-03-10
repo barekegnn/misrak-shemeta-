@@ -24,6 +24,8 @@ export default function ShopRegistration() {
   const [formData, setFormData] = useState({
     name: '',
     city: 'HARAR' as 'HARAR' | 'DIRE_DAWA',
+    specificLocation: '',
+    landmark: '',
     contactPhone: '',
   });
 
@@ -49,6 +51,12 @@ export default function ShopRegistration() {
             break;
           case 'INVALID_CITY':
             setError('Please select a valid city');
+            break;
+          case 'SPECIFIC_LOCATION_REQUIRED':
+            setError('Specific address is required');
+            break;
+          case 'SPECIFIC_LOCATION_TOO_LONG':
+            setError('Address is too long (max 200 characters)');
             break;
           case 'CONTACT_PHONE_REQUIRED':
             setError('Contact phone is required');
@@ -188,6 +196,51 @@ export default function ShopRegistration() {
                   </Label>
                 </div>
               </RadioGroup>
+            </div>
+
+            {/* Specific Location */}
+            <div className="space-y-2">
+              <Label htmlFor="specificLocation">
+                Specific Address <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="specificLocation"
+                type="text"
+                placeholder="e.g., Near Ras Hotel, Main Street"
+                value={formData.specificLocation}
+                onChange={(e) =>
+                  setFormData({ ...formData, specificLocation: e.target.value })
+                }
+                required
+                maxLength={200}
+                disabled={loading}
+                className="text-base"
+              />
+              <p className="text-sm text-gray-500">
+                Detailed address within the city for customer visits
+              </p>
+            </div>
+
+            {/* Landmark */}
+            <div className="space-y-2">
+              <Label htmlFor="landmark">
+                Landmark (Optional)
+              </Label>
+              <Input
+                id="landmark"
+                type="text"
+                placeholder="e.g., Commercial Bank of Ethiopia"
+                value={formData.landmark}
+                onChange={(e) =>
+                  setFormData({ ...formData, landmark: e.target.value })
+                }
+                maxLength={100}
+                disabled={loading}
+                className="text-base"
+              />
+              <p className="text-sm text-gray-500">
+                Nearby landmark for easier navigation
+              </p>
             </div>
 
             {/* Contact Phone */}
