@@ -67,6 +67,9 @@ export default function ShopRegistration() {
           case 'SHOP_ALREADY_EXISTS':
             setError('You already have a shop registered');
             break;
+          case 'SHOP_NAME_ALREADY_TAKEN':
+            setError('A shop with this name already exists. Please choose a different name.');
+            break;
           default:
             setError('Failed to register shop. Please try again.');
         }

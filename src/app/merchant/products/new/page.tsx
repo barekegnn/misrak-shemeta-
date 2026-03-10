@@ -168,29 +168,27 @@ export default function NewProduct() {
         return;
       }
 
-      // Requirement 4.1: "at least one image" is REQUIRED
+      // Requirement 4.1: "at least one image" is REQUIRED for UI
       if (formData.images.length === 0) {
         setError('At least one product image is required');
         setLoading(false);
         return;
       }
 
-      // First, get shop ID to generate product ID for image uploads
+      // Get shop details first
       const { getShopDetails } = await import('@/app/actions/shop');
       const shopResult = await getShopDetails(telegramId);
       
       if (!shopResult.success || !shopResult.data) {
-        setError('Failed to get shop details');
+        setError('Failed to get shop details. Please make sure you have registered a shop.');
         return;
       }
 
       const shopId = shopResult.data.id;
-      
-      // Generate a temporary product ID for image uploads
-      const tempProductId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-      // Upload images to Firebase Storage FIRST
+      // Upload images first, then create product with image URLs
       const imageUrls: string[] = [];
+      
       for (let i = 0; i < formData.images.length; i++) {
         const imageFile = formData.images[i];
         
@@ -204,7 +202,10 @@ export default function NewProduct() {
           reader.readAsDataURL(imageFile);
         });
 
-        // Upload via Server Action
+        // Generate a temporary product ID for image upload
+        const tempProductId = `temp_${Date.now()}_${i}`;
+
+        // Upload image
         const { uploadProductImage } = await import('@/app/actions/products');
         const uploadResult = await uploadProductImage(
           telegramId,
@@ -231,10 +232,10 @@ export default function NewProduct() {
         price,
         category: formData.category.trim(),
         stock,
-        images: imageUrls,
+        images: imageUrls, // Include uploaded images
       });
 
-      if (!result.success) {
+      if (!result.success || !result.data) {
         setError(result.error || 'Failed to create product');
         return;
       }

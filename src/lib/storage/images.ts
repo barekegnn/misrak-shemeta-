@@ -67,8 +67,11 @@ export async function uploadProductImage(
   'use server';
   
   try {
+    console.log(`[uploadProductImage] Starting upload for shop: ${shopId}, product: ${productId}, index: ${imageIndex}`);
+    
     // Validate MIME type
     if (!ALLOWED_MIME_TYPES.includes(mimeType)) {
+      console.error(`[uploadProductImage] Invalid MIME type: ${mimeType}`);
       return {
         success: false,
         error: 'Invalid file type',
@@ -80,15 +83,19 @@ export async function uploadProductImage(
     
     // Construct storage path
     const filePath = `products/${shopId}/${productId}/image_${imageIndex}.${ext}`;
+    console.log(`[uploadProductImage] Storage path: ${filePath}`);
     
     // Get bucket
     const bucket = adminStorage.bucket();
+    console.log(`[uploadProductImage] Using bucket: ${bucket.name}`);
     
     // Convert base64 to buffer
     const buffer = Buffer.from(imageData, 'base64');
+    console.log(`[uploadProductImage] Buffer size: ${buffer.length} bytes`);
     
     // Check file size
     if (buffer.length > MAX_FILE_SIZE) {
+      console.error(`[uploadProductImage] File too large: ${buffer.length} bytes`);
       return {
         success: false,
         error: 'File size exceeds 5MB limit',
@@ -104,21 +111,25 @@ export async function uploadProductImage(
       public: true, // Make file publicly accessible
     });
     
+    console.log(`[uploadProductImage] File uploaded successfully`);
+    
     // Make the file publicly accessible
     await file.makePublic();
+    console.log(`[uploadProductImage] File made public`);
     
     // Get correct public URL for Firebase Storage
     const publicUrl = `https://storage.googleapis.com/${bucket.name}/${encodeURIComponent(filePath).replace(/%2F/g, '/')}`;
+    console.log(`[uploadProductImage] Public URL: ${publicUrl}`);
     
     return {
       success: true,
       url: publicUrl,
     };
   } catch (error) {
-    console.error('Error uploading product image:', error);
+    console.error('[uploadProductImage] Error uploading product image:', error);
     return {
       success: false,
-      error: 'Failed to upload image',
+      error: `Failed to upload image: ${error instanceof Error ? error.message : 'Unknown error'}`,
     };
   }
 }

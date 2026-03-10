@@ -297,8 +297,17 @@ export async function registerShop(
       updatedAt: new Date()
     });
 
-    // Create shop record
-    const shopRef = await adminDb.collection('shops').add({
+    // Create shop record with consistent ID generation
+    const shopId = `shop_${shopData.name.toLowerCase().replace(/[^a-z0-9]+/g, '_')}`;
+    const shopRef = adminDb.collection('shops').doc(shopId);
+    
+    // Check if shop with this ID already exists
+    const existingShopDoc = await shopRef.get();
+    if (existingShopDoc.exists) {
+      return { success: false, error: 'SHOP_NAME_ALREADY_TAKEN' };
+    }
+    
+    await shopRef.set({
       name: shopData.name.trim(),
       ownerId: user.id,
       city: shopData.city,

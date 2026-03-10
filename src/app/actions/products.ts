@@ -194,10 +194,10 @@ export async function updateProduct(
       };
     }
 
-    if (productData.images && (productData.images.length < 1 || productData.images.length > 5)) {
+    if (productData.images && productData.images.length > 0 && productData.images.length > 5) {
       return {
         success: false,
-        error: 'Product must have between 1 and 5 images',
+        error: 'Product cannot have more than 5 images',
       };
     }
 
@@ -488,7 +488,12 @@ export async function uploadProductImage(
 
     // 4. Upload image using storage utility
     const { uploadProductImage: uploadImage } = await import('@/lib/storage/images');
-    const result = await uploadImage(shopId, productId, imageData, imageIndex, mimeType);
+    
+    // For temporary product IDs (during creation), use a special path
+    const isTemporaryId = productId.startsWith('temp_');
+    const actualProductId = isTemporaryId ? `temp/${productId}` : productId;
+    
+    const result = await uploadImage(shopId, actualProductId, imageData, imageIndex, mimeType);
 
     if (!result.success || !result.url) {
       return {
@@ -539,8 +544,8 @@ function validateProductInput(data: ProductInput): { valid: boolean; error?: str
     return { valid: false, error: 'Category is required' };
   }
 
-  if (!data.images || data.images.length < 1 || data.images.length > 5) {
-    return { valid: false, error: 'Product must have between 1 and 5 images' };
+  if (!data.images || data.images.length > 5) {
+    return { valid: false, error: 'Product cannot have more than 5 images' };
   }
 
   if (data.stock < 0) {
