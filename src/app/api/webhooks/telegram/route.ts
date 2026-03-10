@@ -2,10 +2,16 @@
  * Telegram Bot Webhook Handler
  * 
  * This endpoint receives updates from Telegram when users interact with the bot.
- * It handles /start command and sends the Mini App link.
+ * It handles /start command and sends the Mini App link with promotional messaging.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { 
+  generateWelcomeMessage, 
+  generateHelpMessage, 
+  generateShopMessage, 
+  generateProductsMessage 
+} from '@/lib/bot/messages';
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://misrak-shemeta.vercel.app';
@@ -19,6 +25,7 @@ interface TelegramUpdate {
       is_bot: boolean;
       first_name: string;
       username?: string;
+      language_code?: string;
     };
     chat: {
       id: number;
@@ -57,22 +64,17 @@ async function sendTelegramMessage(chatId: number, text: string, replyMarkup?: a
 }
 
 /**
- * Handle /start command
+ * Handle /start command with promotional messaging
  */
-async function handleStartCommand(chatId: number, firstName: string) {
-  const welcomeText = `
-👋 Welcome to <b>Misrak Shemeta</b>! 🛍️
+async function handleStartCommand(chatId: number, firstName: string, languageCode?: string) {
+  // Detect language from Telegram user settings
+  let language = 'en';
+  if (languageCode) {
+    if (languageCode.startsWith('am')) language = 'am';
+    else if (languageCode.startsWith('om')) language = 'om';
+  }
 
-I'm your Eastern Ethiopia Marketplace assistant. I'll help you browse shops and products from Harar and Dire Dawa.
-
-<b>How to use:</b>
-1. Click the button below to open the marketplace
-2. Login with your Telegram account
-3. Select your location
-4. Start shopping!
-
-Let's get started! 🚀
-  `.trim();
+  const welcomeText = generateWelcomeMessage(firstName, language);
 
   const replyMarkup = {
     inline_keyboard: [
@@ -97,17 +99,14 @@ Let's get started! 🚀
 /**
  * Handle other messages
  */
-async function handleMessage(chatId: number, text: string) {
-  const helpText = `
-<b>Available Commands:</b>
+async function handleMessage(chatId: number, text: string, languageCode?: string) {
+  let language = 'en';
+  if (languageCode) {
+    if (languageCode.startsWith('am')) language = 'am';
+    else if (languageCode.startsWith('om')) language = 'om';
+  }
 
-/start - Start the bot and open the marketplace
-/help - Show this help message
-/shop - Browse shops
-/products - Browse products
-
-Or click the button below to open the full marketplace:
-  `.trim();
+  const helpText = generateHelpMessage(language);
 
   const replyMarkup = {
     inline_keyboard: [
@@ -138,24 +137,23 @@ export async function POST(request: NextRequest) {
     const { message_id, from, chat, text } = update.message;
     const chatId = chat.id;
     const firstName = from.first_name;
+    const languageCode = from.language_code;
 
     console.log(`[Telegram] Message from ${from.username || firstName}: ${text}`);
 
     // Handle /start command
     if (text === '/start') {
-      await handleStartCommand(chatId, firstName);
+      await handleStartCommand(chatId, firstName, languageCode);
     }
     // Handle /help command
     else if (text === '/help') {
-      await handleMessage(chatId, text);
+      await handleMessage(chatId, text, languageCode);
     }
     // Handle /shop command
     else if (text === '/shop') {
-      const shopText = `
-🏪 <b>Browse Shops</b>
-
-Click the button below to open the marketplace and browse all available shops from Harar and Dire Dawa.
-      `.trim();
+      const shopText = generateShopMessage(
+        languageCode?.startsWith('am') ? 'am' : languageCode?.startsWith('om') ? 'om' : 'en'
+      );
 
       const replyMarkup = {
         inline_keyboard: [
@@ -172,11 +170,9 @@ Click the button below to open the marketplace and browse all available shops fr
     }
     // Handle /products command
     else if (text === '/products') {
-      const productsText = `
-📦 <b>Browse Products</b>
-
-Click the button below to open the marketplace and browse all available products.
-      `.trim();
+      const productsText = generateProductsMessage(
+        languageCode?.startsWith('am') ? 'am' : languageCode?.startsWith('om') ? 'om' : 'en'
+      );
 
       const replyMarkup = {
         inline_keyboard: [
@@ -193,7 +189,7 @@ Click the button below to open the marketplace and browse all available products
     }
     // Handle any other message
     else {
-      await handleMessage(chatId, text || '');
+      await handleMessage(chatId, text || '', languageCode);
     }
 
     return NextResponse.json({ ok: true });
