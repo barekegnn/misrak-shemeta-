@@ -159,7 +159,7 @@ export const botMessages: Record<string, LegacyBotMessage> = {
  * Get bot message in specified language
  * Falls back to English if language not found
  */
-export function getBotMessage(language: string = 'en'): BotMessage {
+export function getBotMessage(language: string = 'en'): LegacyBotMessage {
   return botMessages[language] || botMessages.en;
 }
 
