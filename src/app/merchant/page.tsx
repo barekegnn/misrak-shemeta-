@@ -32,7 +32,7 @@ export default function MerchantDashboard() {
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);
 
   // Mock telegramId for testing (in production, get from Telegram context)
-  const telegramId = '111222333'; // Merchant 1 from seed data
+  const telegramId = '888888888'; // Merchant from test users setup
 
   useEffect(() => {
     checkShopStatus();

@@ -61,7 +61,7 @@ export default function EditProduct({ params }: { params: Promise<{ productId: s
   });
 
   // Mock telegramId for testing
-  const telegramId = '111222333';
+  const telegramId = '888888888';
 
   useEffect(() => {
     params.then(({ productId }) => {

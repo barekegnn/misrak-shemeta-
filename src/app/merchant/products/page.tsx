@@ -46,7 +46,7 @@ export default function ProductManagement() {
   const [error, setError] = useState('');
 
   // Mock telegramId for testing
-  const telegramId = '111222333';
+  const telegramId = '888888888';
 
   useEffect(() => {
     loadProducts();

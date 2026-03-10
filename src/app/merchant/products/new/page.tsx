@@ -53,7 +53,7 @@ export default function NewProduct() {
   });
 
   // Mock telegramId for testing
-  const telegramId = '111222333';
+  const telegramId = '888888888';
 
   // Requirement 13.5: Validate file types (JPEG, PNG, WebP) and size (max 5MB)
   const validateImage = (file: File): string | null => {
@@ -175,25 +175,21 @@ export default function NewProduct() {
         return;
       }
 
-      // Create product first to get productId
-      const tempProduct = await createProduct(telegramId, {
-        name: formData.name.trim(),
-        description: formData.description.trim(),
-        price,
-        category: formData.category.trim(),
-        stock,
-        images: ['https://via.placeholder.com/400x400'], // Temporary placeholder
-      });
-
-      if (!tempProduct.success || !tempProduct.data) {
-        setError(tempProduct.error || 'Failed to create product');
+      // First, get shop ID to generate product ID for image uploads
+      const { getShopDetails } = await import('@/app/actions/shop');
+      const shopResult = await getShopDetails(telegramId);
+      
+      if (!shopResult.success || !shopResult.data) {
+        setError('Failed to get shop details');
         return;
       }
 
-      const productId = tempProduct.data.id;
-      const shopId = tempProduct.data.shopId;
+      const shopId = shopResult.data.id;
+      
+      // Generate a temporary product ID for image uploads
+      const tempProductId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-      // Upload images to Firebase Storage
+      // Upload images to Firebase Storage FIRST
       const imageUrls: string[] = [];
       for (let i = 0; i < formData.images.length; i++) {
         const imageFile = formData.images[i];
@@ -213,7 +209,7 @@ export default function NewProduct() {
         const uploadResult = await uploadProductImage(
           telegramId,
           shopId,
-          productId,
+          tempProductId,
           base64,
           i,
           imageFile.type
@@ -221,25 +217,14 @@ export default function NewProduct() {
 
         if (!uploadResult.success || !uploadResult.data) {
           console.error('Failed to upload image:', uploadResult.error);
-          // Use placeholder if upload fails
-          imageUrls.push(`https://via.placeholder.com/400x400?text=${encodeURIComponent(formData.name)}`);
+          setError(`Failed to upload image ${i + 1}: ${uploadResult.error || 'Unknown error'}`);
+          return;
         } else {
           imageUrls.push(uploadResult.data);
         }
       }
 
-      // Update product with real image URLs
-      const { updateProduct } = await import('@/app/actions/products');
-      const updateResult = await updateProduct(telegramId, productId, {
-        images: imageUrls,
-      });
-
-      if (!updateResult.success) {
-        console.error('Failed to update product with image URLs:', updateResult.error);
-        // Product created but images might be placeholders
-      }
-
-      // Create product via Server Action
+      // Now create product with the uploaded image URLs
       const result = await createProduct(telegramId, {
         name: formData.name.trim(),
         description: formData.description.trim(),

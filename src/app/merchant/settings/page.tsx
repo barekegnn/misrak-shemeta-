@@ -34,7 +34,7 @@ export default function ShopSettings() {
   });
 
   // Mock telegramId for testing
-  const telegramId = '111222333';
+  const telegramId = '888888888';
 
   useEffect(() => {
     loadShopDetails();

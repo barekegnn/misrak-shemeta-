@@ -28,7 +28,7 @@ export default function ShopRegistration() {
   });
 
   // Mock telegramId for testing (in production, get from Telegram context)
-  const telegramId = '111222333';
+  const telegramId = '888888888';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
