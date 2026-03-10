@@ -36,12 +36,66 @@ interface ProductFormData {
   images: File[];
 }
 
+// Validation utilities for real-time feedback
+function validateProductName(name: string): string | null {
+  if (!name.trim()) {
+    return 'Product name is required';
+  }
+  if (name.length > 200) {
+    return 'Product name must be 200 characters or less';
+  }
+  return null;
+}
+
+function validateProductDescription(description: string): string | null {
+  if (!description.trim()) {
+    return 'Product description is required';
+  }
+  if (description.length > 1000) {
+    return 'Description must be 1000 characters or less';
+  }
+  return null;
+}
+
+function validateProductPrice(price: string): string | null {
+  if (!price) {
+    return 'Price is required';
+  }
+  const numPrice = parseFloat(price);
+  if (isNaN(numPrice) || numPrice <= 0) {
+    return 'Please enter a valid price greater than 0';
+  }
+  return null;
+}
+
+function validateProductStock(stock: string): string | null {
+  if (!stock) {
+    return 'Stock quantity is required';
+  }
+  const numStock = parseInt(stock);
+  if (isNaN(numStock) || numStock < 0) {
+    return 'Please enter a valid stock quantity (0 or more)';
+  }
+  return null;
+}
+
+function validateProductCategory(category: string): string | null {
+  if (!category.trim()) {
+    return 'Category is required';
+  }
+  if (category.length > 50) {
+    return 'Category must be 50 characters or less';
+  }
+  return null;
+}
+
 export default function NewProduct() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [uploadingImages, setUploadingImages] = useState(false);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const [formData, setFormData] = useState<ProductFormData>({
     name: '',
@@ -54,6 +108,62 @@ export default function NewProduct() {
 
   // Mock telegramId for testing
   const telegramId = '888888888';
+
+  // Real-time validation handlers
+  const handleNameChange = (value: string) => {
+    setFormData({ ...formData, name: value });
+    const error = validateProductName(value);
+    if (error) {
+      setFieldErrors({ ...fieldErrors, name: error });
+    } else {
+      const { name, ...rest } = fieldErrors;
+      setFieldErrors(rest);
+    }
+  };
+
+  const handleDescriptionChange = (value: string) => {
+    setFormData({ ...formData, description: value });
+    const error = validateProductDescription(value);
+    if (error) {
+      setFieldErrors({ ...fieldErrors, description: error });
+    } else {
+      const { description, ...rest } = fieldErrors;
+      setFieldErrors(rest);
+    }
+  };
+
+  const handlePriceChange = (value: string) => {
+    setFormData({ ...formData, price: value });
+    const error = validateProductPrice(value);
+    if (error) {
+      setFieldErrors({ ...fieldErrors, price: error });
+    } else {
+      const { price, ...rest } = fieldErrors;
+      setFieldErrors(rest);
+    }
+  };
+
+  const handleStockChange = (value: string) => {
+    setFormData({ ...formData, stock: value });
+    const error = validateProductStock(value);
+    if (error) {
+      setFieldErrors({ ...fieldErrors, stock: error });
+    } else {
+      const { stock, ...rest } = fieldErrors;
+      setFieldErrors(rest);
+    }
+  };
+
+  const handleCategoryChange = (value: string) => {
+    setFormData({ ...formData, category: value });
+    const error = validateProductCategory(value);
+    if (error) {
+      setFieldErrors({ ...fieldErrors, category: error });
+    } else {
+      const { category, ...rest } = fieldErrors;
+      setFieldErrors(rest);
+    }
+  };
 
   // Requirement 13.5: Validate file types (JPEG, PNG, WebP) and size (max 5MB)
   const validateImage = (file: File): string | null => {
@@ -135,45 +245,34 @@ export default function NewProduct() {
     setLoading(true);
 
     try {
-      // Requirement 4.1: Validate required fields
-      if (!formData.name.trim()) {
-        setError('Product name is required');
-        setLoading(false);
-        return;
+      // Validate all fields before submission
+      const nameError = validateProductName(formData.name);
+      const descriptionError = validateProductDescription(formData.description);
+      const priceError = validateProductPrice(formData.price);
+      const stockError = validateProductStock(formData.stock);
+      const categoryError = validateProductCategory(formData.category);
+
+      const errors: Record<string, string> = {};
+      if (nameError) errors.name = nameError;
+      if (descriptionError) errors.description = descriptionError;
+      if (priceError) errors.price = priceError;
+      if (stockError) errors.stock = stockError;
+      if (categoryError) errors.category = categoryError;
+
+      if (formData.images.length === 0) {
+        errors.images = 'At least one product image is required';
       }
 
-      if (!formData.description.trim()) {
-        setError('Product description is required');
+      if (Object.keys(errors).length > 0) {
+        setFieldErrors(errors);
+        const firstError = Object.values(errors)[0];
+        setError(firstError);
         setLoading(false);
         return;
       }
 
       const price = parseFloat(formData.price);
-      if (isNaN(price) || price <= 0) {
-        setError('Please enter a valid price greater than 0');
-        setLoading(false);
-        return;
-      }
-
-      if (!formData.category.trim()) {
-        setError('Product category is required');
-        setLoading(false);
-        return;
-      }
-
       const stock = parseInt(formData.stock);
-      if (isNaN(stock) || stock < 0) {
-        setError('Please enter a valid stock quantity (0 or more)');
-        setLoading(false);
-        return;
-      }
-
-      // Requirement 4.1: "at least one image" is REQUIRED for UI
-      if (formData.images.length === 0) {
-        setError('At least one product image is required');
-        setLoading(false);
-        return;
-      }
 
       // Get shop details first
       const { getShopDetails } = await import('@/app/actions/shop');
@@ -391,12 +490,15 @@ export default function NewProduct() {
                   type="text"
                   placeholder="e.g., Wireless Headphones"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) => handleNameChange(e.target.value)}
                   required
                   disabled={loading}
-                  className="text-base min-h-[44px]"
+                  className={`text-base min-h-[44px] ${fieldErrors.name ? 'border-red-500' : ''}`}
                   maxLength={200}
                 />
+                {fieldErrors.name && (
+                  <p className="text-sm text-red-500">{fieldErrors.name}</p>
+                )}
                 <p className="text-xs text-gray-500">{formData.name.length}/200 characters</p>
               </div>
 
@@ -409,12 +511,15 @@ export default function NewProduct() {
                   id="description"
                   placeholder="Describe your product in detail..."
                   value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  onChange={(e) => handleDescriptionChange(e.target.value)}
                   required
                   disabled={loading}
-                  className="w-full min-h-[120px] px-3 py-2 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary resize-y"
+                  className={`w-full min-h-[120px] px-3 py-2 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary resize-y ${fieldErrors.description ? 'border-red-500' : ''}`}
                   maxLength={1000}
                 />
+                {fieldErrors.description && (
+                  <p className="text-sm text-red-500">{fieldErrors.description}</p>
+                )}
                 <p className="text-xs text-gray-500">{formData.description.length}/1000 characters</p>
               </div>
 
@@ -436,12 +541,15 @@ export default function NewProduct() {
                       min="0"
                       placeholder="0.00"
                       value={formData.price}
-                      onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                      onChange={(e) => handlePriceChange(e.target.value)}
                       required
                       disabled={loading}
-                      className="text-base pl-14 min-h-[44px]"
+                      className={`text-base pl-14 min-h-[44px] ${fieldErrors.price ? 'border-red-500' : ''}`}
                     />
                   </div>
+                  {fieldErrors.price && (
+                    <p className="text-sm text-red-500">{fieldErrors.price}</p>
+                  )}
                 </div>
 
                 {/* Stock */}
@@ -455,11 +563,14 @@ export default function NewProduct() {
                     min="0"
                     placeholder="0"
                     value={formData.stock}
-                    onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+                    onChange={(e) => handleStockChange(e.target.value)}
                     required
                     disabled={loading}
-                    className="text-base min-h-[44px]"
+                    className={`text-base min-h-[44px] ${fieldErrors.stock ? 'border-red-500' : ''}`}
                   />
+                  {fieldErrors.stock && (
+                    <p className="text-sm text-red-500">{fieldErrors.stock}</p>
+                  )}
                 </div>
               </div>
 
@@ -473,12 +584,15 @@ export default function NewProduct() {
                   type="text"
                   placeholder="e.g., Electronics, Books, Clothing"
                   value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                  onChange={(e) => handleCategoryChange(e.target.value)}
                   required
                   disabled={loading}
-                  className="text-base min-h-[44px]"
+                  className={`text-base min-h-[44px] ${fieldErrors.category ? 'border-red-500' : ''}`}
                   maxLength={50}
                 />
+                {fieldErrors.category && (
+                  <p className="text-sm text-red-500">{fieldErrors.category}</p>
+                )}
                 <p className="text-xs text-gray-500">
                   Choose a category that best describes your product
                 </p>

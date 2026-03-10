@@ -15,11 +15,59 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Store, AlertCircle, CheckCircle2 } from 'lucide-react';
 
+// Validation utilities
+function sanitizePhone(phone: string): string {
+  return phone
+    .replace(/\s/g, '')      // Remove spaces
+    .replace(/[-()]/g, '')   // Remove dashes and parentheses
+    .trim();
+}
+
+function validateShopData(data: any): { valid: boolean; errors: Record<string, string> } {
+  const errors: Record<string, string> = {};
+
+  // Validate shop name
+  if (!data.name || data.name.trim().length === 0) {
+    errors.name = 'Shop name is required';
+  } else if (data.name.length > 100) {
+    errors.name = 'Shop name must be 100 characters or less';
+  }
+
+  // Validate city
+  if (!data.city || (data.city !== 'HARAR' && data.city !== 'DIRE_DAWA')) {
+    errors.city = 'Please select a valid city';
+  }
+
+  // Validate location
+  if (!data.specificLocation || data.specificLocation.trim().length === 0) {
+    errors.specificLocation = 'Specific address is required';
+  } else if (data.specificLocation.length > 200) {
+    errors.specificLocation = 'Address must be 200 characters or less';
+  }
+
+  // Validate phone
+  if (!data.contactPhone || data.contactPhone.trim().length === 0) {
+    errors.contactPhone = 'Contact phone is required';
+  } else {
+    const clean = sanitizePhone(data.contactPhone);
+    const phoneRegex = /^(\+251|0)?[79]\d{8}$/;
+    if (!phoneRegex.test(clean)) {
+      errors.contactPhone = 'Invalid format. Use: +251912345678 or 0912345678';
+    }
+  }
+
+  return {
+    valid: Object.keys(errors).length === 0,
+    errors
+  };
+}
+
 export default function ShopRegistration() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const [formData, setFormData] = useState({
     name: '',
@@ -32,43 +80,109 @@ export default function ShopRegistration() {
   // Mock telegramId for testing (in production, get from Telegram context)
   const telegramId = '888888888';
 
+  // Real-time validation handlers
+  const handleNameChange = (value: string) => {
+    setFormData({ ...formData, name: value });
+    
+    // Validate in real-time
+    if (value && value.length > 100) {
+      setFieldErrors({
+        ...fieldErrors,
+        name: 'Shop name must be 100 characters or less'
+      });
+    } else {
+      const { name, ...rest } = fieldErrors;
+      setFieldErrors(rest);
+    }
+  };
+
+  const handleLocationChange = (value: string) => {
+    setFormData({ ...formData, specificLocation: value });
+    
+    // Validate in real-time
+    if (value && value.length > 200) {
+      setFieldErrors({
+        ...fieldErrors,
+        specificLocation: 'Address must be 200 characters or less'
+      });
+    } else {
+      const { specificLocation, ...rest } = fieldErrors;
+      setFieldErrors(rest);
+    }
+  };
+
+  const handlePhoneChange = (value: string) => {
+    setFormData({ ...formData, contactPhone: value });
+    
+    // Validate in real-time
+    if (value) {
+      const clean = sanitizePhone(value);
+      const phoneRegex = /^(\+251|0)?[79]\d{8}$/;
+      
+      if (!phoneRegex.test(clean)) {
+        setFieldErrors({
+          ...fieldErrors,
+          contactPhone: 'Invalid format. Use: +251912345678 or 0912345678'
+        });
+      } else {
+        const { contactPhone, ...rest } = fieldErrors;
+        setFieldErrors(rest);
+      }
+    } else {
+      const { contactPhone, ...rest } = fieldErrors;
+      setFieldErrors(rest);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
+      // Validate before submission
+      const validation = validateShopData(formData);
+      if (!validation.valid) {
+        // Show all field errors
+        setFieldErrors(validation.errors);
+        // Show first error in alert
+        const firstError = Object.values(validation.errors)[0];
+        setError(firstError);
+        setLoading(false);
+        return;
+      }
+
       const result = await registerShop(telegramId, formData);
 
       if (!result.success) {
-        // Handle specific errors
+        // Handle specific errors with better messages
         switch (result.error) {
           case 'SHOP_NAME_REQUIRED':
-            setError('Shop name is required');
+            setError('Shop name is required. Please enter a shop name.');
             break;
           case 'SHOP_NAME_TOO_LONG':
-            setError('Shop name is too long (max 100 characters)');
+            setError('Shop name is too long. Maximum 100 characters allowed.');
             break;
           case 'INVALID_CITY':
-            setError('Please select a valid city');
+            setError('Please select a valid city (Harar or Dire Dawa).');
             break;
           case 'SPECIFIC_LOCATION_REQUIRED':
-            setError('Specific address is required');
+            setError('Specific address is required. Please enter your shop location.');
             break;
           case 'SPECIFIC_LOCATION_TOO_LONG':
-            setError('Address is too long (max 200 characters)');
+            setError('Address is too long. Maximum 200 characters allowed.');
             break;
           case 'CONTACT_PHONE_REQUIRED':
-            setError('Contact phone is required');
+            setError('Contact phone is required. Please enter a phone number.');
             break;
           case 'INVALID_PHONE_FORMAT':
-            setError('Invalid phone format. Use Ethiopian format: +251XXXXXXXXX or 09XXXXXXXX');
+            setError('Invalid phone format. Use: +251912345678 or 0912345678');
             break;
           case 'SHOP_ALREADY_EXISTS':
-            setError('You already have a shop registered');
+            setError('You already have a registered shop. You can only have one shop.');
             break;
           case 'SHOP_NAME_ALREADY_TAKEN':
-            setError('A shop with this name already exists. Please choose a different name.');
+            setError('This shop name is already taken. Please choose a different name.');
             break;
           default:
             setError('Failed to register shop. Please try again.');
@@ -155,14 +269,15 @@ export default function ShopRegistration() {
                 type="text"
                 placeholder="e.g., Harar Tech Hub"
                 value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
+                onChange={(e) => handleNameChange(e.target.value)}
                 required
                 maxLength={100}
                 disabled={loading}
-                className="text-base"
+                className={`text-base ${fieldErrors.name ? 'border-red-500' : ''}`}
               />
+              {fieldErrors.name && (
+                <p className="text-sm text-red-500">{fieldErrors.name}</p>
+              )}
               <p className="text-sm text-gray-500">
                 Choose a memorable name for your shop
               </p>
@@ -211,14 +326,15 @@ export default function ShopRegistration() {
                 type="text"
                 placeholder="e.g., Near Ras Hotel, Main Street"
                 value={formData.specificLocation}
-                onChange={(e) =>
-                  setFormData({ ...formData, specificLocation: e.target.value })
-                }
+                onChange={(e) => handleLocationChange(e.target.value)}
                 required
                 maxLength={200}
                 disabled={loading}
-                className="text-base"
+                className={`text-base ${fieldErrors.specificLocation ? 'border-red-500' : ''}`}
               />
+              {fieldErrors.specificLocation && (
+                <p className="text-sm text-red-500">{fieldErrors.specificLocation}</p>
+              )}
               <p className="text-sm text-gray-500">
                 Detailed address within the city for customer visits
               </p>
@@ -256,13 +372,14 @@ export default function ShopRegistration() {
                 type="tel"
                 placeholder="+251912345678 or 0912345678"
                 value={formData.contactPhone}
-                onChange={(e) =>
-                  setFormData({ ...formData, contactPhone: e.target.value })
-                }
+                onChange={(e) => handlePhoneChange(e.target.value)}
                 required
                 disabled={loading}
-                className="text-base"
+                className={`text-base ${fieldErrors.contactPhone ? 'border-red-500' : ''}`}
               />
+              {fieldErrors.contactPhone && (
+                <p className="text-sm text-red-500">{fieldErrors.contactPhone}</p>
+              )}
               <p className="text-sm text-gray-500">
                 Ethiopian phone number for customer contact
               </p>

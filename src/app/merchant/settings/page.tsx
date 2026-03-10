@@ -6,8 +6,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getShopDetails } from '@/app/actions/shop';
-import { adminDb } from '@/lib/firebase/admin';
+import { getShopDetails, updateShop } from '@/app/actions/shop';
 import type { Shop } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -75,86 +74,81 @@ export default function ShopSettings() {
     setSaving(true);
 
     try {
-      // Validate input
-      if (!formData.name || formData.name.trim().length === 0) {
-        setError('Shop name is required');
-        setSaving(false);
-        return;
-      }
-
-      if (formData.name.length > 100) {
-        setError('Shop name is too long (max 100 characters)');
-        setSaving(false);
-        return;
-      }
-
-      if (!formData.contactPhone || formData.contactPhone.trim().length === 0) {
-        setError('Contact phone is required');
-        setSaving(false);
-        return;
-      }
-
-      if (!formData.specificLocation || formData.specificLocation.trim().length === 0) {
-        setError('Specific location is required');
-        setSaving(false);
-        return;
-      }
-
-      if (formData.specificLocation.length > 200) {
-        setError('Specific location is too long (max 200 characters)');
-        setSaving(false);
-        return;
-      }
-
-      // Validate phone number format
-      const phoneRegex = /^(\+251|0)?[79]\d{8}$/;
-      if (!phoneRegex.test(formData.contactPhone.replace(/\s/g, ''))) {
-        setError('Invalid phone format. Use Ethiopian format: +251XXXXXXXXX or 09XXXXXXXX');
-        setSaving(false);
-        return;
-      }
-
-      if (!shop) {
-        setError('Shop not found');
-        setSaving(false);
-        return;
-      }
-
-      // Update shop in Firestore (using client-side for now, should be Server Action in production)
-      // Note: In production, create an updateShop Server Action
-      const response = await fetch('/api/shops/update', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          telegramId,
-          shopId: shop.id,
-          updates: {
-            name: formData.name.trim(),
-            city: formData.city,
-            specificLocation: formData.specificLocation.trim(),
-            landmark: formData.landmark.trim() || null,
-            contactPhone: formData.contactPhone.trim(),
-            description: formData.description.trim(),
-            updatedAt: new Date().toISOString(),
-          },
-        }),
+      // Use the updateShop Server Action
+      const result = await updateShop(telegramId, {
+        name: formData.name.trim(),
+        city: formData.city,
+        specificLocation: formData.specificLocation.trim(),
+        landmark: formData.landmark.trim() || undefined,
+        contactPhone: formData.contactPhone.trim(),
+        description: formData.description.trim(),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to update shop');
+      if (!result.success) {
+        // Handle specific errors
+        switch (result.error) {
+          case 'SHOP_NAME_REQUIRED':
+            setError('Shop name is required');
+            break;
+          case 'SHOP_NAME_TOO_LONG':
+            setError('Shop name is too long (max 100 characters)');
+            break;
+          case 'INVALID_CITY':
+            setError('Please select a valid city');
+            break;
+          case 'SPECIFIC_LOCATION_REQUIRED':
+            setError('Specific address is required');
+            break;
+          case 'SPECIFIC_LOCATION_TOO_LONG':
+            setError('Address is too long (max 200 characters)');
+            break;
+          case 'CONTACT_PHONE_REQUIRED':
+            setError('Contact phone is required');
+            break;
+          case 'INVALID_PHONE_FORMAT':
+            setError('Invalid phone format. Use Ethiopian format: +251XXXXXXXXX or 09XXXXXXXX');
+            break;
+          case 'LANDMARK_TOO_LONG':
+            setError('Landmark is too long (max 100 characters)');
+            break;
+          case 'DESCRIPTION_TOO_LONG':
+            setError('Description is too long (max 500 characters)');
+            break;
+          case 'SHOP_NOT_FOUND':
+            setError('Shop not found');
+            break;
+          case 'UNAUTHORIZED':
+            setError('You are not authorized to update this shop');
+            break;
+          default:
+            setError('Failed to update shop. Please try again.');
+        }
+        return;
       }
 
       setSuccess(true);
       
-      // Reload shop details
+      // Update local shop state with the returned data
+      if (result.data) {
+        setShop(result.data);
+        setFormData({
+          name: result.data.name,
+          city: result.data.city,
+          specificLocation: result.data.specificLocation || '',
+          landmark: result.data.landmark || '',
+          contactPhone: result.data.contactPhone || '',
+          description: result.data.description || '',
+        });
+      }
+      
+      // Clear success message after 3 seconds
       setTimeout(() => {
-        loadShopDetails();
         setSuccess(false);
-      }, 2000);
+      }, 3000);
 
     } catch (err) {
       console.error('Update error:', err);
-      setError('Failed to update shop. Please try again.');
+      setError('An unexpected error occurred. Please try again.');
     } finally {
       setSaving(false);
     }

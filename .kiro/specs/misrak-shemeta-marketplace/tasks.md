@@ -67,7 +67,7 @@ The implementation is organized into 7 phases following the roadmap: Infrastruct
     - Store selection in Firestore User profile
     - _Requirements: 2.2, 2.3_
 
-  - [ ]* 2.4 Write property test for multi-tenant isolation
+  - [x]* 2.4 Write property test for multi-tenant isolation
     - **Property 1: Multi-Tenant Isolation**
     - **Validates: Requirements 1.4, 1.5, 10.3**
     - Implement property test verifying shop owners cannot access other shops' products
@@ -177,7 +177,7 @@ The implementation is organized into 7 phases following the roadmap: Infrastruct
     - Include estimated delivery times for each route
     - _Requirements: 16.1, 16.2, 16.3, 16.4, 16.5, 16.6, 16.7_
 
-  - [ ]* 7.2 Write property test for Eastern Triangle Pricing consistency
+  - [x]* 7.2 Write property test for Eastern Triangle Pricing consistency
     - **Property 2: Eastern Triangle Pricing Consistency**
     - **Validates: Requirements 16.1-16.7**
     - Verify delivery fee matches route matrix for all combinations
@@ -220,7 +220,7 @@ The implementation is organized into 7 phases following the roadmap: Infrastruct
     - Handle return from Chapa after payment
     - _Requirements: 8.1, 8.2_
 
-  - [ ]* 9.5 Write property test for payment webhook idempotency
+  - [x]* 9.5 Write property test for payment webhook idempotency
     - **Property 5: Payment Webhook Idempotency**
     - **Validates: Requirements 8.7, 24.1-24.5**
     - Verify duplicate webhook calls don't cause double-crediting
@@ -297,14 +297,14 @@ The implementation is organized into 7 phases following the roadmap: Infrastruct
     - Send notification to shop owner
     - _Requirements: 18.1, 18.2, 18.3, 18.4, 18.5_
 
-  - [ ]* 10.9 Write property test for Escrow State Machine validity
+  - [x]* 10.9 Write property test for Escrow State Machine validity
     - **Property 3: Escrow State Machine Validity**
     - **Validates: Requirements 23.1-23.5**
     - Verify only allowed state transitions succeed
     - Generate random status transitions and verify correctness
     - _Requirements: 23.1, 23.2, 23.3, 23.4, 23.5_
 
-  - [ ]* 10.10 Write property test for OTP validation security
+  - [x]* 10.10 Write property test for OTP validation security
     - **Property 4: OTP Validation Security**
     - **Validates: Requirements 17.1-17.6**
     - Verify correct OTP completes order
@@ -334,7 +334,7 @@ The implementation is organized into 7 phases following the roadmap: Infrastruct
     - Display transaction history
     - _Requirements: 22.3, 22.4_
 
-  - [ ]* 11.3 Write property test for shop balance consistency
+  - [x]* 11.3 Write property test for shop balance consistency
     - **Property 6: Shop Balance Consistency**
     - **Validates: Requirements 22.1, 22.2, 22.5**
     - Verify balance equals sum of completed orders minus withdrawals

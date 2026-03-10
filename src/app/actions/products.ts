@@ -6,6 +6,106 @@ import { Product, ActionResponse, City } from '@/types';
 import { deleteProductImages } from '@/lib/storage/images';
 
 /**
+ * UTILITY FUNCTIONS FOR PRODUCT UPLOAD
+ * Medium-Priority Fixes for Manual Product Creation
+ */
+
+/**
+ * Fix 8: Check Firebase Storage quota before upload
+ */
+async function checkStorageQuota(): Promise<{ available: boolean; message: string }> {
+  try {
+    console.log('[checkStorageQuota] Checking storage quota...');
+    
+    // Try to upload a small test file to verify quota
+    const { storage } = await import('@/lib/firebase/config');
+    const { ref, uploadBytes, deleteObject } = await import('firebase/storage');
+    
+    const testFile = new Blob(['test'], { type: 'text/plain' });
+    const testRef = ref(storage, `quota_check_${Date.now()}.txt`);
+    
+    try {
+      await uploadBytes(testRef, testFile);
+      await deleteObject(testRef);
+      
+      console.log('[checkStorageQuota] Storage quota check passed');
+      return { available: true, message: 'Storage available' };
+    } catch (uploadError: any) {
+      if (uploadError.code === 'storage/quota-exceeded') {
+        console.error('[checkStorageQuota] Storage quota exceeded');
+        return {
+          available: false,
+          message: 'Storage quota exceeded. Please contact support.'
+        };
+      }
+      throw uploadError;
+    }
+  } catch (error) {
+    console.error('[checkStorageQuota] Error checking quota:', error);
+    // Don't block upload if quota check fails - let the actual upload attempt
+    return { available: true, message: 'Storage check passed' };
+  }
+}
+
+/**
+ * Fix 5: Retry logic with exponential backoff for image uploads
+ */
+async function uploadProductImageWithRetry(
+  telegramId: string,
+  shopId: string,
+  productId: string,
+  imageData: string,
+  imageIndex: number,
+  mimeType: string,
+  maxRetries: number = 3
+): Promise<ActionResponse<string>> {
+  let lastError: any;
+  
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      console.log(`[uploadProductImageWithRetry] Attempt ${attempt + 1}/${maxRetries} for image ${imageIndex}`);
+      
+      // Import and call the upload function
+      const { uploadProductImage: uploadImage } = await import('@/lib/storage/images');
+      
+      const isTemporaryId = productId.startsWith('temp_');
+      const actualProductId = isTemporaryId ? `temp/${productId}` : productId;
+      
+      const result = await uploadImage(shopId, actualProductId, imageData, imageIndex, mimeType);
+      
+      if (result.success && result.url) {
+        console.log(`[uploadProductImageWithRetry] Success on attempt ${attempt + 1}`);
+        return {
+          success: true,
+          data: result.url,
+        };
+      }
+      
+      lastError = result.error || 'Upload failed';
+      
+    } catch (error) {
+      console.error(`[uploadProductImageWithRetry] Error on attempt ${attempt + 1}:`, error);
+      lastError = error instanceof Error ? error.message : String(error);
+    }
+    
+    // Don't retry on last attempt
+    if (attempt < maxRetries - 1) {
+      // Exponential backoff: 1s, 2s, 4s
+      const delayMs = 1000 * Math.pow(2, attempt);
+      console.log(`[uploadProductImageWithRetry] Retrying in ${delayMs}ms...`);
+      await new Promise(resolve => setTimeout(resolve, delayMs));
+    }
+  }
+  
+  // All retries failed
+  console.error('[uploadProductImageWithRetry] All retries failed:', lastError);
+  return {
+    success: false,
+    error: `Failed to upload image after ${maxRetries} attempts: ${lastError}`
+  };
+}
+
+/**
  * Input type for creating/updating products
  */
 export interface ProductInput {
@@ -30,17 +130,29 @@ export async function createProduct(
   productData: ProductInput
 ): Promise<ActionResponse<Product>> {
   try {
+    console.log('[createProduct] Starting product creation for telegramId:', telegramId);
+    console.log('[createProduct] Product data:', JSON.stringify({
+      name: productData.name,
+      price: productData.price,
+      category: productData.category,
+      stock: productData.stock,
+      imageCount: productData.images.length
+    }));
+    
     // 1. Verify user
     const user = await verifyTelegramUser(telegramId);
     if (!user) {
+      console.error('[createProduct] User verification failed');
       return {
         success: false,
         error: 'User not found or unauthorized',
       };
     }
+    console.log('[createProduct] User verified:', user.id, 'Role:', user.role);
 
     // 2. Verify user is a shop owner
     if (user.role !== 'MERCHANT') {
+      console.error('[createProduct] User is not a merchant, role:', user.role);
       return {
         success: false,
         error: 'Only shop owners can create products',
@@ -48,34 +160,44 @@ export async function createProduct(
     }
 
     // 3. Get shop ID for this owner
+    console.log('[createProduct] Getting shop ID for owner:', user.id);
     const shopId = await getShopIdForOwner(user.id);
     if (!shopId) {
+      console.error('[createProduct] No shop found for owner:', user.id);
       return {
         success: false,
         error: 'Shop not found for this owner',
       };
     }
+    console.log('[createProduct] Shop ID found:', shopId);
 
     // 4. Get shop details to get originCity
+    console.log('[createProduct] Fetching shop details...');
     const shopDoc = await adminDb.collection('shops').doc(shopId).get();
     if (!shopDoc.exists) {
+      console.error('[createProduct] Shop document does not exist:', shopId);
       return {
         success: false,
         error: 'Shop not found',
       };
     }
     const shopData = shopDoc.data()!;
+    console.log('[createProduct] Shop city:', shopData.city);
 
     // 5. Validate product data
+    console.log('[createProduct] Validating product data...');
     const validation = validateProductInput(productData);
     if (!validation.valid) {
+      console.error('[createProduct] Validation failed:', validation.error);
       return {
         success: false,
         error: validation.error,
       };
     }
+    console.log('[createProduct] Product data validated successfully');
 
     // 6. Create product with shopId association (TENANT ISOLATION)
+    console.log('[createProduct] Creating product document...');
     const productRef = await adminDb.collection('products').add({
       shopId, // CRITICAL: Associate with shop for tenant isolation
       shopCity: shopData.city as City, // Denormalized for performance (eliminates N+1 queries)
@@ -88,8 +210,10 @@ export async function createProduct(
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
     });
+    console.log('[createProduct] Product document created with ID:', productRef.id);
 
     // 7. Get created product
+    console.log('[createProduct] Fetching created product...');
     const productDoc = await productRef.get();
     const productDataFromDb = productDoc.data()!;
 
@@ -107,15 +231,18 @@ export async function createProduct(
       updatedAt: productDataFromDb.updatedAt.toDate(),
     };
 
+    console.log('[createProduct] Product creation completed successfully:', product.id);
     return {
       success: true,
       data: product,
     };
   } catch (error) {
-    console.error('Error creating product:', error);
+    console.error('[createProduct] ERROR during product creation:', error);
+    console.error('[createProduct] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+    console.error('[createProduct] Error message:', error instanceof Error ? error.message : String(error));
     return {
       success: false,
-      error: 'Failed to create product',
+      error: `Failed to create product: ${error instanceof Error ? error.message : 'Unknown error'}`,
     };
   }
 }
@@ -486,26 +613,26 @@ export async function uploadProductImage(
       };
     }
 
-    // 4. Upload image using storage utility
-    const { uploadProductImage: uploadImage } = await import('@/lib/storage/images');
-    
-    // For temporary product IDs (during creation), use a special path
-    const isTemporaryId = productId.startsWith('temp_');
-    const actualProductId = isTemporaryId ? `temp/${productId}` : productId;
-    
-    const result = await uploadImage(shopId, actualProductId, imageData, imageIndex, mimeType);
-
-    if (!result.success || !result.url) {
+    // FIX 8: Check storage quota before upload
+    const quotaCheck = await checkStorageQuota();
+    if (!quotaCheck.available) {
+      console.error('[uploadProductImage] Storage quota check failed:', quotaCheck.message);
       return {
         success: false,
-        error: result.error || 'Failed to upload image',
+        error: quotaCheck.message,
       };
     }
 
-    return {
-      success: true,
-      data: result.url,
-    };
+    // FIX 5: Use retry logic for image upload
+    return await uploadProductImageWithRetry(
+      telegramId,
+      shopId,
+      productId,
+      imageData,
+      imageIndex,
+      mimeType,
+      3 // maxRetries
+    );
   } catch (error) {
     console.error('Error uploading product image:', error);
     return {
