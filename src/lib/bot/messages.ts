@@ -11,9 +11,19 @@
  * - Language detection from Telegram settings
  */
 
-export interface BotMessage {
-  welcome: string;
+export interface PremiumBotMessage {
+  welcome: (studentName: string) => string;
   buttonText: string;
+}
+
+export interface LegacyBotMessage {
+  greeting: string;
+  headline: string;
+  features: string[];
+  cta: string;
+  benefits: string[];
+  security: string;
+  commands: string;
 }
 
 /**
@@ -58,17 +68,7 @@ export const buttonTexts: Record<string, string> = {
 /**
  * Legacy bot messages (kept for backward compatibility)
  */
-export interface BotMessage {
-  greeting: string;
-  headline: string;
-  features: string[];
-  cta: string;
-  benefits: string[];
-  security: string;
-  commands: string;
-}
-
-export const botMessages: Record<string, BotMessage> = {
+export const botMessages: Record<string, LegacyBotMessage> = {
   en: {
     greeting: '👋 Welcome to <b>Misrak Shemeta</b>! 🛍️',
     headline: '<b>Your Gateway to Eastern Ethiopia\'s Marketplace</b>',
