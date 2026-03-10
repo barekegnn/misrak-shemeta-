@@ -1,10 +1,63 @@
 /**
  * Telegram Bot Promotional Messages
  * 
- * Multilingual welcome messages for the /start command
+ * Premium multilingual welcome messages for the /start command
  * Supports: English, Amharic, Afaan Oromo
+ * 
+ * Features:
+ * - Personalized greeting with student's first name
+ * - Premium copywriting with brand identity (🌅 emoji)
+ * - HTML formatting for rich text
+ * - Language detection from Telegram settings
  */
 
+export interface BotMessage {
+  welcome: string;
+  buttonText: string;
+}
+
+/**
+ * Premium welcome messages with personalization
+ * Uses HTML formatting for rich text
+ */
+export const premiumWelcomeMessages: Record<string, (studentName: string) => string> = {
+  en: (studentName: string) => `
+<b>Welcome to the Golden Gateway of the East.</b> 🌅
+
+Hello <b>${studentName}</b>! <b>Misrak Shemeta</b> is your secure, student-first marketplace. Whether you are at Haramaya Main Campus, Dire Dawa, or Harar, we've made trading textbooks, electronics, and essentials safe and seamless with our built-in Escrow system.
+
+Your next great find is just one click away. Tap below to enter the marketplace!
+  `.trim(),
+
+  am: (studentName: string) => `
+<b>እንኳን ወደ ምስራቅ ሸመታ በሰላም መጡ!</b> 🌅
+
+ሰላም <b>${studentName}</b>! <b>ምስራቅ ሸመታ</b> በሀረማያ ዩኒቨርሲቲ፣ በድሬዳዋ እና በሀረር ተማሪዎች መካከል ደህንነቱ የተጠበቀ የንግድ ልውውጥ እንዲኖር ታስቦ የተዘጋጀ የገበያ ቦታ ነው። መጻሕፍትን፣ ኤሌክትሮኒክስን እና ሌሎች አስፈላጊ ቁሳቁሶችን ያለምንም ስጋት ይገበያዩ።
+
+የፈለጉትን ዕቃ አሁኑኑ ያግኙ። ለመጀመር ከታች ያለውን ቁልፍ ይጫኑ!
+  `.trim(),
+
+  om: (studentName: string) => `
+<b>Baga nagaan gara Misrak Shemeta dhuftan!</b> 🌅
+
+Akkam <b>${studentName}</b>! <b>Misrak Shemeta</b> gabaa amansiisaa barattoota Yuunivarsiitii Haramayaa, Dirree Dhawaa fi Harar jidduutti dhimmoota daldalaa mijeessuuf kan qophaahoodha. Meeshaalee barumsaa, elektironiksii fi waan isiniif barbaachisu hunda bifa amansiisaa ta'een daldaluu dandeessu.
+
+Wantoota isin barbaachisan amuma argadhaa. Jalqabuuf mallattoo armaan gadii cuqaasaa!
+  `.trim(),
+};
+
+/**
+ * Button text in three languages
+ */
+export const buttonTexts: Record<string, string> = {
+  en: 'Open Marketplace 🚀',
+  am: 'ገበያ ክፈት 🚀',
+  om: 'Gabaa Banaa 🚀',
+};
+
+/**
+ * Legacy bot messages (kept for backward compatibility)
+ */
 export interface BotMessage {
   greeting: string;
   headline: string;

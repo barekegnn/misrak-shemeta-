@@ -7,7 +7,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { 
-  generateWelcomeMessage, 
+  premiumWelcomeMessages,
+  buttonTexts,
   generateHelpMessage, 
   generateShopMessage, 
   generateProductsMessage 
@@ -64,7 +65,7 @@ async function sendTelegramMessage(chatId: number, text: string, replyMarkup?: a
 }
 
 /**
- * Handle /start command with promotional messaging
+ * Handle /start command with premium personalized welcome
  */
 async function handleStartCommand(chatId: number, firstName: string, languageCode?: string) {
   // Detect language from Telegram user settings
@@ -74,20 +75,16 @@ async function handleStartCommand(chatId: number, firstName: string, languageCod
     else if (languageCode.startsWith('om')) language = 'om';
   }
 
-  const welcomeText = generateWelcomeMessage(firstName, language);
+  // Generate personalized welcome message with student's first name
+  const welcomeText = premiumWelcomeMessages[language](firstName);
+  const buttonText = buttonTexts[language];
 
   const replyMarkup = {
     inline_keyboard: [
       [
         {
-          text: '🛍️ Open Marketplace',
+          text: buttonText,
           web_app: { url: APP_URL },
-        },
-      ],
-      [
-        {
-          text: '📱 Direct Link',
-          url: APP_URL,
         },
       ],
     ],
