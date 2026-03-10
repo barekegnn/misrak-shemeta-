@@ -18,6 +18,8 @@ export function ShopRegistrationForm({
   const [formData, setFormData] = useState({
     name: '',
     city: '' as City | '',
+    specificLocation: '',
+    landmark: '',
     contactPhone: ''
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -34,6 +36,10 @@ export function ShopRegistrationForm({
       cityPlaceholder: 'Select city',
       harar: 'Harar',
       direDawa: 'Dire Dawa',
+      specificLocation: 'Specific Address',
+      specificLocationPlaceholder: 'Enter detailed address (e.g., Near Ras Hotel, Main Street)',
+      landmark: 'Landmark (Optional)',
+      landmarkPlaceholder: 'Enter nearby landmark for easier navigation',
       contactPhone: 'Contact Phone',
       contactPhonePlaceholder: '+251911234567',
       submit: 'Register Shop',
@@ -42,6 +48,8 @@ export function ShopRegistrationForm({
         SHOP_NAME_REQUIRED: 'Shop name is required',
         SHOP_NAME_TOO_LONG: 'Shop name is too long (max 100 characters)',
         INVALID_CITY: 'Please select a valid city',
+        SPECIFIC_LOCATION_REQUIRED: 'Specific address is required',
+        SPECIFIC_LOCATION_TOO_LONG: 'Address is too long (max 200 characters)',
         CONTACT_PHONE_REQUIRED: 'Contact phone is required',
         INVALID_PHONE_FORMAT: 'Invalid phone format. Use +251XXXXXXXXX or 09XXXXXXXX',
         SHOP_ALREADY_EXISTS: 'You already have a registered shop',
@@ -57,6 +65,10 @@ export function ShopRegistrationForm({
       cityPlaceholder: 'ከተማ ይምረጡ',
       harar: 'ሐረር',
       direDawa: 'ድሬዳዋ',
+      specificLocation: 'ዝርዝር አድራሻ',
+      specificLocationPlaceholder: 'ዝርዝር አድራሻ ያስገቡ (ምሳሌ፡ ራስ ሆቴል አጠገብ፣ ዋና መንገድ)',
+      landmark: 'ምልክት (አማራጭ)',
+      landmarkPlaceholder: 'ለቀላል አሰሳ የሚረዳ ምልክት ያስገቡ',
       contactPhone: 'የመገኛ ስልክ',
       contactPhonePlaceholder: '+251911234567',
       submit: 'ሱቅ መዝግብ',
@@ -65,6 +77,8 @@ export function ShopRegistrationForm({
         SHOP_NAME_REQUIRED: 'የሱቅ ስም ያስፈልጋል',
         SHOP_NAME_TOO_LONG: 'የሱቅ ስም በጣም ረጅም ነው (ከ100 ቁምፊዎች በላይ)',
         INVALID_CITY: 'እባክዎ ትክክለኛ ከተማ ይምረጡ',
+        SPECIFIC_LOCATION_REQUIRED: 'ዝርዝር አድራሻ ያስፈልጋል',
+        SPECIFIC_LOCATION_TOO_LONG: 'አድራሻው በጣም ረጅም ነው (ከ200 ቁምፊዎች በላይ)',
         CONTACT_PHONE_REQUIRED: 'የመገኛ ስልክ ያስፈልጋል',
         INVALID_PHONE_FORMAT: 'ልክ ያልሆነ የስልክ ቅርጸት። +251XXXXXXXXX ወይም 09XXXXXXXX ይጠቀሙ',
         SHOP_ALREADY_EXISTS: 'ቀድሞውኑ የተመዘገበ ሱቅ አለዎት',
@@ -80,6 +94,10 @@ export function ShopRegistrationForm({
       cityPlaceholder: 'Magaalaa filadhu',
       harar: 'Harar',
       direDawa: 'Dire Dawa',
+      specificLocation: 'Teessoo Bal\'aa',
+      specificLocationPlaceholder: 'Teessoo bal\'aa galchi (fkf: Ras Hotel biratti, Daandii Guddaa)',
+      landmark: 'Mallattoo (Filannoo)',
+      landmarkPlaceholder: 'Karaa salphaa ta\'uuf mallattoo naannoo galchi',
       contactPhone: 'Bilbila Quunnamtii',
       contactPhonePlaceholder: '+251911234567',
       submit: 'Suuqa Galmee',
@@ -88,6 +106,8 @@ export function ShopRegistrationForm({
         SHOP_NAME_REQUIRED: 'Maqaan suuqaa barbaachisaadha',
         SHOP_NAME_TOO_LONG: 'Maqaan suuqaa baay\'ee dheeraadha (arfii 100 ol)',
         INVALID_CITY: 'Maaloo magaalaa sirrii ta\'e filadhu',
+        SPECIFIC_LOCATION_REQUIRED: 'Teessoon bal\'aa barbaachisaadha',
+        SPECIFIC_LOCATION_TOO_LONG: 'Teessoon baay\'ee dheeraadha (arfii 200 ol)',
         CONTACT_PHONE_REQUIRED: 'Bilbilli quunnamtii barbaachisaadha',
         INVALID_PHONE_FORMAT: 'Bifa bilbilaa sirrii miti. +251XXXXXXXXX ykn 09XXXXXXXX fayyadami',
         SHOP_ALREADY_EXISTS: 'Suuqa galmeeffame duraan qabda',
@@ -109,6 +129,12 @@ export function ShopRegistrationForm({
 
     if (!formData.city) {
       newErrors.city = t.errors.INVALID_CITY;
+    }
+
+    if (!formData.specificLocation.trim()) {
+      newErrors.specificLocation = t.errors.SPECIFIC_LOCATION_REQUIRED;
+    } else if (formData.specificLocation.length > 200) {
+      newErrors.specificLocation = t.errors.SPECIFIC_LOCATION_TOO_LONG;
     }
 
     if (!formData.contactPhone.trim()) {
@@ -138,6 +164,8 @@ export function ShopRegistrationForm({
       const result = await registerShop(telegramId, {
         name: formData.name,
         city: formData.city as City,
+        specificLocation: formData.specificLocation,
+        landmark: formData.landmark || undefined,
         contactPhone: formData.contactPhone
       });
 
@@ -216,6 +244,53 @@ export function ShopRegistrationForm({
           {errors.city && (
             <p className="text-red-600 text-sm mt-1">{errors.city}</p>
           )}
+        </div>
+
+        {/* Specific Location */}
+        <div>
+          <label
+            htmlFor="specificLocation"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            {t.specificLocation}
+          </label>
+          <input
+            id="specificLocation"
+            type="text"
+            value={formData.specificLocation}
+            onChange={(e) =>
+              setFormData({ ...formData, specificLocation: e.target.value })
+            }
+            placeholder={t.specificLocationPlaceholder}
+            className={`w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+              errors.specificLocation ? 'border-red-500' : 'border-gray-300'
+            }`}
+            maxLength={200}
+          />
+          {errors.specificLocation && (
+            <p className="text-red-600 text-sm mt-1">{errors.specificLocation}</p>
+          )}
+        </div>
+
+        {/* Landmark */}
+        <div>
+          <label
+            htmlFor="landmark"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            {t.landmark}
+          </label>
+          <input
+            id="landmark"
+            type="text"
+            value={formData.landmark}
+            onChange={(e) =>
+              setFormData({ ...formData, landmark: e.target.value })
+            }
+            placeholder={t.landmarkPlaceholder}
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            maxLength={100}
+          />
         </div>
 
         {/* Contact Phone */}

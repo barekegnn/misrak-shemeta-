@@ -67,6 +67,8 @@ const SHOPS = [
     ownerName: 'Ahmed Mohammed',
     contactPhone: '+251911234567',
     city: 'HARAR' as const,
+    specificLocation: 'Ras Tafari Street, Near Commercial Bank',
+    landmark: 'Commercial Bank of Ethiopia',
     category: 'Electronics',
     tier: 'premium' as const,
     products: [
@@ -88,6 +90,8 @@ const SHOPS = [
     ownerName: 'Fatima Yusuf',
     contactPhone: '+251922345678',
     city: 'HARAR' as const,
+    specificLocation: 'Jugol Wall Area, Main Market Street',
+    landmark: 'Harar Main Market',
     category: 'Cosmetics',
     tier: 'luxury' as const,
     products: [
@@ -116,6 +120,8 @@ const SHOPS = [
     ownerName: 'Abdulahi Hassan',
     contactPhone: '+251933456789',
     city: 'HARAR' as const,
+    specificLocation: 'University Road, Near Harar University Gate',
+    landmark: 'Harar University Main Gate',
     category: 'Accessories',
     tier: 'standard' as const,
     products: [
@@ -139,6 +145,8 @@ const SHOPS = [
     ownerName: 'Dawit Tesfaye',
     contactPhone: '+251944567890',
     city: 'DIRE_DAWA' as const,
+    specificLocation: 'Kezira Street, Central Business District',
+    landmark: 'Dire Dawa City Hall',
     category: 'Footwear',
     tier: 'premium' as const,
     products: [
@@ -166,6 +174,8 @@ const SHOPS = [
     ownerName: 'Meron Alemayehu',
     contactPhone: '+251955678901',
     city: 'DIRE_DAWA' as const,
+    specificLocation: 'Sabian Street, Fashion District',
+    landmark: 'Dire Dawa Fashion Center',
     category: 'Footwear',
     tier: 'luxury' as const,
     products: [
@@ -191,6 +201,8 @@ const SHOPS = [
     ownerName: 'Yohannes Bekele',
     contactPhone: '+251966789012',
     city: 'DIRE_DAWA' as const,
+    specificLocation: 'Stadium Road, Near DDU Sports Complex',
+    landmark: 'Dire Dawa University Sports Complex',
     category: 'Clothing',
     tier: 'standard' as const,
     products: [
@@ -293,6 +305,7 @@ async function seedShops() {
   }
 
   for (const shopConfig of SHOPS) {
+    // Create predictable shop ID based on name
     const shopId = `shop_${shopConfig.name.toLowerCase().replace(/[^a-z0-9]+/g, '_')}`;
     const shopFolderPath = path.join(seedImagesDir, shopConfig.folder);
     
@@ -322,8 +335,10 @@ async function seedShops() {
       description: shopConfig.description,
       ownerName: shopConfig.ownerName,
       contactPhone: shopConfig.contactPhone,
-      ownerId: `merchant_${shopId}`,
+      ownerId: `merchant_${shopId}`, // Use predictable ownerId matching shopId
       city: shopConfig.city,
+      specificLocation: shopConfig.specificLocation,
+      landmark: shopConfig.landmark,
       tier: shopConfig.tier,
       location: {
         latitude: shopConfig.city === 'HARAR' ? 9.3 : 9.6,
@@ -334,8 +349,11 @@ async function seedShops() {
       updatedAt: Timestamp.now(),
     };
 
-    await db.collection('shops').doc(shopId).set(shopData);
-    console.log(`   ✅ Created ${shopConfig.tier} shop: ${shopConfig.name}`);
+    // Use predictable document ID instead of auto-generated
+    const shopRef = db.collection('shops').doc(shopId);
+    await shopRef.set(shopData);
+    const actualShopId = shopRef.id; // This will be the predictable shopId
+    console.log(`   ✅ Created ${shopConfig.tier} shop: ${shopConfig.name} (ID: ${actualShopId})`);
 
     // Create products with images
     const productsToCreate = Math.min(shopConfig.products.length, imageFiles.length);
@@ -346,12 +364,12 @@ async function seedShops() {
       
       console.log(`   📸 Uploading image for: ${productConfig.name}`);
       
-      // Upload image to Firebase Storage
-      const imageUrl = await uploadImage(shopId, productId, imageFiles[i], 0);
+      // Upload image to Firebase Storage using predictable product ID
+      const imageUrl = await uploadImage(actualShopId, productId, imageFiles[i], 0);
       
-      // Create product document
+      // Create product document with predictable ID
       const productData = {
-        shopId: shopId,
+        shopId: actualShopId, // Use the predictable shop ID
         shopCity: shopConfig.city,
         name: productConfig.name,
         description: productConfig.description,
@@ -364,7 +382,7 @@ async function seedShops() {
       };
 
       await db.collection('products').doc(productId).set(productData);
-      console.log(`   ✅ Created product: ${productConfig.name}`);
+      console.log(`   ✅ Created product: ${productConfig.name} (ID: ${productId})`);
     }
   }
 

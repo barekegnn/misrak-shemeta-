@@ -32,7 +32,9 @@ export interface Shop {
   description?: string; // Optional shop description
   ownerId: string; // Reference to User.id
   ownerName?: string; // Ethiopian shop owner name
-  city: City; // Shop location
+  city: City; // Shop location (HARAR/DIRE_DAWA)
+  specificLocation?: string; // Detailed address/location within the city
+  landmark?: string; // Optional landmark for easier navigation
   tier?: 'luxury' | 'premium' | 'standard'; // Shop tier for UI styling
   contactPhone?: string; // Ethiopian phone number
   balance: number; // Current balance in ETB

@@ -29,6 +29,8 @@ export default function ShopSettings() {
   const [formData, setFormData] = useState({
     name: '',
     city: 'HARAR' as 'HARAR' | 'DIRE_DAWA',
+    specificLocation: '',
+    landmark: '',
     contactPhone: '',
     description: '',
   });
@@ -50,6 +52,8 @@ export default function ShopSettings() {
         setFormData({
           name: result.data.name,
           city: result.data.city,
+          specificLocation: result.data.specificLocation || '',
+          landmark: result.data.landmark || '',
           contactPhone: result.data.contactPhone || '',
           description: result.data.description || '',
         });
@@ -90,6 +94,18 @@ export default function ShopSettings() {
         return;
       }
 
+      if (!formData.specificLocation || formData.specificLocation.trim().length === 0) {
+        setError('Specific location is required');
+        setSaving(false);
+        return;
+      }
+
+      if (formData.specificLocation.length > 200) {
+        setError('Specific location is too long (max 200 characters)');
+        setSaving(false);
+        return;
+      }
+
       // Validate phone number format
       const phoneRegex = /^(\+251|0)?[79]\d{8}$/;
       if (!phoneRegex.test(formData.contactPhone.replace(/\s/g, ''))) {
@@ -115,6 +131,8 @@ export default function ShopSettings() {
           updates: {
             name: formData.name.trim(),
             city: formData.city,
+            specificLocation: formData.specificLocation.trim(),
+            landmark: formData.landmark.trim() || null,
             contactPhone: formData.contactPhone.trim(),
             description: formData.description.trim(),
             updatedAt: new Date().toISOString(),
@@ -270,6 +288,51 @@ export default function ShopSettings() {
                     </Label>
                   </div>
                 </RadioGroup>
+              </div>
+
+              {/* Specific Location */}
+              <div className="space-y-2">
+                <Label htmlFor="specificLocation" className="text-sm sm:text-base">
+                  Specific Address <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="specificLocation"
+                  type="text"
+                  placeholder="e.g., Near Ras Hotel, Main Street"
+                  value={formData.specificLocation}
+                  onChange={(e) =>
+                    setFormData({ ...formData, specificLocation: e.target.value })
+                  }
+                  required
+                  maxLength={200}
+                  disabled={saving}
+                  className="text-base min-h-[44px]"
+                />
+                <p className="text-xs sm:text-sm text-gray-500">
+                  {formData.specificLocation.length}/200 characters
+                </p>
+              </div>
+
+              {/* Landmark */}
+              <div className="space-y-2">
+                <Label htmlFor="landmark" className="text-sm sm:text-base">
+                  Landmark (Optional)
+                </Label>
+                <Input
+                  id="landmark"
+                  type="text"
+                  placeholder="e.g., Next to Commercial Bank"
+                  value={formData.landmark}
+                  onChange={(e) =>
+                    setFormData({ ...formData, landmark: e.target.value })
+                  }
+                  maxLength={100}
+                  disabled={saving}
+                  className="text-base min-h-[44px]"
+                />
+                <p className="text-xs sm:text-sm text-gray-500">
+                  Help customers find your shop more easily
+                </p>
               </div>
 
               {/* Contact Phone */}

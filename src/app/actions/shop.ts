@@ -131,10 +131,10 @@ export async function getShopStatistics(
     const shopData = shopDoc.data();
     const shopId = shopDoc.id;
 
-    // Get all orders containing items from this shop
+    // Get all orders containing items from this shop using denormalized shopIds array
     const ordersSnapshot = await adminDb
       .collection('orders')
-      .where('items', 'array-contains', { shopId })
+      .where('shopIds', 'array-contains', shopId)
       .get();
 
     let pendingOrdersValue = 0;
@@ -237,6 +237,8 @@ export async function registerShop(
   shopData: {
     name: string;
     city: City;
+    specificLocation: string;
+    landmark?: string;
     contactPhone: string;
   }
 ): Promise<ActionResponse<Shop>> {
@@ -258,6 +260,14 @@ export async function registerShop(
 
     if (!shopData.city || (shopData.city !== 'HARAR' && shopData.city !== 'DIRE_DAWA')) {
       return { success: false, error: 'INVALID_CITY' };
+    }
+
+    if (!shopData.specificLocation || shopData.specificLocation.trim().length === 0) {
+      return { success: false, error: 'SPECIFIC_LOCATION_REQUIRED' };
+    }
+
+    if (shopData.specificLocation.length > 200) {
+      return { success: false, error: 'SPECIFIC_LOCATION_TOO_LONG' };
     }
 
     if (!shopData.contactPhone || shopData.contactPhone.trim().length === 0) {
@@ -292,6 +302,8 @@ export async function registerShop(
       name: shopData.name.trim(),
       ownerId: user.id,
       city: shopData.city,
+      specificLocation: shopData.specificLocation.trim(),
+      landmark: shopData.landmark?.trim() || null,
       contactPhone: shopData.contactPhone.trim(),
       balance: 0,
       suspended: false,
@@ -304,6 +316,8 @@ export async function registerShop(
       name: shopData.name.trim(),
       ownerId: user.id,
       city: shopData.city,
+      specificLocation: shopData.specificLocation.trim(),
+      landmark: shopData.landmark?.trim() || undefined,
       contactPhone: shopData.contactPhone.trim(),
       balance: 0,
       suspended: false,
