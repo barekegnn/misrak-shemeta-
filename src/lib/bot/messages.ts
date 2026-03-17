@@ -29,40 +29,59 @@ export interface LegacyBotMessage {
 /**
  * Premium welcome messages with personalization
  * Uses HTML formatting for rich text
+ * Professional marketing copy from brand/sales team
  */
 export const premiumWelcomeMessages: Record<string, (studentName: string) => string> = {
   en: (studentName: string) => `
-<b>Welcome to the Golden Gateway of the East.</b> 🌅
+🌅 <b>Welcome to Misrak Shemeta, ${studentName}!</b>
 
-Hello <b>${studentName}</b>! <b>Misrak Shemeta</b> is your secure, student-first marketplace. Whether you are at Haramaya Main Campus, Dire Dawa, or Harar, we've made trading textbooks, electronics, and essentials safe and seamless with our built-in Escrow system.
+You just found your new favorite marketplace. We're the go-to spot for students across Haramaya, Dire Dawa, and Harar who want to buy and sell textbooks, electronics, and essentials without the stress.
 
-Your next great find is just one click away. Tap below to enter the marketplace!
+<b>Here's what makes us different:</b>
+✨ <b>Built for students, by students</b> – We get what you need
+🔒 <b>Escrow protection</b> – Your money is safe until you get your stuff
+⚡ <b>Lightning-fast delivery</b> – Get what you want in hours, not days
+💯 <b>Trusted by thousands</b> – Join the community that's changing how students trade
+
+Ready to find your next great deal? Let's go! 🚀
   `.trim(),
 
   am: (studentName: string) => `
-<b>እንኳን ወደ ምስራቅ ሸመታ በሰላም መጡ!</b> 🌅
+🌅 <b>ወደ ሚሳ ሸመታ በደህና መጡ, ${studentName}!</b>
 
-ሰላም <b>${studentName}</b>! <b>ምስራቅ ሸመታ</b> በሀረማያ ዩኒቨርሲቲ፣ በድሬዳዋ እና በሀረር ተማሪዎች መካከል ደህንነቱ የተጠበቀ የንግድ ልውውጥ እንዲኖር ታስቦ የተዘጋጀ የገበያ ቦታ ነው። መጻሕፍትን፣ ኤሌክትሮኒክስን እና ሌሎች አስፈላጊ ቁሳቁሶችን ያለምንም ስጋት ይገበያዩ።
+አሁን ወደ ምርጥ ገበያህ ደርሰሃል። ሚሳ ሸመታ በሐረር፣ በደሬ ዳዋ እና በሐረማያ ተማሪዎች መካከል መጻሕፍት፣ ኤሌክትሮኒክስ እና ሌሎች አስፈላጊ ነገሮችን ለመግዛት እና ለመሸጥ ምቹ ቦታ ነው።
 
-የፈለጉትን ዕቃ አሁኑኑ ያግኙ። ለመጀመር ከታች ያለውን ቁልፍ ይጫኑ!
+<b>ለምን ሚሳ ሸመታ?</b>
+✨ <b>ተማሪዎች ለተማሪዎች</b> – ምን ትፈልጋለህ እንደምናውቅ
+🔒 <b>ደህንነቱ የተጠበቀ ክፍያ</b> – ገንዘብህ እስከ ምርቱ ደርሰህ ድረስ ተጠብቆ ይሆናል
+⚡ <b>ፈጣን ማድረስ</b> – ምን ትፈልገው በሰዓታት ውስጥ ታገኛለህ
+💯 <b>ሺህ ሺህ ተማሪዎች ያምናሉ</b> – ተማሪዎች ንግድ ለመቀየር ወደ ሚሳ ሸመታ ይመጣሉ
+
+ምርጥ ዕቃ ለማግኘት ዝግጁ? እንሂድ! 🚀
   `.trim(),
 
   om: (studentName: string) => `
-<b>Baga nagaan gara Misrak Shemeta dhuftan!</b> 🌅
+🌅 <b>Gara Misrak Shemeta akam galateeffadha, ${studentName}!</b>
 
-Akkam <b>${studentName}</b>! <b>Misrak Shemeta</b> gabaa amansiisaa barattoota Yuunivarsiitii Haramayaa, Dirree Dhawaa fi Harar jidduutti dhimmoota daldalaa mijeessuuf kan qophaahoodha. Meeshaalee barumsaa, elektironiksii fi waan isiniif barbaachisu hunda bifa amansiisaa ta'een daldaluu dandeessu.
+Gabaa barattootaaf kan qophaa'e argadhe. Misrak Shemeta gabaa amansiisaa barattoota Haramayaa, Dirree Dhawaa fi Harar jidduutti meeshaalee barumsaa, elektironiksii fi waan isiniif barbaachisu hunda daldaluuf kan qophaa'edha.
 
-Wantoota isin barbaachisan amuma argadhaa. Jalqabuuf mallattoo armaan gadii cuqaasaa!
+<b>Misrak Shemeta maaliif filadhu?</b>
+✨ <b>Barattoonni barattootaaf</b> – Maal barbaachdu akka hubnu
+🔒 <b>Kaffaltii amansiisaa</b> – Maallaqa kee hanga midhaa argachuu itti qabama
+⚡ <b>Geessaa saffisaa</b> – Waan barbaachdu sa'aatii keessatti argadha
+💯 <b>Kuma kuma barattoonni amansiisu</b> – Misrak Shemeta gara daldalaa jijjiiruuf dhufu
+
+Midhaa gaarii argachuuf qophaa? Haa deemnu! 🚀
   `.trim(),
 };
 
 /**
- * Button text in three languages
+ * Button text in three languages - with marketing flair
  */
 export const buttonTexts: Record<string, string> = {
-  en: 'Open Marketplace 🚀',
-  am: 'ገበያ ክፈት 🚀',
-  om: 'Gabaa Banaa 🚀',
+  en: '🚀 Let\'s Shop',
+  am: '🚀 ገበያ ክፈት',
+  om: '🚀 Gabaa Banaa',
 };
 
 /**
